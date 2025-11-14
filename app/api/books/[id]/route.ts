@@ -5,11 +5,12 @@ import { BookCategory } from '@prisma/client';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const book = await prisma.book.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!book) {
@@ -31,7 +32,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -50,10 +51,11 @@ export async function PATCH(
       );
     }
 
+    const { id } = await params;
     const body = await request.json();
 
     const book = await prisma.book.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: body.title,
         subtitle: body.subtitle,
@@ -91,7 +93,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -110,8 +112,9 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     await prisma.book.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: 'Book deleted successfully' });

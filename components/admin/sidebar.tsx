@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -20,6 +21,8 @@ import {
   BarChart,
   Settings,
   LogOut,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 const navigation = [
@@ -38,21 +41,56 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    // Load initial state from localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sidebarCollapsed');
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
+
+  const toggleSidebar = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(newState));
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/login' });
   };
 
   return (
-    <div className="flex h-full flex-col border-r bg-gradient-to-b from-blue-900 to-blue-950">
-      {/* Logo/Header */}
-      <div className="flex h-16 items-center border-b border-blue-800 px-6">
-        <Church className="h-6 w-6 text-blue-200" />
-        <span className="ml-2 text-lg font-semibold text-white">El Shaddai</span>
+    <div className={cn(
+      "flex h-full flex-col border-r bg-gradient-to-b from-blue-900 to-blue-950 transition-all duration-300",
+      isCollapsed ? "w-16" : "w-64"
+    )}>
+      {/* Logo/Header with Toggle */}
+      <div className="flex h-16 items-center justify-between border-b border-blue-800 px-3">
+        <div className="flex items-center overflow-hidden">
+          <Church className="h-6 w-6 text-blue-200 flex-shrink-0" />
+          {!isCollapsed && (
+            <span className="ml-2 text-lg font-semibold text-white whitespace-nowrap">El Shaddai</span>
+          )}
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleSidebar}
+          className="text-blue-200 hover:bg-blue-800 hover:text-white p-1 h-8 w-8"
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-5 w-5" />
+          ) : (
+            <ChevronLeft className="h-5 w-5" />
+          )}
+        </Button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
+      <nav className="flex-1 space-y-1 px-2 py-4 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
@@ -63,25 +101,31 @@ export function Sidebar() {
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive
                   ? 'bg-blue-700 text-white'
-                  : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+                  : 'text-blue-100 hover:bg-blue-800 hover:text-white',
+                isCollapsed && 'justify-center'
               )}
+              title={isCollapsed ? item.name : undefined}
             >
-              <item.icon className="h-5 w-5" />
-              {item.name}
+              <item.icon className="h-5 w-5 flex-shrink-0" />
+              {!isCollapsed && <span className="whitespace-nowrap">{item.name}</span>}
             </Link>
           );
         })}
       </nav>
 
       {/* Sign Out */}
-      <div className="border-t border-blue-800 p-4">
+      <div className="border-t border-blue-800 p-2">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 text-blue-100 hover:bg-blue-800 hover:text-white"
+          className={cn(
+            "w-full gap-3 text-blue-100 hover:bg-blue-800 hover:text-white",
+            isCollapsed ? 'justify-center px-2' : 'justify-start'
+          )}
           onClick={handleSignOut}
+          title={isCollapsed ? 'Sign Out' : undefined}
         >
-          <LogOut className="h-5 w-5" />
-          Sign Out
+          <LogOut className="h-5 w-5 flex-shrink-0" />
+          {!isCollapsed && <span>Sign Out</span>}
         </Button>
       </div>
     </div>

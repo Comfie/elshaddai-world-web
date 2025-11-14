@@ -19,7 +19,7 @@ export default async function AdminLayout({
     <SessionProvider session={session}>
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
-        <aside className="hidden w-64 md:block">
+        <aside className="hidden md:block">
           <Sidebar />
         </aside>
 

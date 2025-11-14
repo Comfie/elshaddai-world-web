@@ -45,11 +45,11 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex h-full flex-col border-r bg-background">
+    <div className="flex h-full flex-col border-r bg-gradient-to-b from-blue-900 to-blue-950">
       {/* Logo/Header */}
-      <div className="flex h-16 items-center border-b px-6">
-        <Church className="h-6 w-6 text-primary" />
-        <span className="ml-2 text-lg font-semibold">El Shaddai</span>
+      <div className="flex h-16 items-center border-b border-blue-800 px-6">
+        <Church className="h-6 w-6 text-blue-200" />
+        <span className="ml-2 text-lg font-semibold text-white">El Shaddai</span>
       </div>
 
       {/* Navigation */}
@@ -63,8 +63,8 @@ export function Sidebar() {
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-blue-700 text-white'
+                  : 'text-blue-100 hover:bg-blue-800 hover:text-white'
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -75,10 +75,10 @@ export function Sidebar() {
       </nav>
 
       {/* Sign Out */}
-      <div className="border-t p-4">
+      <div className="border-t border-blue-800 p-4">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3"
+          className="w-full justify-start gap-3 text-blue-100 hover:bg-blue-800 hover:text-white"
           onClick={handleSignOut}
         >
           <LogOut className="h-5 w-5" />

@@ -49,10 +49,10 @@ export function Header() {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-background px-6">
+    <header className="flex h-16 items-center justify-between border-b bg-white px-6">
       <div>
-        <h2 className="text-xl font-semibold">Admin Portal</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-xl font-semibold text-gray-900">Admin Portal</h2>
+        <p className="text-sm text-gray-600">
           Manage your church operations
         </p>
       </div>

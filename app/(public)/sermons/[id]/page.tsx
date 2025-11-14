@@ -29,8 +29,9 @@ function extractYouTubeId(url: string) {
   return match ? match[1] : null;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const sermon = await getSermon(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const sermon = await getSermon(id);
 
   if (!sermon) {
     return { title: 'Sermon Not Found' };
@@ -42,8 +43,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default async function SermonDetailPage({ params }: { params: { id: string } }) {
-  const sermon = await getSermon(params.id);
+export default async function SermonDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const sermon = await getSermon(id);
 
   if (!sermon) {
     notFound();

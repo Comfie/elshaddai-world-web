@@ -73,7 +73,7 @@ export function NoticeForm({ initialData, noticeId, userId, userName }: NoticeFo
       summary: '',
       category: 'GENERAL',
       priority: 'NORMAL',
-      targetAudience: 'ALL',
+      targetAudience: 'EVERYONE',
       publishDate: new Date(),
       displayOnWebsite: true,
       isActive: true,
@@ -243,13 +243,10 @@ export function NoticeForm({ initialData, noticeId, userId, userName }: NoticeFo
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ALL">All Members</SelectItem>
-                      <SelectItem value="MEMBERS">Members Only</SelectItem>
-                      <SelectItem value="LEADERS">Leaders</SelectItem>
-                      <SelectItem value="YOUTH">Youth</SelectItem>
-                      <SelectItem value="CHILDREN">Children</SelectItem>
-                      <SelectItem value="ADULTS">Adults</SelectItem>
-                      <SelectItem value="SENIORS">Seniors</SelectItem>
+                      <SelectItem value="EVERYONE">Everyone</SelectItem>
+                      <SelectItem value="MEMBERS_ONLY">Members Only</SelectItem>
+                      <SelectItem value="LEADERS_ONLY">Leaders Only</SelectItem>
+                      <SelectItem value="SPECIFIC_MINISTRY">Specific Ministry</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

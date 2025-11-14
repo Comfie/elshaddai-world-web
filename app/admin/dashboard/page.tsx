@@ -274,7 +274,7 @@ async function DashboardContent() {
               </div>
             ) : (
               <div className="space-y-3">
-                {upcomingEvents.map((event) => (
+                {upcomingEvents.map((event: any) => (
                   <Link
                     key={event.id}
                     href={`/admin/events/${event.id}`}
@@ -333,7 +333,7 @@ async function DashboardContent() {
               </div>
             ) : (
               <div className="space-y-3">
-                {recentNotices.map((notice) => (
+                {recentNotices.map((notice: any) => (
                   <Link
                     key={notice.id}
                     href={`/admin/notices/${notice.id}`}

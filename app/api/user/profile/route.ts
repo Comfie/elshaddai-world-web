@@ -7,10 +7,21 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth();
 
+    console.log('Session:', JSON.stringify(session, null, 2));
+
     if (!session || !session.user) {
+      console.error('No session or user found');
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    if (!session.user.id) {
+      console.error('Session user ID is missing:', session.user);
+      return NextResponse.json(
+        { error: 'User ID not found in session' },
+        { status: 400 }
       );
     }
 
@@ -30,6 +41,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
+      console.error('User not found in database for ID:', session.user.id);
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -40,7 +52,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching user profile:', error);
     return NextResponse.json(
-      { error: 'An error occurred' },
+      { error: 'An error occurred', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

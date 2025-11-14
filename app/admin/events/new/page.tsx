@@ -1,14 +1,13 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { EventForm } from '@/components/admin/event-form';
 import { prisma } from '@/lib/db';
 
 export default async function NewEventPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     redirect('/login');

@@ -1,14 +1,13 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { NoticeForm } from '@/components/admin/notice-form';
 import { getNoticeById } from '@/lib/actions/notices';
 
 export default async function EditNoticePage({ params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id || !session?.user?.name) {
     redirect('/login');

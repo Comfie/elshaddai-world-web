@@ -1,13 +1,12 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { NoticeForm } from '@/components/admin/notice-form';
 
 export default async function NewNoticePage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id || !session?.user?.name) {
     redirect('/login');

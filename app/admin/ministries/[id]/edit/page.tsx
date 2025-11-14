@@ -1,14 +1,13 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { MinistryForm } from '@/components/admin/ministry-form';
 import { getMinistryById, getLeadersForSelect } from '@/lib/actions/ministries';
 
 export default async function EditMinistryPage({ params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     redirect('/login');

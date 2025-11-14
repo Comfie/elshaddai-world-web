@@ -1,14 +1,13 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { FollowUpForm } from '@/components/admin/follow-up-form';
 import { getFollowUpById, getMembersForSelect, getUsersForSelect } from '@/lib/actions/follow-ups';
 
 export default async function EditFollowUpPage({ params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     redirect('/login');

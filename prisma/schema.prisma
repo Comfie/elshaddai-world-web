@@ -1,0 +1,731 @@
+// This is your Prisma schema file
+// El Shaddai Church Management System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============== USER MANAGEMENT ==============
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String   // Hashed with bcrypt
+  name          String
+  role          Role     @default(MEMBER)
+  isActive      Boolean  @default(true)
+  lastLogin     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  createdNotices Notice[] @relation("NoticeCreator")
+  createdEvents  Event[]  @relation("EventCreator")
+  assignedFollowUps FollowUp[] @relation("AssignedFollowUps")
+}
+
+enum Role {
+  SUPER_ADMIN  // Pastor - full access
+  ADMIN        // Church leaders - most access
+  LEADER       // Ministry leaders - limited access
+  MEMBER       // Regular members - view only
+}
+
+// ============== MEMBER MANAGEMENT ==============
+
+model Member {
+  id              String    @id @default(cuid())
+  firstName       String
+  lastName        String
+  email           String?   @unique
+  phone           String
+  alternatePhone  String?
+  address         String?
+  city            String?
+  province        String?
+  postalCode      String?
+  dateOfBirth     DateTime?
+  gender          Gender?
+  maritalStatus   MaritalStatus?
+  photoUrl        String?
+
+  // Church-specific
+  membershipType  MembershipType @default(VISITOR)
+  joinDate        DateTime  @default(now())
+  baptized        Boolean   @default(false)
+  baptismDate     DateTime?
+  salvationDate   DateTime?
+
+  // Ministry & Groups
+  ministryId      String?
+  ministry        Ministry? @relation(fields: [ministryId], references: [id])
+  groupId         String?
+  group           Group?    @relation(fields: [groupId], references: [id])
+
+  // Family
+  familyId        String?
+  family          Family?   @relation(fields: [familyId], references: [id])
+
+  // Status
+  status          MemberStatus @default(ACTIVE)
+  notes           String?   @db.Text
+
+  // Metadata
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  followUps       FollowUp[]
+  attendance      Attendance[]
+  pledges         Pledge[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
+enum MembershipType {
+  VISITOR
+  NEW_CONVERT
+  MEMBER
+  LEADER
+  PASTOR
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  TRANSFERRED
+  DECEASED
+}
+
+// ============== FAMILY MANAGEMENT ==============
+
+model Family {
+  id              String   @id @default(cuid())
+  familyName      String
+  headOfHousehold String?
+  address         String?
+  city            String?
+  province        String?
+  postalCode      String?
+  homePhone       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  members         Member[]
+}
+
+// ============== MINISTRIES ==============
+
+model Ministry {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  slug            String   @unique
+  description     String?  @db.Text
+  vision          String?  @db.Text
+  mission         String?  @db.Text
+
+  // Leadership
+  leaderId        String?
+  leaderName      String?
+  leaderEmail     String?
+  leaderPhone     String?
+
+  // Media
+  imageUrl        String?
+  bannerUrl       String?
+
+  // Schedule
+  meetingDay      String?
+  meetingTime     String?
+  meetingLocation String?
+
+  // Status
+  isActive        Boolean  @default(true)
+  displayOnWebsite Boolean @default(true)
+  sortOrder       Int      @default(0)
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  members         Member[]
+  events          Event[]
+  groups          Group[]
+}
+
+// ============== GROUPS (Small Groups, Bible Study, etc.) ==============
+
+model Group {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?  @db.Text
+
+  // Leadership
+  leaderId        String?
+  leaderName      String?
+
+  // Ministry connection
+  ministryId      String?
+  ministry        Ministry? @relation(fields: [ministryId], references: [id])
+
+  // Schedule
+  meetingDay      String?
+  meetingTime     String?
+  meetingLocation String?
+
+  // Limits
+  maxMembers      Int?
+
+  // Status
+  isActive        Boolean  @default(true)
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  members         Member[]
+  events          Event[]
+}
+
+// ============== FOLLOW-UPS ==============
+
+model FollowUp {
+  id              String   @id @default(cuid())
+
+  // Member being followed up
+  memberId        String
+  member          Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  // Assignment
+  assignedToId    String
+  assignedTo      User     @relation("AssignedFollowUps", fields: [assignedToId], references: [id])
+  assignedToName  String
+
+  // Follow-up details
+  reason          FollowUpReason
+  reasonOther     String?
+  priority        Priority @default(NORMAL)
+  method          ContactMethod?
+
+  // Status tracking
+  status          FollowUpStatus @default(PENDING)
+  dueDate         DateTime
+  completedAt     DateTime?
+
+  // Notes
+  initialNotes    String?  @db.Text
+  followUpNotes   String?  @db.Text
+  outcome         String?  @db.Text
+
+  // Next steps
+  requiresFollowUp Boolean @default(false)
+  nextFollowUpDate DateTime?
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum FollowUpReason {
+  NEW_VISITOR
+  NEW_CONVERT
+  ABSENT
+  SICK
+  PRAYER_REQUEST
+  COUNSELING
+  MEMBERSHIP
+  BAPTISM
+  OTHER
+}
+
+enum ContactMethod {
+  PHONE_CALL
+  TEXT_MESSAGE
+  WHATSAPP
+  EMAIL
+  HOME_VISIT
+  CHURCH_VISIT
+}
+
+enum FollowUpStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_RESPONSE
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+// ============== NOTICES/ANNOUNCEMENTS ==============
+
+model Notice {
+  id              String   @id @default(cuid())
+  title           String
+  content         String   @db.Text
+  summary         String?  // Short summary for homepage
+
+  // Display settings
+  priority        Priority @default(NORMAL)
+  category        NoticeCategory @default(GENERAL)
+
+  // Targeting
+  displayOnWebsite Boolean @default(true)
+  displayInAdmin   Boolean @default(true)
+  targetAudience   TargetAudience @default(EVERYONE)
+
+  // Scheduling
+  publishDate     DateTime @default(now())
+  expiryDate      DateTime?
+  isActive        Boolean  @default(true)
+
+  // Media
+  imageUrl        String?
+  attachmentUrl   String?
+
+  // Author
+  createdById     String
+  createdBy       User     @relation("NoticeCreator", fields: [createdById], references: [id])
+  createdByName   String
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([publishDate, expiryDate, isActive])
+}
+
+enum NoticeCategory {
+  GENERAL
+  URGENT
+  EVENT
+  PRAYER
+  MINISTRY
+  YOUTH
+  ADMINISTRATIVE
+}
+
+enum TargetAudience {
+  EVERYONE
+  MEMBERS_ONLY
+  LEADERS_ONLY
+  SPECIFIC_MINISTRY
+}
+
+// ============== EVENTS ==============
+
+model Event {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?  @db.Text
+
+  // Scheduling
+  eventDate       DateTime
+  endDate         DateTime?
+  startTime       String?
+  endTime         String?
+  isAllDay        Boolean  @default(false)
+  isRecurring     Boolean  @default(false)
+  recurrenceRule  String?  // RRULE format
+
+  // Location
+  location        String
+  address         String?
+  isOnline        Boolean  @default(false)
+  onlineLink      String?
+
+  // Categorization
+  eventType       EventType @default(SERVICE)
+  ministryId      String?
+  ministry        Ministry? @relation(fields: [ministryId], references: [id])
+  groupId         String?
+  group           Group?    @relation(fields: [groupId], references: [id])
+
+  // Registration
+  requiresRSVP    Boolean  @default(false)
+  maxAttendees    Int?
+  registrationDeadline DateTime?
+
+  // Media
+  imageUrl        String?
+  posterUrl       String?
+
+  // Display
+  displayOnWebsite Boolean @default(true)
+  isFeatured      Boolean  @default(false)
+
+  // Status
+  status          EventStatus @default(SCHEDULED)
+
+  // Author
+  createdById     String
+  createdBy       User     @relation("EventCreator", fields: [createdById], references: [id])
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  attendance      Attendance[]
+
+  @@index([eventDate, status])
+}
+
+enum EventType {
+  SERVICE
+  PRAYER_MEETING
+  BIBLE_STUDY
+  CONFERENCE
+  SEMINAR
+  WORKSHOP
+  OUTREACH
+  SOCIAL
+  FUNDRAISER
+  BAPTISM
+  WEDDING
+  FUNERAL
+  OTHER
+}
+
+enum EventStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  POSTPONED
+}
+
+// ============== ATTENDANCE ==============
+
+model Attendance {
+  id              String   @id @default(cuid())
+
+  // Who attended
+  memberId        String
+  member          Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  // What they attended
+  eventId         String?
+  event           Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  serviceDate     DateTime
+  serviceType     ServiceType @default(SUNDAY_SERVICE)
+
+  // Attendance details
+  present         Boolean  @default(true)
+  checkInTime     DateTime?
+  notes           String?
+
+  // Metadata
+  createdAt       DateTime @default(now())
+
+  @@unique([memberId, serviceDate, serviceType])
+  @@index([serviceDate, present])
+}
+
+enum ServiceType {
+  SUNDAY_SERVICE
+  MIDWEEK_SERVICE
+  PRAYER_MEETING
+  BIBLE_STUDY
+  SPECIAL_EVENT
+  OTHER
+}
+
+// ============== BOOKS (Pastor's Publications) ==============
+
+model Book {
+  id              String   @id @default(cuid())
+  title           String
+  subtitle        String?
+  author          String   @default("Apostle Charles Magaiza")
+
+  // Description
+  description     String   @db.Text
+  shortDescription String?
+
+  // Publishing info
+  isbn            String?
+  publisher       String?
+  publishedDate   DateTime?
+  edition         String?
+  pageCount       Int?
+  language        String   @default("English")
+
+  // Pricing
+  price           Decimal? @db.Decimal(10, 2)
+  currency        String   @default("ZAR")
+
+  // Purchase
+  amazonUrl       String   // Primary purchase link
+  otherPurchaseUrls Json?  // Array of {platform: string, url: string}
+
+  // Media
+  coverImageUrl   String
+  samplePdfUrl    String?  // Preview/sample chapter
+
+  // Categorization
+  category        BookCategory @default(CHRISTIAN_LIVING)
+  tags            String[]
+
+  // Display
+  isFeatured      Boolean  @default(false)
+  displayOrder    Int      @default(0)
+  isAvailable     Boolean  @default(true)
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([isFeatured, displayOrder])
+}
+
+enum BookCategory {
+  CHRISTIAN_LIVING
+  THEOLOGY
+  DEVOTIONAL
+  PRAYER
+  FAITH
+  MINISTRY
+  LEADERSHIP
+  FAMILY
+  YOUTH
+  OTHER
+}
+
+// ============== SERMONS ==============
+
+model Sermon {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?  @db.Text
+
+  // Sermon details
+  preacher        String   @default("Apostle Charles Magaiza")
+  sermonDate      DateTime
+  series          String?
+  topic           String?
+  scripture       String?  // E.g., "John 3:16-18"
+
+  // Media
+  videoUrl        String?  // YouTube, Vimeo, etc.
+  audioUrl        String?
+  notesUrl        String?  // PDF of sermon notes
+  thumbnailUrl    String?
+
+  // Categorization
+  tags            String[]
+  category        SermonCategory @default(SUNDAY_SERVICE)
+
+  // Stats
+  views           Int      @default(0)
+  downloads       Int      @default(0)
+
+  // Display
+  isFeatured      Boolean  @default(false)
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([sermonDate, isFeatured])
+}
+
+enum SermonCategory {
+  SUNDAY_SERVICE
+  MIDWEEK_SERVICE
+  SPECIAL_EVENT
+  CONFERENCE
+  SERIES
+  GUEST_SPEAKER
+}
+
+// ============== GIVING/PLEDGES ==============
+
+model Pledge {
+  id              String   @id @default(cuid())
+
+  // Who pledged
+  memberId        String
+  member          Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  // Pledge details
+  pledgeType      PledgeType
+  amount          Decimal  @db.Decimal(10, 2)
+  currency        String   @default("ZAR")
+  frequency       PledgeFrequency @default(ONE_TIME)
+
+  // Dates
+  pledgeDate      DateTime @default(now())
+  startDate       DateTime
+  endDate         DateTime?
+
+  // Tracking
+  amountPaid      Decimal  @db.Decimal(10, 2) @default(0)
+  status          PledgeStatus @default(ACTIVE)
+
+  // Notes
+  notes           String?  @db.Text
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum PledgeType {
+  TITHE
+  OFFERING
+  BUILDING_FUND
+  MISSIONS
+  SPECIAL_PROJECT
+  OTHER
+}
+
+enum PledgeFrequency {
+  ONE_TIME
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum PledgeStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+// ============== PRAYER REQUESTS ==============
+
+model PrayerRequest {
+  id              String   @id @default(cuid())
+
+  // Requester info (can be anonymous)
+  name            String?
+  email           String?
+  phone           String?
+  isAnonymous     Boolean  @default(false)
+
+  // Prayer request
+  category        PrayerCategory @default(GENERAL)
+  request         String   @db.Text
+  isUrgent        Boolean  @default(false)
+
+  // Privacy
+  isPublic        Boolean  @default(false)
+  shareWithPastors Boolean @default(true)
+  shareWithLeaders Boolean @default(false)
+
+  // Status
+  status          PrayerStatus @default(SUBMITTED)
+  prayedBy        String[]     // Array of user IDs who prayed
+  prayerCount     Int      @default(0)
+
+  // Testimony
+  hasTestimony    Boolean  @default(false)
+  testimony       String?  @db.Text
+  testimonyDate   DateTime?
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status, isUrgent, category])
+}
+
+enum PrayerCategory {
+  GENERAL
+  HEALTH
+  FAMILY
+  FINANCIAL
+  EMPLOYMENT
+  SPIRITUAL
+  SALVATION
+  DIRECTION
+  OTHER
+}
+
+enum PrayerStatus {
+  SUBMITTED
+  PRAYING
+  ANSWERED
+  CLOSED
+}
+
+// ============== CONTACT FORMS ==============
+
+model ContactMessage {
+  id              String   @id @default(cuid())
+  name            String
+  email           String
+  phone           String?
+  subject         String
+  message         String   @db.Text
+
+  // Categorization
+  category        ContactCategory @default(GENERAL)
+
+  // Status
+  status          MessageStatus @default(NEW)
+  assignedTo      String?
+  response        String?  @db.Text
+  respondedAt     DateTime?
+
+  // Metadata
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status, category])
+}
+
+enum ContactCategory {
+  GENERAL
+  PRAYER_REQUEST
+  VISITOR_INFO
+  PARTNERSHIP
+  MEDIA_INQUIRY
+  COMPLAINT
+  SUGGESTION
+}
+
+enum MessageStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  CLOSED
+}
+
+// ============== SETTINGS ==============
+
+model Settings {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String   @db.Text
+  category        String
+  description     String?
+  updatedAt       DateTime @updatedAt
+}

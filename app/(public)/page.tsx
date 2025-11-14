@@ -59,29 +59,34 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white">
+      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+        {/* Animated gradient orbs */}
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+
         <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-blue-800/50 px-4 py-2 text-sm backdrop-blur-sm">
-              <Sparkles className="h-4 w-4 text-blue-300" />
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-blue-800/50 px-4 py-2 text-sm backdrop-blur-sm border border-blue-700/50 hover:bg-blue-700/50 transition-all duration-300 hover:scale-105">
+              <Sparkles className="h-4 w-4 text-blue-300 animate-pulse" />
               <span className="text-blue-200">Welcome to El Shaddai</span>
             </div>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6 animate-fade-in-up">
               Transforming Lives Through God's Love
             </h1>
-            <p className="text-lg leading-8 text-blue-100 mb-10">
+            <p className="text-lg leading-8 text-blue-100 mb-10 animate-fade-in-up animation-delay-200">
               Join us as we worship together, grow in faith, and make a difference in our community and the world.
             </p>
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
               <Link href="/about">
-                <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50">
+                <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
                   Learn More
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               <Link href="/events">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
                   View Events
                 </Button>
               </Link>
@@ -102,38 +107,44 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <Card className="border-blue-200">
+            <Card className="border-blue-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer bg-gradient-to-br from-white to-blue-50/50">
               <CardHeader className="text-center">
-                <Calendar className="h-12 w-12 text-blue-600 mx-auto mb-2" />
-                <CardTitle className="text-blue-900">Sunday Service</CardTitle>
+                <div className="mx-auto mb-2 w-fit p-3 rounded-full bg-blue-100 group-hover:bg-blue-600 transition-colors duration-300">
+                  <Calendar className="h-12 w-12 text-blue-600 group-hover:text-white transition-colors duration-300 group-hover:scale-110 transform" />
+                </div>
+                <CardTitle className="text-blue-900 group-hover:text-blue-700 transition-colors">Sunday Service</CardTitle>
                 <CardDescription>Main Worship Service</CardDescription>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-2xl font-bold text-blue-900">9:00 AM & 11:00 AM</p>
+                <p className="text-2xl font-bold text-blue-900 group-hover:scale-105 transition-transform">9:00 AM & 11:00 AM</p>
                 <p className="text-sm text-blue-600 mt-2">Every Sunday</p>
               </CardContent>
             </Card>
 
-            <Card className="border-blue-200">
+            <Card className="border-blue-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer bg-gradient-to-br from-white to-blue-50/50">
               <CardHeader className="text-center">
-                <BookOpen className="h-12 w-12 text-blue-600 mx-auto mb-2" />
-                <CardTitle className="text-blue-900">Bible Study</CardTitle>
+                <div className="mx-auto mb-2 w-fit p-3 rounded-full bg-blue-100 group-hover:bg-blue-600 transition-colors duration-300">
+                  <BookOpen className="h-12 w-12 text-blue-600 group-hover:text-white transition-colors duration-300 group-hover:scale-110 transform" />
+                </div>
+                <CardTitle className="text-blue-900 group-hover:text-blue-700 transition-colors">Bible Study</CardTitle>
                 <CardDescription>Midweek Teaching</CardDescription>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-2xl font-bold text-blue-900">6:00 PM</p>
+                <p className="text-2xl font-bold text-blue-900 group-hover:scale-105 transition-transform">6:00 PM</p>
                 <p className="text-sm text-blue-600 mt-2">Every Wednesday</p>
               </CardContent>
             </Card>
 
-            <Card className="border-blue-200">
+            <Card className="border-blue-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer bg-gradient-to-br from-white to-blue-50/50">
               <CardHeader className="text-center">
-                <Heart className="h-12 w-12 text-blue-600 mx-auto mb-2" />
-                <CardTitle className="text-blue-900">Prayer Meeting</CardTitle>
+                <div className="mx-auto mb-2 w-fit p-3 rounded-full bg-blue-100 group-hover:bg-blue-600 transition-colors duration-300">
+                  <Heart className="h-12 w-12 text-blue-600 group-hover:text-white transition-colors duration-300 group-hover:scale-110 transform" />
+                </div>
+                <CardTitle className="text-blue-900 group-hover:text-blue-700 transition-colors">Prayer Meeting</CardTitle>
                 <CardDescription>Corporate Prayer</CardDescription>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-2xl font-bold text-blue-900">7:00 PM</p>
+                <p className="text-2xl font-bold text-blue-900 group-hover:scale-105 transition-transform">7:00 PM</p>
                 <p className="text-sm text-blue-600 mt-2">Every Friday</p>
               </CardContent>
             </Card>
@@ -156,14 +167,14 @@ export default async function HomePage() {
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
-                <div key={feature.title} className="text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 mb-4">
-                    <Icon className="h-8 w-8 text-blue-600" />
+                <div key={feature.title} className="text-center group cursor-pointer">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 mb-4 group-hover:bg-gradient-to-br group-hover:from-blue-600 group-hover:to-blue-800 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
+                    <Icon className="h-8 w-8 text-blue-600 group-hover:text-white transition-colors duration-300 group-hover:rotate-6 transform" />
                   </div>
-                  <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-2 group-hover:text-blue-700 transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
                     {feature.description}
                   </p>
                 </div>
@@ -196,18 +207,22 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {ministries.slice(0, 6).map((ministry) => (
                 <Link key={ministry.id} href={`/ministries/${ministry.slug}`}>
-                  <Card className="h-full hover:shadow-lg transition-shadow border-blue-200">
+                  <Card className="h-full hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-blue-200 group overflow-hidden">
                     {ministry.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+                      <div className="aspect-video w-full overflow-hidden rounded-t-lg relative">
                         <img
                           src={ministry.imageUrl}
                           alt={ministry.name}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
                     )}
                     <CardHeader>
-                      <CardTitle className="text-blue-900">{ministry.name}</CardTitle>
+                      <CardTitle className="text-blue-900 group-hover:text-blue-700 transition-colors flex items-center justify-between">
+                        {ministry.name}
+                        <ArrowRight className="h-5 w-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                      </CardTitle>
                       {ministry.description && (
                         <CardDescription className="line-clamp-2">
                           {ministry.description}
@@ -244,26 +259,27 @@ export default async function HomePage() {
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {upcomingEvents.map((event) => (
-                <Card key={event.id} className="hover:shadow-lg transition-shadow border-blue-200">
+                <Card key={event.id} className="hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-blue-200 group overflow-hidden">
                   {event.imageUrl && (
-                    <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+                    <div className="aspect-video w-full overflow-hidden rounded-t-lg relative">
                       <img
                         src={event.imageUrl}
                         alt={event.title}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                   )}
                   <CardHeader>
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge className="bg-blue-600 text-white">
+                      <Badge className="bg-blue-600 text-white group-hover:bg-blue-700 transition-colors">
                         {format(new Date(event.eventDate), 'MMM dd')}
                       </Badge>
                       {event.startTime && (
                         <span className="text-sm text-blue-600">{event.startTime}</span>
                       )}
                     </div>
-                    <CardTitle className="text-blue-900">{event.title}</CardTitle>
+                    <CardTitle className="text-blue-900 group-hover:text-blue-700 transition-colors">{event.title}</CardTitle>
                     {event.description && (
                       <CardDescription className="line-clamp-2">
                         {event.description}

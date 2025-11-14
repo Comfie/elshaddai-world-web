@@ -55,14 +55,15 @@ export default async function MinistriesPage() {
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {ministries.map((ministry) => (
                 <Link key={ministry.id} href={`/ministries/${ministry.slug}`}>
-                  <Card className="h-full hover:shadow-xl transition-all border-blue-200 group">
+                  <Card className="h-full hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-blue-200 group overflow-hidden">
                     {ministry.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+                      <div className="aspect-video w-full overflow-hidden rounded-t-lg relative">
                         <img
                           src={ministry.imageUrl}
                           alt={ministry.name}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
                     )}
                     <CardHeader>
@@ -70,7 +71,7 @@ export default async function MinistriesPage() {
                         <CardTitle className="text-xl text-blue-900 group-hover:text-blue-700 transition-colors">
                           {ministry.name}
                         </CardTitle>
-                        <ArrowRight className="h-5 w-5 text-blue-600 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="h-5 w-5 text-blue-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
                       </div>
                       {ministry.description && (
                         <CardDescription className="line-clamp-3">
@@ -80,7 +81,7 @@ export default async function MinistriesPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between">
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs group-hover:bg-blue-100 transition-colors">
                           {ministry._count.members} members
                         </Badge>
                         {ministry.meetingDay && (

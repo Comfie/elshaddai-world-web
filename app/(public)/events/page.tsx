@@ -77,26 +77,27 @@ export default async function EventsPage() {
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
-                <Card key={event.id} className="hover:shadow-xl transition-shadow border-blue-200">
+                <Card key={event.id} className="hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-blue-200 group overflow-hidden cursor-pointer">
                   {event.imageUrl && (
-                    <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+                    <div className="aspect-video w-full overflow-hidden rounded-t-lg relative">
                       <img
                         src={event.imageUrl}
                         alt={event.title}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                   )}
                   <CardHeader>
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge className="bg-blue-600 text-white">
+                      <Badge className="bg-blue-600 text-white group-hover:bg-blue-700 transition-colors">
                         {format(new Date(event.eventDate), 'MMM dd, yyyy')}
                       </Badge>
-                      <Badge className={`${getEventTypeColor(event.eventType)} text-white`}>
+                      <Badge className={`${getEventTypeColor(event.eventType)} text-white group-hover:brightness-110 transition-all`}>
                         {formatEventType(event.eventType)}
                       </Badge>
                     </div>
-                    <CardTitle className="text-xl text-blue-900">{event.title}</CardTitle>
+                    <CardTitle className="text-xl text-blue-900 group-hover:text-blue-700 transition-colors">{event.title}</CardTitle>
                     {event.description && (
                       <CardDescription className="line-clamp-2">
                         {event.description}
@@ -106,13 +107,13 @@ export default async function EventsPage() {
                   <CardContent className="space-y-2">
                     {event.startTime && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Clock className="h-4 w-4 text-blue-600" />
+                        <Clock className="h-4 w-4 text-blue-600 group-hover:scale-110 transition-transform" />
                         <span>{event.startTime}</span>
                       </div>
                     )}
                     {event.location && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="h-4 w-4 text-blue-600" />
+                        <MapPin className="h-4 w-4 text-blue-600 group-hover:scale-110 transition-transform" />
                         <span className="line-clamp-1">{event.location}</span>
                       </div>
                     )}

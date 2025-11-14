@@ -109,7 +109,7 @@ export async function createNotice(data: NoticeFormData, userId: string, userNam
   } catch (error) {
     console.error('Error creating notice:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to create notice' };
   }
@@ -131,7 +131,7 @@ export async function updateNotice(id: string, data: NoticeFormData) {
   } catch (error) {
     console.error('Error updating notice:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to update notice' };
   }

@@ -27,6 +27,7 @@ model User {
   createdNotices Notice[] @relation("NoticeCreator")
   createdEvents  Event[]  @relation("EventCreator")
   assignedFollowUps FollowUp[] @relation("AssignedFollowUps")
+  ledMinistries  Ministry[] @relation("MinistryLeader")
 }
 
 enum Role {
@@ -142,9 +143,15 @@ model Ministry {
 
   // Leadership
   leaderId        String?
+  leader          User?    @relation("MinistryLeader", fields: [leaderId], references: [id])
   leaderName      String?
   leaderEmail     String?
   leaderPhone     String?
+
+  // Contact Information
+  contactEmail    String?
+  contactPhone    String?
+  meetingSchedule String?
 
   // Media
   imageUrl        String?

@@ -131,7 +131,7 @@ export async function createMember(data: MemberFormData) {
   } catch (error) {
     console.error('Error creating member:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to create member' };
   }
@@ -155,7 +155,7 @@ export async function updateMember(id: string, data: MemberFormData) {
   } catch (error) {
     console.error('Error updating member:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to update member' };
   }

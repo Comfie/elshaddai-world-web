@@ -3,19 +3,60 @@
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 
 // Validation schema for ministry
 const ministrySchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional().nullable(),
   leaderId: z.string().optional().nullable(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
   contactEmail: z.string().email('Invalid email').optional().or(z.literal('')).nullable(),
   contactPhone: z.string().optional().nullable(),
   meetingSchedule: z.string().optional().nullable(),
 });
 
 export type MinistryFormData = z.infer<typeof ministrySchema>;
+
+// Type for ministry with relations
+const ministryWithRelations = Prisma.validator<Prisma.MinistryDefaultArgs>()({
+  include: {
+    leader: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    },
+    members: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        photoUrl: true,
+      },
+    },
+    events: {
+      select: {
+        id: true,
+        title: true,
+        eventDate: true,
+        eventType: true,
+        status: true,
+      },
+    },
+    _count: {
+      select: {
+        members: true,
+        events: true,
+      },
+    },
+  },
+});
+
+export type MinistryWithRelations = Prisma.MinistryGetPayload<typeof ministryWithRelations>;
 
 export async function getMinistries(params?: {
   search?: string;
@@ -69,9 +110,9 @@ export async function getMinistries(params?: {
   }
 }
 
-export async function getMinistryById(id: string) {
+export async function getMinistryById(id: string): Promise<MinistryWithRelations | null> {
   try {
-    const ministry = await prisma.ministry.findUnique({
+    return await prisma.ministry.findUnique({
       where: { id },
       include: {
         leader: {
@@ -112,8 +153,6 @@ export async function getMinistryById(id: string) {
         },
       },
     });
-
-    return ministry;
   } catch (error) {
     console.error('Error fetching ministry:', error);
     throw new Error('Failed to fetch ministry');
@@ -125,15 +164,24 @@ export async function createMinistry(data: MinistryFormData) {
     // Validate the data
     const validatedData = ministrySchema.parse(data);
 
+    // Generate slug from name
+    const slug = validatedData.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
     const ministry = await prisma.ministry.create({
       data: {
         name: validatedData.name,
-        description: validatedData.description,
-        leaderId: validatedData.leaderId,
+        slug,
+        description: validatedData.description ?? undefined,
+        ...(validatedData.leaderId && {
+          leader: { connect: { id: validatedData.leaderId } }
+        }),
         isActive: validatedData.isActive,
-        contactEmail: validatedData.contactEmail,
-        contactPhone: validatedData.contactPhone,
-        meetingSchedule: validatedData.meetingSchedule,
+        contactEmail: validatedData.contactEmail ?? undefined,
+        contactPhone: validatedData.contactPhone ?? undefined,
+        meetingSchedule: validatedData.meetingSchedule ?? undefined,
       },
     });
 
@@ -142,7 +190,7 @@ export async function createMinistry(data: MinistryFormData) {
   } catch (error) {
     console.error('Error creating ministry:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to create ministry' };
   }
@@ -157,12 +205,16 @@ export async function updateMinistry(id: string, data: MinistryFormData) {
       where: { id },
       data: {
         name: validatedData.name,
-        description: validatedData.description,
-        leaderId: validatedData.leaderId,
+        description: validatedData.description ?? undefined,
+        ...(validatedData.leaderId ? {
+          leader: { connect: { id: validatedData.leaderId } }
+        } : {
+          leader: { disconnect: true }
+        }),
         isActive: validatedData.isActive,
-        contactEmail: validatedData.contactEmail,
-        contactPhone: validatedData.contactPhone,
-        meetingSchedule: validatedData.meetingSchedule,
+        contactEmail: validatedData.contactEmail ?? undefined,
+        contactPhone: validatedData.contactPhone ?? undefined,
+        meetingSchedule: validatedData.meetingSchedule ?? undefined,
       },
     });
 
@@ -172,7 +224,7 @@ export async function updateMinistry(id: string, data: MinistryFormData) {
   } catch (error) {
     console.error('Error updating ministry:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to update ministry' };
   }

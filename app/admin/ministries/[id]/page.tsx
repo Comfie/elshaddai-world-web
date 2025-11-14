@@ -150,7 +150,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ id: s
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {ministry.members.map((member) => (
+                  {ministry.members.map((member: any) => (
                     <Link
                       key={member.id}
                       href={`/admin/members/${member.id}`}
@@ -186,7 +186,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ id: s
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {ministry.events.map((event) => (
+                  {ministry.events.map((event: any) => (
                     <Link
                       key={event.id}
                       href={`/admin/events/${event.id}`}

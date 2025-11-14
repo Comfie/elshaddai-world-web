@@ -143,7 +143,7 @@ export async function createEvent(data: EventFormData, userId: string) {
   } catch (error) {
     console.error('Error creating event:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to create event' };
   }
@@ -168,7 +168,7 @@ export async function updateEvent(id: string, data: EventFormData) {
   } catch (error) {
     console.error('Error updating event:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to update event' };
   }

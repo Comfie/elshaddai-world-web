@@ -35,7 +35,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   leaderId: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
   contactEmail: z.string().email('Invalid email').optional().or(z.literal('')),
   contactPhone: z.string().optional(),
   meetingSchedule: z.string().optional(),

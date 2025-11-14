@@ -126,7 +126,7 @@ async function EventsContent({ searchParams }: { searchParams: { search?: string
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {events.map((event) => (
+              {events.map((event: any) => (
                 <Link key={event.id} href={`/admin/events/${event.id}`}>
                   <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                     <CardHeader>

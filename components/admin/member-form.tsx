@@ -56,7 +56,7 @@ const formSchema = z.object({
   maritalStatus: z.nativeEnum(MaritalStatus).optional(),
   photoUrl: z.string().optional(),
   membershipType: z.nativeEnum(MembershipType),
-  baptized: z.boolean().default(false),
+  baptized: z.boolean(),
   baptismDate: z.date().optional(),
   salvationDate: z.date().optional(),
   ministryId: z.string().optional(),

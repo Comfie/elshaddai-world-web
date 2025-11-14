@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { CalendarIcon, Loader2 } from 'lucide-react';
-import { NoticeCategory, NoticePriority, TargetAudience } from '@prisma/client';
+import { NoticeCategory, Priority, TargetAudience } from '@prisma/client';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,12 +46,12 @@ const formSchema = z.object({
   content: z.string().min(1, 'Content is required'),
   summary: z.string().optional(),
   category: z.nativeEnum(NoticeCategory),
-  priority: z.nativeEnum(NoticePriority),
+  priority: z.nativeEnum(Priority),
   targetAudience: z.nativeEnum(TargetAudience),
   publishDate: z.date(),
   expiryDate: z.date().optional(),
-  displayOnWebsite: z.boolean().default(true),
-  isActive: z.boolean().default(true),
+  displayOnWebsite: z.boolean(),
+  isActive: z.boolean(),
 });
 
 interface NoticeFormProps {

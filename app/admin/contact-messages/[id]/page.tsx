@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { ContactMessageDetail } from '@/components/admin/contact-message-detail';
 

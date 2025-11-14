@@ -212,7 +212,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {event.attendance.map((record) => (
+                  {event.attendance.map((record: any) => (
                     <div
                       key={record.id}
                       className="flex items-center justify-between border-b pb-2 last:border-0"

@@ -105,7 +105,7 @@ async function MinistriesContent({ searchParams }: { searchParams: { search?: st
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {ministries.map((ministry) => (
+              {ministries.map((ministry: any) => (
                 <Link key={ministry.id} href={`/admin/ministries/${ministry.id}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                     <CardHeader>

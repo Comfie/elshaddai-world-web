@@ -142,7 +142,7 @@ async function NoticesContent({ searchParams }: { searchParams: { search?: strin
             </div>
           ) : (
             <div className="space-y-4">
-              {notices.map((notice) => (
+              {notices.map((notice: any) => (
                 <Link key={notice.id} href={`/admin/notices/${notice.id}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardHeader>

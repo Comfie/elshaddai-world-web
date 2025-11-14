@@ -269,7 +269,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                   </CardContent>
                 </Card>
               ) : (
-                member.followUps.map((followUp) => (
+                member.followUps.map((followUp: any) => (
                   <Card key={followUp.id}>
                     <CardHeader>
                       <div className="flex items-center justify-between">
@@ -305,7 +305,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {member.attendance.map((record) => (
+                      {member.attendance.map((record: any) => (
                         <div
                           key={record.id}
                           className="flex items-center justify-between border-b pb-2 last:border-0"

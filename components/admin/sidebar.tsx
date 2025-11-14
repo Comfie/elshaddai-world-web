@@ -16,6 +16,7 @@ import {
   Video,
   UserCheck,
   Mail,
+  Heart,
   BarChart,
   Settings,
   LogOut,
@@ -25,16 +26,14 @@ const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Members', href: '/admin/members', icon: Users },
   { name: 'Follow-ups', href: '/admin/follow-ups', icon: ClipboardList },
+  { name: 'Groups', href: '/admin/groups', icon: Users },
   { name: 'Notices', href: '/admin/notices', icon: Bell },
   { name: 'Events', href: '/admin/events', icon: Calendar },
   { name: 'Ministries', href: '/admin/ministries', icon: Church },
-  { name: 'Groups', href: '/admin/groups', icon: Users },
   { name: 'Books', href: '/admin/books', icon: BookOpen },
   { name: 'Sermons', href: '/admin/sermons', icon: Video },
-  { name: 'Attendance', href: '/admin/attendance', icon: UserCheck },
-  { name: 'Communications', href: '/admin/communications', icon: Mail },
-  { name: 'Reports', href: '/admin/reports', icon: BarChart },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Contact Messages', href: '/admin/contact-messages', icon: Mail },
+  { name: 'Prayer Requests', href: '/admin/prayer-requests', icon: Heart },
 ];
 
 export function Sidebar() {

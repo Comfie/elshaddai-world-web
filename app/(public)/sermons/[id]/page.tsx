@@ -29,6 +29,32 @@ function extractYouTubeId(url: string) {
   return match ? match[1] : null;
 }
 
+function extractFacebookVideoId(url: string) {
+  // Match various Facebook video URL formats
+  const patterns = [
+    /facebook\.com\/share\/v\/([a-zA-Z0-9_-]+)/,  // New share format: facebook.com/share/v/ID
+    /facebook\.com\/.*\/videos\/(\d+)/,            // Classic format: facebook.com/.../videos/ID
+    /fb\.watch\/([a-zA-Z0-9_-]+)/,                // Short URL: fb.watch/ID
+    /facebook\.com\/watch\/?\?v=(\d+)/,            // Watch format: facebook.com/watch?v=ID
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+function getVideoType(url: string): 'youtube' | 'facebook' | 'other' {
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    return 'youtube';
+  }
+  if (url.includes('facebook.com') || url.includes('fb.watch')) {
+    return 'facebook';
+  }
+  return 'other';
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sermon = await getSermon(id);
@@ -52,7 +78,11 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
   }
 
   const relatedSermons = await getRelatedSermons(sermon.category, sermon.id);
-  const youtubeId = sermon.videoUrl ? extractYouTubeId(sermon.videoUrl) : null;
+
+  // Detect video type and extract IDs
+  const videoType = sermon.videoUrl ? getVideoType(sermon.videoUrl) : null;
+  const youtubeId = videoType === 'youtube' && sermon.videoUrl ? extractYouTubeId(sermon.videoUrl) : null;
+  const facebookVideoId = videoType === 'facebook' && sermon.videoUrl ? extractFacebookVideoId(sermon.videoUrl) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -83,6 +113,33 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
                       className="absolute inset-0 w-full h-full"
                     />
                   </div>
+                </Card>
+              ) : facebookVideoId ? (
+                <Card className="overflow-hidden group cursor-pointer">
+                  <a href={sermon.videoUrl!} target="_blank" rel="noopener noreferrer">
+                    <div className="relative aspect-video bg-gradient-to-br from-blue-600 to-blue-800">
+                      {sermon.thumbnailUrl ? (
+                        <img src={sermon.thumbnailUrl} alt={sermon.title} className="object-cover w-full h-full" />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <VideoIcon className="h-24 w-24 text-white opacity-50" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center transition-all group-hover:bg-black/60">
+                        <div className="bg-blue-600 rounded-full p-6 mb-4 transform transition-transform group-hover:scale-110">
+                          <Play className="h-12 w-12 text-white fill-white" />
+                        </div>
+                        <div className="bg-white/90 px-6 py-3 rounded-full">
+                          <p className="text-blue-900 font-semibold text-lg flex items-center gap-2">
+                            <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Watch on Facebook
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
                 </Card>
               ) : sermon.thumbnailUrl ? (
                 <Card className="overflow-hidden">
@@ -155,7 +212,7 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
                     <a href={sermon.videoUrl} target="_blank" rel="noopener noreferrer" className="block">
                       <Button variant="outline" size="lg" className="w-full">
                         <Play className="h-5 w-5 mr-2" />
-                        Watch on YouTube
+                        {videoType === 'youtube' ? 'Watch on YouTube' : videoType === 'facebook' ? 'Watch on Facebook' : 'Watch Video'}
                       </Button>
                     </a>
                   )}

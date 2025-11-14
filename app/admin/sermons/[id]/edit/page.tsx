@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Save, Youtube } from 'lucide-react';
@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { SermonCategory } from '@prisma/client';
 
-export default function EditSermonPage({ params }: { params: { id: string } }) {
+export default function EditSermonPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -33,11 +34,11 @@ export default function EditSermonPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchSermon();
-  }, [params.id]);
+  }, [id]);
 
   const fetchSermon = async () => {
     try {
-      const response = await fetch(`/api/sermons/${params.id}`);
+      const response = await fetch(`/api/sermons/${id}`);
       if (!response.ok) throw new Error('Failed to fetch sermon');
 
       const sermon = await response.json();
@@ -98,7 +99,7 @@ export default function EditSermonPage({ params }: { params: { id: string } }) {
         description: formData.description || null,
       };
 
-      const response = await fetch(`/api/sermons/${params.id}`, {
+      const response = await fetch(`/api/sermons/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

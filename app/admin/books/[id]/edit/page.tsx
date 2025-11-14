@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookCategory } from '@prisma/client';
 
-export default function EditBookPage({ params }: { params: { id: string } }) {
+export default function EditBookPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -40,11 +41,11 @@ export default function EditBookPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchBook();
-  }, [params.id]);
+  }, [id]);
 
   const fetchBook = async () => {
     try {
-      const response = await fetch(`/api/books/${params.id}`);
+      const response = await fetch(`/api/books/${id}`);
       if (!response.ok) throw new Error('Failed to fetch book');
 
       const book = await response.json();
@@ -113,7 +114,7 @@ export default function EditBookPage({ params }: { params: { id: string } }) {
         samplePdfUrl: formData.samplePdfUrl || null,
       };
 
-      const response = await fetch(`/api/books/${params.id}`, {
+      const response = await fetch(`/api/books/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

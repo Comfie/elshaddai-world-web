@@ -10,8 +10,9 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getMemberById } from '@/lib/actions/members';
 
-export default async function MemberPage({ params }: { params: { id: string } }) {
-  const member = await getMemberById(params.id);
+export default async function MemberPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const member = await getMemberById(id);
 
   if (!member) {
     notFound();

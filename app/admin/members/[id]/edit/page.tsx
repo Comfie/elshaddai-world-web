@@ -6,8 +6,9 @@ import { MemberForm } from '@/components/admin/member-form';
 import { getMemberById } from '@/lib/actions/members';
 import { prisma } from '@/lib/db';
 
-export default async function EditMemberPage({ params }: { params: { id: string } }) {
-  const member = await getMemberById(params.id);
+export default async function EditMemberPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const member = await getMemberById(id);
   const ministries = await prisma.ministry.findMany({
     where: { isActive: true },
     orderBy: { name: 'asc' },

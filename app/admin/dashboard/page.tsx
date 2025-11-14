@@ -3,13 +3,15 @@ import { Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, ClipboardList, Calendar, Bell, Plus, TrendingUp, UserPlus, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Users, ClipboardList, Calendar, Bell, Plus, TrendingUp, UserPlus, AlertCircle, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { getMemberStats } from '@/lib/actions/members';
+import { format } from 'date-fns';
 
 async function DashboardContent() {
   // Fetch stats from database
-  const [memberStats, followUps, events, notices] = await Promise.all([
+  const [memberStats, followUps, eventsCount, noticesCount, upcomingEvents, recentNotices] = await Promise.all([
     getMemberStats(),
     prisma.followUp.count({
       where: {
@@ -35,6 +37,31 @@ async function DashboardContent() {
         ],
       },
     }),
+    // Fetch upcoming events
+    prisma.event.findMany({
+      where: {
+        eventDate: { gte: new Date() },
+        status: 'SCHEDULED',
+      },
+      include: {
+        ministry: { select: { name: true } },
+      },
+      orderBy: { eventDate: 'asc' },
+      take: 5,
+    }),
+    // Fetch recent active notices
+    prisma.notice.findMany({
+      where: {
+        isActive: true,
+        publishDate: { lte: new Date() },
+        OR: [
+          { expiryDate: null },
+          { expiryDate: { gte: new Date() } },
+        ],
+      },
+      orderBy: { publishDate: 'desc' },
+      take: 5,
+    }),
   ]);
 
   const stats = [
@@ -58,7 +85,7 @@ async function DashboardContent() {
     },
     {
       title: 'Upcoming Events',
-      value: events.toString(),
+      value: eventsCount.toString(),
       description: 'Next 30 days',
       icon: Calendar,
       color: 'text-green-600',
@@ -67,7 +94,7 @@ async function DashboardContent() {
     },
     {
       title: 'Active Notices',
-      value: notices.toString(),
+      value: noticesCount.toString(),
       description: 'Current announcements',
       icon: Bell,
       color: 'text-purple-600',
@@ -216,36 +243,184 @@ async function DashboardContent() {
         </Card>
       </div>
 
-      {/* Phase 2 Completion Notice */}
-      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 border-green-200 dark:border-green-800">
+      {/* Events & Notices Widgets */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Upcoming Events */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-green-600" />
+                Upcoming Events
+              </CardTitle>
+              <Link href="/admin/events">
+                <Button variant="ghost" size="sm">
+                  View All
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {upcomingEvents.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Calendar className="h-8 w-8 text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground">No upcoming events</p>
+                <Link href="/admin/events/new">
+                  <Button variant="link" className="text-xs">
+                    Create an event →
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {upcomingEvents.map((event) => (
+                  <Link
+                    key={event.id}
+                    href={`/admin/events/${event.id}`}
+                    className="block p-3 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium line-clamp-1">{event.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(event.eventDate), 'MMM dd, yyyy')}
+                          {event.startTime && ` • ${event.startTime}`}
+                        </p>
+                        {event.ministry && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {event.ministry.name}
+                          </p>
+                        )}
+                      </div>
+                      <Badge className="bg-green-500 text-white text-xs">
+                        {event.eventType.replace(/_/g, ' ')}
+                      </Badge>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recent Notices */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5 text-purple-600" />
+                Active Notices
+              </CardTitle>
+              <Link href="/admin/notices">
+                <Button variant="ghost" size="sm">
+                  View All
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {recentNotices.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Bell className="h-8 w-8 text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground">No active notices</p>
+                <Link href="/admin/notices/new">
+                  <Button variant="link" className="text-xs">
+                    Create a notice →
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentNotices.map((notice) => (
+                  <Link
+                    key={notice.id}
+                    href={`/admin/notices/${notice.id}`}
+                    className="block p-3 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium line-clamp-1">{notice.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(notice.publishDate), 'MMM dd, yyyy')}
+                          {notice.expiryDate &&
+                            ` • Expires ${format(new Date(notice.expiryDate), 'MMM dd')}`
+                          }
+                        </p>
+                      </div>
+                      <div className="flex gap-1">
+                        <Badge
+                          className={
+                            notice.priority === 'URGENT' ? 'bg-red-500 text-white' :
+                            notice.priority === 'HIGH' ? 'bg-orange-500 text-white' :
+                            'bg-blue-500 text-white'
+                          }
+                          style={{ fontSize: '10px', padding: '2px 6px' }}
+                        >
+                          {notice.priority}
+                        </Badge>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Phase 3 Completion Notice */}
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800">
         <CardHeader>
-          <CardTitle className="text-green-900 dark:text-green-100">🎉 Phase 2 Complete!</CardTitle>
-          <CardDescription className="text-green-700 dark:text-green-300">
-            Members Management is now fully functional
+          <CardTitle className="text-blue-900 dark:text-blue-100">🎉 Phase 3 Complete!</CardTitle>
+          <CardDescription className="text-blue-700 dark:text-blue-300">
+            Events, Notices & Ministries Management is now fully functional
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h3 className="font-semibold text-green-900 dark:text-green-100 mb-2">
+            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
               ✅ What's Working Now:
             </h3>
-            <ul className="list-disc list-inside space-y-1 text-sm text-green-800 dark:text-green-200">
-              <li>Add, edit, view, and delete members</li>
-              <li>Search and filter members</li>
-              <li>Member profile with tabs (Details, Follow-ups, Attendance)</li>
-              <li>Live statistics on dashboard</li>
-              <li>Quick action buttons</li>
-              <li>Beautiful, modern UI with shadcn/ui</li>
-            </ul>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div>
+                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">Events Management</p>
+                <ul className="list-disc list-inside space-y-1 text-xs text-blue-700 dark:text-blue-300">
+                  <li>Create & edit events</li>
+                  <li>Event calendar & scheduling</li>
+                  <li>RSVP tracking</li>
+                  <li>Event statistics</li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">Notices & Announcements</p>
+                <ul className="list-disc list-inside space-y-1 text-xs text-blue-700 dark:text-blue-300">
+                  <li>Create & manage notices</li>
+                  <li>Priority & categories</li>
+                  <li>Target audiences</li>
+                  <li>Expiry management</li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">Ministries Management</p>
+                <ul className="list-disc list-inside space-y-1 text-xs text-blue-700 dark:text-blue-300">
+                  <li>Create & manage ministries</li>
+                  <li>Assign leaders</li>
+                  <li>Member tracking</li>
+                  <li>Ministry events</li>
+                </ul>
+              </div>
+            </div>
           </div>
 
           <div>
-            <h3 className="font-semibold text-green-900 dark:text-green-100 mb-2">
+            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
               🚀 Ready to Test:
             </h3>
-            <p className="text-sm text-green-800 dark:text-green-200">
-              You can now add members, edit their information, and view detailed profiles.
-              The dashboard shows real-time statistics from your database.
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              You can now manage all aspects of church events, announcements, and ministries.
+              The dashboard shows real-time statistics and upcoming events/notices.
             </p>
           </div>
         </CardContent>

@@ -40,8 +40,8 @@ const formSchema = z.object({
   meetingDay: z.string().optional(),
   meetingTime: z.string().optional(),
   meetingLocation: z.string().optional(),
-  maxMembers: z.coerce.number().optional(),
-  isActive: z.boolean().default(true),
+  maxMembers: z.number().int().positive().optional(),
+  isActive: z.boolean(),
 });
 
 interface GroupFormProps {

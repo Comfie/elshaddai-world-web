@@ -14,8 +14,8 @@ const groupSchema = z.object({
   meetingDay: z.string().optional().nullable(),
   meetingTime: z.string().optional().nullable(),
   meetingLocation: z.string().optional().nullable(),
-  maxMembers: z.coerce.number().optional().nullable(),
-  isActive: z.boolean().default(true),
+  maxMembers: z.number().int().positive().optional().nullable(),
+  isActive: z.boolean(),
 });
 
 export type GroupFormData = z.infer<typeof groupSchema>;
@@ -152,7 +152,7 @@ export async function createGroup(data: GroupFormData) {
   } catch (error) {
     console.error('Error creating group:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to create group' };
   }
@@ -185,7 +185,7 @@ export async function updateGroup(id: string, data: GroupFormData) {
   } catch (error) {
     console.error('Error updating group:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to update group' };
   }

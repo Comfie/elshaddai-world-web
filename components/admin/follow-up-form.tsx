@@ -55,7 +55,7 @@ const formSchema = z.object({
   initialNotes: z.string().optional(),
   followUpNotes: z.string().optional(),
   outcome: z.string().optional(),
-  requiresFollowUp: z.boolean().default(false),
+  requiresFollowUp: z.boolean(),
   nextFollowUpDate: z.date().optional(),
 });
 

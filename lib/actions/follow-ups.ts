@@ -12,15 +12,15 @@ const followUpSchema = z.object({
   assignedToName: z.string().min(1, 'Assigned to name is required'),
   reason: z.nativeEnum(FollowUpReason),
   reasonOther: z.string().optional().nullable(),
-  priority: z.nativeEnum(Priority).default('NORMAL'),
+  priority: z.nativeEnum(Priority),
   method: z.nativeEnum(ContactMethod).optional().nullable(),
-  status: z.nativeEnum(FollowUpStatus).default('PENDING'),
+  status: z.nativeEnum(FollowUpStatus),
   dueDate: z.date(),
   completedAt: z.date().optional().nullable(),
   initialNotes: z.string().optional().nullable(),
   followUpNotes: z.string().optional().nullable(),
   outcome: z.string().optional().nullable(),
-  requiresFollowUp: z.boolean().default(false),
+  requiresFollowUp: z.boolean(),
   nextFollowUpDate: z.date().optional().nullable(),
 });
 
@@ -180,7 +180,7 @@ export async function createFollowUp(data: FollowUpFormData) {
   } catch (error) {
     console.error('Error creating follow-up:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to create follow-up' };
   }
@@ -228,7 +228,7 @@ export async function updateFollowUp(id: string, data: FollowUpFormData) {
   } catch (error) {
     console.error('Error updating follow-up:', error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0].message };
     }
     return { success: false, error: 'Failed to update follow-up' };
   }

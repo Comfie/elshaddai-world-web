@@ -1,58 +1,67 @@
-import { withAuth } from 'next-auth/middleware';
+import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token;
-    const path = req.nextUrl.pathname;
+export async function middleware(request: NextRequest) {
+  const session = await auth();
+  const path = request.nextUrl.pathname;
 
-    // Check if user is accessing admin routes
-    if (path.startsWith('/admin')) {
-      if (!token) {
-        return NextResponse.redirect(new URL('/login', req.url));
-      }
+  // Protect admin routes
+  if (path.startsWith('/admin')) {
+    if (!session || !session.user) {
+      const url = new URL('/login', request.url);
+      url.searchParams.set('callbackUrl', path);
+      return NextResponse.redirect(url);
+    }
 
-      // Super admin can access everything
-      if (token.role === 'SUPER_ADMIN') {
-        return NextResponse.next();
-      }
+    const { role } = session.user;
 
-      // Admin can access most things except settings
-      if (token.role === 'ADMIN' && path.startsWith('/admin/settings')) {
-        return NextResponse.redirect(new URL('/admin/dashboard', req.url));
-      }
+    // Super admin can access everything
+    if (role === 'SUPER_ADMIN') {
+      return NextResponse.next();
+    }
 
-      // Leader has limited access
-      if (token.role === 'LEADER') {
-        const allowedPaths = [
-          '/admin/dashboard',
-          '/admin/members',
-          '/admin/follow-ups',
-          '/admin/events',
-          '/admin/ministries',
-        ];
+    // Admin can access most things except settings
+    if (role === 'ADMIN' && path.startsWith('/admin/settings')) {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    }
 
-        const isAllowed = allowedPaths.some(allowed => path.startsWith(allowed));
-        if (!isAllowed) {
-          return NextResponse.redirect(new URL('/admin/dashboard', req.url));
-        }
-      }
+    // Leader has limited access
+    if (role === 'LEADER') {
+      const allowedPaths = [
+        '/admin/dashboard',
+        '/admin/members',
+        '/admin/follow-ups',
+        '/admin/events',
+        '/admin/ministries',
+      ];
 
-      // Regular members shouldn't access admin at all
-      if (token.role === 'MEMBER') {
-        return NextResponse.redirect(new URL('/login', req.url));
+      const isAllowed = allowedPaths.some(allowed => path.startsWith(allowed));
+      if (!isAllowed) {
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
       }
     }
 
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token
-    },
+    // Regular members shouldn't access admin at all
+    if (role === 'MEMBER') {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
   }
-);
+
+  // Redirect logged-in users away from auth pages
+  if (path === '/login' || path === '/register') {
+    if (session && session.user) {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    }
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ['/admin/:path*']
+  matcher: [
+    '/admin/:path*',
+    '/login',
+    '/register',
+  ],
 };

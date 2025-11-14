@@ -1,11 +1,22 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { User, Settings, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export function Header() {
   const { data: session } = useSession();
+  const router = useRouter();
 
   const getInitials = (name: string) => {
     return name
@@ -33,6 +44,10 @@ export function Header() {
     return role.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
   };
 
+  const handleLogout = async () => {
+    await signOut({ redirect: true, callbackUrl: '/login' });
+  };
+
   return (
     <header className="flex h-16 items-center justify-between border-b bg-background px-6">
       <div>
@@ -49,11 +64,40 @@ export function Header() {
             {formatRole(session?.user?.role || '')}
           </Badge>
         </div>
-        <Avatar>
-          <AvatarFallback className="bg-primary text-primary-foreground">
-            {session?.user?.name ? getInitials(session.user.name) : 'AD'}
-          </AvatarFallback>
-        </Avatar>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="cursor-pointer">
+            <Avatar>
+              <AvatarFallback className="bg-primary text-primary-foreground">
+                {session?.user?.name ? getInitials(session.user.name) : 'AD'}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {session?.user?.email}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => router.push('/admin/profile')} className="cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/admin/settings')} className="cursor-pointer">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

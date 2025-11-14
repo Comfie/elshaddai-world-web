@@ -429,14 +429,17 @@ export function MemberForm({ initialData, memberId, ministries }: MemberFormProp
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Ministry</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={(value) => field.onChange(value === "none" ? "" : value)}
+                    defaultValue={field.value || "none"}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select ministry" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {ministries.map((ministry) => (
                         <SelectItem key={ministry.id} value={ministry.id}>
                           {ministry.name}

@@ -24,11 +24,6 @@ function Calendar({
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
-        caption_dropdowns: "flex justify-center gap-1",
-        dropdown: "bg-background border border-input rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring",
-        dropdown_month: "relative inline-flex",
-        dropdown_year: "relative inline-flex",
-        dropdown_icon: "ml-1",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -42,10 +37,7 @@ function Calendar({
           "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
         cell: cn(
-          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
-          "[&:has([aria-selected])]:bg-accent",
-          "[&:has([aria-selected].day-outside)]:bg-accent/50",
-          "[&:has([aria-selected].day-range-end)]:rounded-r-md"
+          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected].day-range-end)]:rounded-r-md"
         ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
@@ -64,14 +56,9 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ orientation, ...props }) => {
-          const Icon = orientation === 'left' ? ChevronLeft : ChevronRight;
-          return <Icon className="h-4 w-4" />;
-        },
+        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
-      captionLayout="dropdown"
-      fromYear={1900}
-      toYear={new Date().getFullYear() + 10}
       {...props}
     />
   )

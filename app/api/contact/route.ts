@@ -1,79 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db/prisma';
+import { z } from 'zod';
 
-// Contact form submission schema
-interface ContactFormData {
-  name: string;
-  email: string;
-  phone?: string;
-  subject: string;
-  message: string;
+const contactSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Valid email is required'),
+  phone: z.string().optional(),
+  subject: z.string().min(1, 'Subject is required'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+  category: z.enum([
+    'GENERAL',
+    'PRAYER_REQUEST',
+    'VISITOR_INFO',
+    'PARTNERSHIP',
+    'MEDIA_INQUIRY',
+    'COMPLAINT',
+    'SUGGESTION',
+  ]).optional(),
+});
+
+// GET - List all contact messages (admin only)
+export async function GET(request: NextRequest) {
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: [
+        { status: 'asc' }, // NEW messages first
+        { createdAt: 'desc' },
+      ],
+      take: 100,
+    });
+
+    return NextResponse.json(messages);
+  } catch (error) {
+    console.error('Error fetching contact messages:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch contact messages' },
+      { status: 500 }
+    );
+  }
 }
 
+// POST - Create new contact message (public)
 export async function POST(request: NextRequest) {
   try {
-    const body: ContactFormData = await request.json();
+    const body = await request.json();
+    const validatedData = contactSchema.parse(body);
 
-    // Validate required fields
-    if (!body.name || !body.email || !body.subject || !body.message) {
-      return NextResponse.json(
-        { error: 'Please fill in all required fields' },
-        { status: 400 }
-      );
-    }
+    // Get IP address and user agent for tracking
+    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+    const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(body.email)) {
-      return NextResponse.json(
-        { error: 'Please provide a valid email address' },
-        { status: 400 }
-      );
-    }
-
-    // TODO: Send email using Resend or other email service
-    // For now, we'll just log the contact submission
-    console.log('Contact form submission:', {
-      name: body.name,
-      email: body.email,
-      phone: body.phone,
-      subject: body.subject,
-      message: body.message,
-      timestamp: new Date().toISOString(),
+    const message = await prisma.contactMessage.create({
+      data: {
+        name: validatedData.name,
+        email: validatedData.email,
+        phone: validatedData.phone || null,
+        subject: validatedData.subject,
+        message: validatedData.message,
+        category: validatedData.category || 'GENERAL',
+        ipAddress,
+        userAgent,
+        status: 'NEW',
+      },
     });
-
-    // Uncomment this section when you have Resend API key configured
-    /*
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
-    await resend.emails.send({
-      from: 'El Shaddai World Ministries <noreply@elshaddaiworld.org>',
-      to: ['info@elshaddaiworld.org'],
-      replyTo: body.email,
-      subject: `Contact Form: ${body.subject}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${body.name}</p>
-        <p><strong>Email:</strong> ${body.email}</p>
-        ${body.phone ? `<p><strong>Phone:</strong> ${body.phone}</p>` : ''}
-        <p><strong>Subject:</strong> ${body.subject}</p>
-        <h3>Message:</h3>
-        <p>${body.message.replace(/\n/g, '<br>')}</p>
-      `,
-    });
-    */
 
     return NextResponse.json(
       {
         success: true,
-        message: 'Thank you for your message. We will get back to you soon!'
+        message: 'Your message has been received. We will get back to you soon!',
+        id: message.id,
       },
-      { status: 200 }
+      { status: 201 }
     );
-
   } catch (error) {
-    console.error('Contact form error:', error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
+    }
+
+    console.error('Error creating contact message:', error);
     return NextResponse.json(
-      { error: 'Failed to send message. Please try again later.' },
+      { error: 'Failed to submit contact form' },
       { status: 500 }
     );
   }

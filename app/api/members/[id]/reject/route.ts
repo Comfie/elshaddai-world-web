@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db';
 
 // DELETE - Reject and delete a pending member registration
 export async function DELETE(

@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { RegistrationApproval } from '@/components/admin/registration-approval';
 

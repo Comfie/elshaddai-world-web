@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
 const registerSchema = z.object({
@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
         province: validatedData.province || null,
         postalCode: validatedData.postalCode || null,
         dateOfBirth: validatedData.dateOfBirth ? new Date(validatedData.dateOfBirth) : null,
-        gender: (validatedData.gender && validatedData.gender !== '') ? validatedData.gender : null,
-        maritalStatus: (validatedData.maritalStatus && validatedData.maritalStatus !== '') ? validatedData.maritalStatus : null,
+        gender: validatedData.gender || null,
+        maritalStatus: validatedData.maritalStatus || null,
         membershipType: validatedData.membershipType,
         notes: validatedData.notes || null,
         status: 'PENDING', // Set to PENDING for admin approval
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { error: 'Validation failed', details: error.issues },
         { status: 400 }
       );
     }

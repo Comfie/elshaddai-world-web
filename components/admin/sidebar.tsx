@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,10 +23,12 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  UserCog,
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'System Users', href: '/admin/users', icon: UserCog, superAdminOnly: true },
   { name: 'Members', href: '/admin/members', icon: Users },
   { name: 'Follow-ups', href: '/admin/follow-ups', icon: ClipboardList },
   { name: 'Groups', href: '/admin/groups', icon: Users },
@@ -41,6 +43,7 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [isCollapsed, setIsCollapsed] = useState(() => {
     // Load initial state from localStorage
     if (typeof window !== 'undefined') {
@@ -61,6 +64,14 @@ export function Sidebar() {
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/login' });
   };
+
+  // Filter navigation based on user role
+  const filteredNavigation = navigation.filter((item) => {
+    if (item.superAdminOnly) {
+      return session?.user?.role === 'SUPER_ADMIN';
+    }
+    return true;
+  });
 
   return (
     <div className={cn(
@@ -91,7 +102,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-2 py-4 overflow-y-auto">
-        {navigation.map((item) => {
+        {filteredNavigation.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
             <Link

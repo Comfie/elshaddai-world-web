@@ -32,9 +32,6 @@ export async function GET(request: NextRequest) {
         name: true,
         email: true,
         role: true,
-        image: true,
-        isActive: true,
-        lastLogin: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -144,7 +141,7 @@ export async function PATCH(request: NextRequest) {
         name: true,
         email: true,
         role: true,
-        image: true,
+        createdAt: true,
         updatedAt: true,
       },
     });

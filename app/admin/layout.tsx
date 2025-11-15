@@ -19,15 +19,17 @@ export default async function AdminLayout({
     <SessionProvider session={session}>
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
-        <aside className="hidden md:block">
+        <aside className="hidden md:block flex-shrink-0">
           <Sidebar />
         </aside>
 
         {/* Main Content */}
-        <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            {children}
+          <main className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 p-6">
+            <div className="max-w-full">
+              {children}
+            </div>
           </main>
         </div>
       </div>

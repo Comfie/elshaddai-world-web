@@ -5,7 +5,10 @@ import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, User, Mail, Calendar, Shield, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Loader2, User, Mail, Calendar, Shield, CheckCircle2, AlertCircle, Edit2, KeyRound } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function ProfilePage() {
@@ -145,10 +148,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
-        <p className="text-gray-600 dark:text-gray-400">Manage your account settings</p>
+    <div className="mx-auto max-w-5xl space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-lg p-8 text-white shadow-lg">
+        <h1 className="text-3xl font-bold">My Profile</h1>
+        <p className="text-blue-100 mt-2">Manage your account settings and preferences</p>
       </div>
 
       {message && (
@@ -164,160 +168,203 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-          <CardDescription>View and update your account details</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {!isEditing ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 pb-4 border-b">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                  <User className="h-10 w-10" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Profile Overview Card */}
+        <Card className="lg:col-span-1 shadow-md border-blue-100">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="relative">
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg">
+                  <User className="h-12 w-12" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold">{userDetails.name}</h3>
-                  <Badge className={getRoleBadgeColor(userDetails.role)}>
-                    {formatRole(userDetails.role)}
-                  </Badge>
+                <div className="absolute -bottom-1 -right-1 bg-green-500 h-6 w-6 rounded-full border-4 border-white"></div>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-gray-900">{userDetails.name}</h3>
+                <Badge className={`${getRoleBadgeColor(userDetails.role)} px-3 py-1`}>
+                  <Shield className="h-3 w-3 mr-1" />
+                  {formatRole(userDetails.role)}
+                </Badge>
+              </div>
+              <Separator />
+              <div className="w-full space-y-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-500">Email</span>
+                  <span className="font-medium text-gray-900 truncate ml-2">{userDetails.email}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-500">Member Since</span>
+                  <span className="font-medium text-gray-900">
+                    {format(new Date(userDetails.createdAt), 'MMM d, yyyy')}
+                  </span>
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="grid gap-4">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="font-medium">{userDetails.email}</p>
+        {/* Account Details Card */}
+        <Card className="lg:col-span-2 shadow-md border-blue-100">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">Account Information</CardTitle>
+                <CardDescription className="mt-1">View and update your account details</CardDescription>
+              </div>
+              {!isEditing && (
+                <Button onClick={() => setIsEditing(true)} size="sm" className="bg-blue-900 hover:bg-blue-800">
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Edit Profile
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {!isEditing ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
+                      <User className="h-4 w-4" />
+                      Full Name
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{userDetails.name}</p>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3">
-                  <Shield className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Role</p>
-                    <p className="font-medium">{formatRole(userDetails.role)}</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
+                      <Mail className="h-4 w-4" />
+                      Email Address
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{userDetails.email}</p>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Member Since</p>
-                    <p className="font-medium">
-                      {format(new Date(userDetails.createdAt), 'MMMM d, yyyy')}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
+                      <Shield className="h-4 w-4" />
+                      Account Role
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{formatRole(userDetails.role)}</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
+                      <Calendar className="h-4 w-4" />
+                      Last Updated
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {format(new Date(userDetails.updatedAt), 'MMM d, yyyy')}
                     </p>
                   </div>
                 </div>
-
-                {userDetails.lastLogin && (
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Last Login</p>
-                      <p className="font-medium">
-                        {format(new Date(userDetails.lastLogin), 'MMMM d, yyyy h:mm a')}
-                      </p>
-                    </div>
-                  </div>
-                )}
               </div>
-
-              <Button onClick={() => setIsEditing(true)} className="w-full">
-                Edit Profile
-              </Button>
-            </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Full Name
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="border-gray-300"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="border-gray-300"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
-              </div>
+              <Separator />
 
-              <div className="pt-4 border-t">
-                <h4 className="text-sm font-medium text-gray-700 mb-4">Change Password (Optional)</h4>
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <KeyRound className="h-4 w-4" />
+                  Change Password (Optional)
+                </div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 pl-6">
                   <div className="space-y-2">
-                    <label htmlFor="currentPassword" className="text-sm font-medium text-gray-700">
-                      Current Password
-                    </label>
-                    <input
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input
                       id="currentPassword"
                       name="currentPassword"
                       type="password"
                       value={formData.currentPassword}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                      placeholder="Enter current password"
+                      className="border-gray-300"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="newPassword" className="text-sm font-medium text-gray-700">
-                      New Password
-                    </label>
-                    <input
-                      id="newPassword"
-                      name="newPassword"
-                      type="password"
-                      value={formData.newPassword}
-                      onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                    />
-                    <p className="text-xs text-gray-500">Must be at least 8 characters long</p>
-                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="newPassword">New Password</Label>
+                      <Input
+                        id="newPassword"
+                        name="newPassword"
+                        type="password"
+                        value={formData.newPassword}
+                        onChange={handleChange}
+                        placeholder="Enter new password"
+                        className="border-gray-300"
+                      />
+                      <p className="text-xs text-gray-500">Min. 8 characters</p>
+                    </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                      Confirm New Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                    />
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword">Confirm Password</Label>
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        placeholder="Confirm new password"
+                        className="border-gray-300"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" disabled={isLoading} className="flex-1">
+              <Separator />
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex-1 bg-blue-900 hover:bg-blue-800"
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
+                      Saving Changes...
                     </>
                   ) : (
-                    'Save Changes'
+                    <>
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      Save Changes
+                    </>
                   )}
                 </Button>
                 <Button
@@ -344,6 +391,7 @@ export default function ProfilePage() {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

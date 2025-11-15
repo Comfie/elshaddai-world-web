@@ -66,12 +66,14 @@ export function Header() {
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="cursor-pointer">
-            <Avatar>
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {session?.user?.name ? getInitials(session.user.name) : 'AD'}
-              </AvatarFallback>
-            </Avatar>
+          <DropdownMenuTrigger asChild>
+            <button className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-full">
+              <Avatar>
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {session?.user?.name ? getInitials(session.user.name) : 'AD'}
+                </AvatarFallback>
+              </Avatar>
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>

@@ -106,11 +106,13 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
                 <Card className="overflow-hidden">
                   <div className="relative aspect-video bg-black">
                     <iframe
-                      src={`https://www.youtube.com/embed/${youtubeId}`}
+                      src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`}
                       title={sermon.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
-                      className="absolute inset-0 w-full h-full"
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full border-0"
+                      style={{ border: 0 }}
                     />
                   </div>
                 </Card>

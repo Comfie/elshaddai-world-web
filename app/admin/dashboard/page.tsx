@@ -8,6 +8,7 @@ import { Users, ClipboardList, Calendar, Bell, Plus, TrendingUp, UserPlus, Alert
 import { prisma } from '@/lib/db';
 import { getMemberStats } from '@/lib/actions/members';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 async function DashboardContent() {
   // Fetch stats from database
@@ -351,12 +352,12 @@ async function DashboardContent() {
                       </div>
                       <div className="flex gap-1">
                         <Badge
-                          className={
+                          className={cn(
+                            "text-[10px] px-1.5 py-0.5",
                             notice.priority === 'URGENT' ? 'bg-red-500 text-white' :
                             notice.priority === 'HIGH' ? 'bg-orange-500 text-white' :
                             'bg-blue-500 text-white'
-                          }
-                          style={{ fontSize: '10px', padding: '2px 6px' }}
+                          )}
                         >
                           {notice.priority}
                         </Badge>

@@ -18,6 +18,7 @@ import {
   UserCheck,
   Mail,
   Heart,
+  UserPlus,
   BarChart,
   Settings,
   LogOut,
@@ -29,6 +30,7 @@ import {
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'System Users', href: '/admin/users', icon: UserCog, superAdminOnly: true },
+  { name: 'Pending Registrations', href: '/admin/pending-registrations', icon: UserPlus },
   { name: 'Members', href: '/admin/members', icon: Users },
   { name: 'Follow-ups', href: '/admin/follow-ups', icon: ClipboardList },
   { name: 'Groups', href: '/admin/groups', icon: Users },

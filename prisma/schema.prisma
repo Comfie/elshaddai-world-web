@@ -152,6 +152,7 @@ enum MembershipType {
 }
 
 enum MemberStatus {
+  PENDING      // Awaiting approval from admin
   ACTIVE
   INACTIVE
   TRANSFERRED

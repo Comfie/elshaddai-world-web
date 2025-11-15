@@ -15,6 +15,7 @@ const navigation = [
   { name: 'Books', href: '/books' },
   { name: 'Sermons', href: '/sermons' },
   { name: 'Prayer', href: '/prayer-requests' },
+  { name: 'Join Us', href: '/join' },
   { name: 'Contact', href: '/contact' },
   { name: 'Give', href: '/give' },
 ];

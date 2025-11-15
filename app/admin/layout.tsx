@@ -15,6 +15,11 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
+  // Regular members shouldn't access admin at all
+  if (session.user.role === 'MEMBER') {
+    redirect('/');
+  }
+
   return (
     <SessionProvider session={session}>
       <div className="flex h-screen overflow-hidden">

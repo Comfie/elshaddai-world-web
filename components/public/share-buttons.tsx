@@ -10,10 +10,10 @@ export function ShareButtons({ url, title, tone = 'light' }: { url: string; titl
   const [canNativeShare] = useState(() => typeof navigator !== 'undefined' && typeof navigator.share === 'function');
 
   const btn = cn(
-    'inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-[0.8rem] font-semibold uppercase tracking-[0.12em] transition-colors',
+    'inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 text-[0.8rem] font-semibold uppercase tracking-[0.12em] transition-colors',
     tone === 'dark'
       ? 'border-white/25 text-white hover:border-white hover:bg-white/10'
-      : 'border-stone-200 text-ink-900 hover:border-ink-900 hover:bg-ink-900 hover:text-ivory',
+      : 'border-brand-200 text-brand-navy hover:border-brand-700 hover:bg-brand-700 hover:text-white',
   );
 
   const copy = async () => {

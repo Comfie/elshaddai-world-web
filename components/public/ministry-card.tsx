@@ -27,7 +27,7 @@ export function MinistryCard({
 }) {
   return (
     <article
-      className={`group relative isolate overflow-hidden rounded-2xl bg-ink-950 ${
+      className={`group relative isolate overflow-hidden rounded-2xl bg-brand-navy ${
         tall ? 'aspect-[4/5]' : 'aspect-[16/11]'
       }`}
     >
@@ -38,10 +38,10 @@ export function MinistryCard({
         zoom
         sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
       />
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/40 to-ink-950/5" />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/40 to-brand-navy/5" />
       <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
         {(ministry.meetingDay || ministry.meetingTime) && (
-          <p className="kicker mb-3 text-gold-light">
+          <p className="kicker mb-3 text-brand-300">
             {[ministry.meetingDay, ministry.meetingTime].filter(Boolean).join(' · ')}
           </p>
         )}
@@ -51,7 +51,7 @@ export function MinistryCard({
           </Link>
         </h3>
         {ministry.description && (
-          <p className="mt-3 line-clamp-2 max-w-sm text-[0.95rem] leading-relaxed text-stone-200">
+          <p className="mt-3 line-clamp-2 max-w-sm text-[0.95rem] leading-relaxed text-brand-100">
             {ministry.description}
           </p>
         )}

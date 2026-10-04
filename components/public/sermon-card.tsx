@@ -36,7 +36,7 @@ export function SermonCard({
   const thumb = sermonThumbnail(sermon);
   return (
     <article className="group relative">
-      <div className="relative aspect-video overflow-hidden rounded-2xl bg-ink-900">
+      <div className="relative aspect-video overflow-hidden rounded-2xl bg-brand-900">
         <Photo
           src={thumb}
           alt=""
@@ -45,27 +45,27 @@ export function SermonCard({
           priority={priority}
           sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent to-transparent" />
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-brand-navy/70 via-transparent to-transparent" />
         <span
           aria-hidden="true"
-          className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-ink-950/70 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur"
+          className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-brand-navy/85 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur"
         >
           {sermon.videoUrl ? <Video className="size-3.5" /> : sermon.audioUrl ? <Headphones className="size-3.5" /> : null}
           {sermon.videoUrl ? 'Watch' : sermon.audioUrl ? 'Listen' : formatCategory(sermon.category)}
         </span>
         <span
           aria-hidden="true"
-          className="absolute bottom-4 right-4 grid size-12 place-items-center rounded-full bg-gold text-ink-950 transition-transform duration-300 group-hover:scale-110"
+          className="absolute bottom-4 right-4 grid size-12 place-items-center rounded-full bg-brand-600 text-white transition-transform duration-300 group-hover:scale-110"
         >
           <Play className="ml-0.5 size-5 fill-current" />
         </span>
       </div>
 
       <div className="mt-5">
-        <p className={cn('kicker mb-3', dark ? 'text-gold-light' : 'text-bronze')}>
+        <p className={cn('kicker mb-3', dark ? 'text-brand-300' : 'text-brand-700')}>
           {sermon.series || formatCategory(sermon.category)}
         </p>
-        <h3 className={cn('display-sm line-clamp-2', dark ? 'text-white' : 'text-ink-900')}>
+        <h3 className={cn('display-sm line-clamp-2', dark ? 'text-white' : 'text-brand-navy')}>
           <Link
             href={`/sermons/${sermon.id}`}
             className="link-underline after:absolute after:inset-0 after:content-['']"
@@ -73,7 +73,7 @@ export function SermonCard({
             {sermon.title}
           </Link>
         </h3>
-        <p className={cn('mt-3 text-[0.95rem]', dark ? 'text-stone-400' : 'text-stone-600')}>
+        <p className={cn('mt-3 text-[0.95rem]', dark ? 'text-mist' : 'text-body')}>
           {sermon.preacher} &middot; {formatShortDate(sermon.sermonDate)}
           {sermon.scripture && <> &middot; {sermon.scripture}</>}
         </p>

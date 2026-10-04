@@ -28,7 +28,7 @@ export default async function SermonsPage() {
         kicker="Sermons"
         title={
           <>
-            Hear the <em className="text-gold-light">Word.</em>
+            Hear the <em className="text-brand-300">Word.</em>
           </>
         }
         description="Messages from our Sunday services, midweek teaching and special gatherings — to watch, listen to and share."

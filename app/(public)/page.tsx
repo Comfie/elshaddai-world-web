@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { HeroSection } from '@/components/public/hero-section';
-import { ServiceTimes } from '@/components/public/service-times';
+import { ThisWeek } from '@/components/public/this-week';
+import { MorningManna } from '@/components/public/morning-manna';
+import { StayConnected } from '@/components/public/stay-connected';
 import { ImageTextSection } from '@/components/public/image-text-section';
 import { FeaturedSermon } from '@/components/public/featured-sermon';
 import { NextSteps } from '@/components/public/next-steps';
@@ -17,7 +19,7 @@ import { Reveal } from '@/components/public/reveal';
 import { JsonLd } from '@/components/public/json-ld';
 import { getRecentSermons, getUpcomingEvents, getWebsiteMinistries } from '@/lib/public-data';
 import { getSiteInfo } from '@/lib/site-info';
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from '@/lib/site-config';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, programmeSchema } from '@/lib/site-config';
 
 export const revalidate = 60;
 
@@ -41,7 +43,8 @@ export default async function HomePage() {
     getUpcomingEvents(3),
   ]);
 
-  const [street, region] = info.addressLines;
+  // Structured data is generated from verified facts only: no address/geo until the
+  // church confirms its location, and opening hours come from WEEKLY_PROGRAM.
   const churchSchema = {
     '@context': 'https://schema.org',
     '@type': 'Church',
@@ -50,14 +53,14 @@ export default async function HomePage() {
     description: SITE_DESCRIPTION,
     ...(info.email && { email: info.email }),
     ...(info.phone && { telephone: info.phone }),
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: street,
-      addressLocality: region?.split(',')[0]?.trim(),
-      addressRegion: region?.split(',')[1]?.trim(),
-      postalCode: info.addressLines.join(' ').match(/\b\d{4}\b/)?.[0],
-      addressCountry: 'ZA',
-    },
+    ...(info.addressLines && {
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: info.addressLines[0],
+        addressCountry: 'ZA',
+      },
+    }),
+    openingHoursSpecification: programmeSchema(),
     sameAs: Object.values(info.social).filter(Boolean),
   };
 
@@ -66,7 +69,8 @@ export default async function HomePage() {
       <JsonLd data={churchSchema} />
 
       <HeroSection />
-      <ServiceTimes info={info} />
+      <ThisWeek info={info} />
+      <MorningManna info={info} />
 
       <ImageTextSection
         kicker="Welcome"
@@ -78,7 +82,7 @@ export default async function HomePage() {
         slot="welcome"
         variant={1}
         cta={
-          <CtaLink href="/about" variant="dark">
+          <CtaLink href="/about" variant="primary">
             Discover our story
           </CtaLink>
         }
@@ -95,7 +99,7 @@ export default async function HomePage() {
       <NextSteps />
 
       {ministries.length > 0 && (
-        <section aria-labelledby="ministries-heading" className="on-dark section-y bg-ink-950 text-white">
+        <section aria-labelledby="ministries-heading" className="on-dark section-y bg-brand-navy text-white">
           <div className="wrap">
             <Reveal>
               <SectionHeader
@@ -124,7 +128,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section aria-labelledby="events-heading" className="on-light section-y bg-ivory">
+      <section aria-labelledby="events-heading" className="on-light section-y bg-brand-50">
         <div className="wrap">
           <Reveal>
             <SectionHeader
@@ -158,7 +162,7 @@ export default async function HomePage() {
                 title="No events on the calendar just yet."
                 description="New gatherings are added as they are planned. Our services meet every week — we would love to see you."
               >
-                <CtaLink href="/visit" variant="dark">
+                <CtaLink href="/visit" variant="primary">
                   Plan your visit
                 </CtaLink>
                 <CtaLink href="/events" variant="text-dark">
@@ -172,6 +176,7 @@ export default async function HomePage() {
 
       <CommunitySection />
       <PrayerCTA />
+      <StayConnected info={info} />
       <GivingCTA />
       <PlanVisitCTA info={info} />
     </>

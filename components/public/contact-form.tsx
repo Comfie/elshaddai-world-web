@@ -71,8 +71,8 @@ export function ContactForm() {
 
   return (
     <FormShell>
-      <h2 className="display-md text-ink-900">Send us a message</h2>
-      <p className="mt-3 text-stone-600">We&rsquo;ll get back to you as soon as we can.</p>
+      <h2 className="display-md text-brand-navy">Send us a message</h2>
+      <p className="mt-3 text-body">We&rsquo;ll get back to you as soon as we can.</p>
 
       <form onSubmit={handleSubmit} className="mt-10 grid gap-6 sm:grid-cols-2">
         <Field id="name" label="Your name" required>

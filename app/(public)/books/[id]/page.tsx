@@ -72,31 +72,31 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
           inLanguage: book.language,
         }}
       />
-      <section className="on-dark relative isolate overflow-hidden bg-ink-950 pb-16 pt-32 text-white sm:pb-24 sm:pt-40">
+      <section className="on-dark relative isolate overflow-hidden bg-brand-navy pb-16 pt-32 text-white sm:pb-24 sm:pt-40">
         <Photo src={book.coverImageUrl} alt="" variant={1} className="scale-125 opacity-25 blur-3xl" />
-        <div aria-hidden="true" className="absolute inset-0 bg-ink-950/70" />
+        <div aria-hidden="true" className="absolute inset-0 bg-brand-navy/70" />
         <div className="wrap relative">
           <CtaLink href="/books" variant="text-light" arrow={false} className="mb-10">
             ← All books
           </CtaLink>
           <div className="grid items-center gap-12 md:grid-cols-12 md:gap-16">
             <div className="md:col-span-4">
-              <div className="relative mx-auto aspect-[2/3] max-w-xs overflow-hidden rounded-xl bg-ink-900 shadow-2xl">
+              <div className="relative mx-auto aspect-[2/3] max-w-xs overflow-hidden rounded-xl bg-brand-900 shadow-2xl">
                 <Photo src={book.coverImageUrl} alt={`Cover of ${book.title}`} variant={1} priority sizes="(min-width: 768px) 30vw, 70vw" />
               </div>
             </div>
             <div className="md:col-span-8">
-              <p className="kicker mb-5 text-gold-light">{formatCategory(book.category)}</p>
+              <p className="kicker mb-5 text-brand-300">{formatCategory(book.category)}</p>
               <h1 className="display-lg">{book.title}</h1>
-              {book.subtitle && <p className="display-sm mt-3 text-stone-300">{book.subtitle}</p>}
-              <p className="mt-5 text-lg text-stone-300">by {book.author}</p>
+              {book.subtitle && <p className="display-sm mt-3 text-brand-100">{book.subtitle}</p>}
+              <p className="mt-5 text-lg text-brand-100">by {book.author}</p>
               {book.price && (
                 <p className="font-display mt-6 text-3xl text-white">
                   {book.currency} {book.price.toString()}
                 </p>
               )}
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                <CtaLink href={book.amazonUrl} variant="gold" external>
+                <CtaLink href={book.amazonUrl} variant="primary" external>
                   Buy on Amazon
                 </CtaLink>
                 {book.samplePdfUrl && (
@@ -110,15 +110,15 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
         </div>
       </section>
 
-      <section className="on-light section-y bg-ivory">
+      <section className="on-light section-y bg-brand-50">
         <div className="wrap grid gap-14 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-8">
-            <h2 className="kicker mb-5 text-bronze">About this book</h2>
-            <p className="lead max-w-2xl whitespace-pre-wrap text-stone-600">{book.description}</p>
+            <h2 className="kicker mb-5 text-brand-700">About this book</h2>
+            <p className="lead max-w-2xl whitespace-pre-wrap text-body">{book.description}</p>
             {book.tags.length > 0 && (
               <ul className="mt-10 flex flex-wrap gap-2" aria-label="Tags">
                 {book.tags.map((t) => (
-                  <li key={t} className="rounded-full border border-stone-200 px-4 py-1.5 text-sm text-stone-600">
+                  <li key={t} className="rounded-full border border-brand-200 px-4 py-1.5 text-sm text-body">
                     {t}
                   </li>
                 ))}
@@ -127,12 +127,12 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
           </Reveal>
           {details.length > 0 && (
             <Reveal className="lg:col-span-4" delay={100}>
-              <h2 className="kicker mb-5 text-bronze">Book details</h2>
-              <dl className="divide-y divide-stone-200 border-y border-stone-200">
+              <h2 className="kicker mb-5 text-brand-700">Book details</h2>
+              <dl className="divide-y divide-brand-200 border-y border-brand-200">
                 {details.map(([k, v]) => (
                   <div key={k} className="flex justify-between gap-6 py-4">
-                    <dt className="text-stone-600">{k}</dt>
-                    <dd className="text-right text-ink-900">{v}</dd>
+                    <dt className="text-body">{k}</dt>
+                    <dd className="text-right text-brand-navy">{v}</dd>
                   </div>
                 ))}
               </dl>
@@ -142,23 +142,23 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
       </section>
 
       {related.length > 0 && (
-        <section aria-labelledby="more-books" className="on-light section-y bg-ivory-200">
+        <section aria-labelledby="more-books" className="on-light section-y bg-brand-100">
           <div className="wrap">
-            <h2 id="more-books" className="display-md mb-12 text-ink-900">
+            <h2 id="more-books" className="display-md mb-12 text-brand-navy">
               More books
             </h2>
             <ul className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((b, i) => (
                 <li key={b.id} className="group relative">
-                  <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-ink-900">
+                  <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-brand-900">
                     <Photo src={b.coverImageUrl} alt="" variant={i} zoom sizes="(min-width: 1024px) 22vw, 45vw" />
                   </div>
-                  <h3 className="display-sm mt-5 line-clamp-2 text-ink-900">
+                  <h3 className="display-sm mt-5 line-clamp-2 text-brand-navy">
                     <Link href={`/books/${b.id}`} className="link-underline after:absolute after:inset-0 after:content-['']">
                       {b.title}
                     </Link>
                   </h3>
-                  <p className="mt-1 text-sm text-stone-600">{b.author}</p>
+                  <p className="mt-1 text-sm text-body">{b.author}</p>
                 </li>
               ))}
             </ul>

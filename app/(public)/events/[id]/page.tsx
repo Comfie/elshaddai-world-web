@@ -70,7 +70,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       : 'https://schema.org/OfflineEventAttendanceMode',
     location: event.isOnline
       ? { '@type': 'VirtualLocation', url: event.onlineLink ?? `${SITE_URL}/events/${event.id}` }
-      : { '@type': 'Place', name: event.location, address: event.address ?? info.addressOneLine },
+      : { '@type': 'Place', name: event.location, address: event.address ?? event.location },
     image: [event.imageUrl ?? event.posterUrl].filter(Boolean),
     organizer: { '@type': 'Organization', name: info.name, url: SITE_URL },
   };
@@ -86,33 +86,33 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         size="tall"
       >
         <DateBlock date={event.eventDate} />
-        <p className="flex items-center text-lg text-stone-200">
+        <p className="flex items-center text-lg text-brand-100">
           {p.weekday}
           {start && <>&nbsp;&middot;&nbsp;{start}{end && <>&ndash;{end}</>}</>}
         </p>
       </PageHero>
 
-      <section className="on-light section-y bg-ivory">
+      <section className="on-light section-y bg-brand-50">
         <div className="wrap grid gap-14 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-7">
             {past && (
-              <p className="mb-8 inline-block rounded-full bg-ivory-200 px-4 py-2 text-sm font-semibold text-stone-600">
+              <p className="mb-8 inline-block rounded-full bg-brand-100 px-4 py-2 text-sm font-semibold text-body">
                 This event has taken place.
               </p>
             )}
-            <h2 className="kicker mb-5 text-bronze">About this event</h2>
+            <h2 className="kicker mb-5 text-brand-700">About this event</h2>
             {event.description ? (
-              <p className="lead max-w-2xl whitespace-pre-wrap text-stone-600">{event.description}</p>
+              <p className="lead max-w-2xl whitespace-pre-wrap text-body">{event.description}</p>
             ) : (
-              <p className="lead max-w-2xl text-stone-600">
+              <p className="lead max-w-2xl text-body">
                 Join us for {event.title}. Get in touch if you would like to know more.
               </p>
             )}
 
             {event.requiresRSVP && (
-              <div className="mt-10 rounded-2xl border border-stone-200 bg-ivory-50 p-7">
-                <p className="kicker mb-3 text-bronze">Registration</p>
-                <p className="text-stone-600">
+              <div className="mt-10 rounded-2xl border border-brand-200 bg-white p-7">
+                <p className="kicker mb-3 text-brand-700">Registration</p>
+                <p className="text-body">
                   Please let us know you are coming
                   {event.registrationDeadline && <> before {formatLongDate(event.registrationDeadline)}</>}
                   {event.maxAttendees && <> — space is limited to {event.maxAttendees} guests</>}.
@@ -120,7 +120,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 <div className="mt-5">
                   <CtaLink
                     href={`/contact?topic=event&subject=${encodeURIComponent(`RSVP: ${event.title}`)}`}
-                    variant="dark"
+                    variant="primary"
                   >
                     RSVP
                   </CtaLink>
@@ -129,21 +129,21 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             )}
 
             <div className="mt-12">
-              <h2 className="kicker mb-5 text-bronze">Share</h2>
+              <h2 className="kicker mb-5 text-brand-700">Share</h2>
               <ShareButtons url={`${SITE_URL}/events/${event.id}`} title={event.title} />
             </div>
           </Reveal>
 
           <Reveal className="lg:col-span-5" delay={100}>
-            <div className="rounded-2xl border border-stone-200 bg-ivory-50 p-8 sm:p-10 lg:sticky lg:top-28">
+            <div className="rounded-2xl border border-brand-200 bg-white p-8 sm:p-10 lg:sticky lg:top-28">
               <ul className="space-y-6">
                 <li className="flex items-start gap-4">
-                  <Clock className="mt-1 size-5 shrink-0 text-bronze" aria-hidden="true" />
+                  <Clock className="mt-1 size-5 shrink-0 text-brand-700" aria-hidden="true" />
                   <div>
-                    <p className="kicker mb-1 text-bronze">When</p>
-                    <p className="text-lg text-ink-900">{formatLongDate(event.eventDate)}</p>
+                    <p className="kicker mb-1 text-brand-700">When</p>
+                    <p className="text-lg text-brand-navy">{formatLongDate(event.eventDate)}</p>
                     {start && (
-                      <p className="text-stone-600">
+                      <p className="text-body">
                         {start}
                         {end && <> &ndash; {end}</>}
                       </p>
@@ -151,17 +151,17 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
-                  <MapPin className="mt-1 size-5 shrink-0 text-bronze" aria-hidden="true" />
+                  <MapPin className="mt-1 size-5 shrink-0 text-brand-700" aria-hidden="true" />
                   <div>
-                    <p className="kicker mb-1 text-bronze">Where</p>
-                    <p className="text-lg text-ink-900">{event.isOnline ? 'Online' : event.location}</p>
-                    {event.address && !event.isOnline && <p className="text-stone-600">{event.address}</p>}
+                    <p className="kicker mb-1 text-brand-700">Where</p>
+                    <p className="text-lg text-brand-navy">{event.isOnline ? 'Online' : event.location}</p>
+                    {event.address && !event.isOnline && <p className="text-body">{event.address}</p>}
                     {event.isOnline && event.onlineLink && (
                       <a
                         href={event.onlineLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-11 items-center gap-1.5 text-ink-900 underline underline-offset-4"
+                        className="inline-flex min-h-11 items-center gap-1.5 text-brand-navy underline underline-offset-4"
                       >
                         Join online <ExternalLink className="size-4" aria-hidden="true" />
                       </a>
@@ -172,10 +172,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                   <li className="flex items-start gap-4">
                     <span className="mt-1 size-5 shrink-0" aria-hidden="true" />
                     <div>
-                      <p className="kicker mb-1 text-bronze">Hosted by</p>
+                      <p className="kicker mb-1 text-brand-700">Hosted by</p>
                       <Link
                         href={`/ministries/${event.ministry.slug}`}
-                        className="text-lg text-ink-900 underline-offset-4 hover:underline"
+                        className="text-lg text-brand-navy underline-offset-4 hover:underline"
                       >
                         {event.ministry.name}
                       </Link>
@@ -184,9 +184,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 )}
               </ul>
 
-              <div className="mt-9 flex flex-col gap-3 border-t border-stone-200 pt-8">
+              <div className="mt-9 flex flex-col gap-3 border-t border-brand-200 pt-8">
                 {!event.isOnline && (
-                  <CtaLink href={directions} variant="dark" external>
+                  <CtaLink href={directions} variant="primary" external>
                     Get directions
                   </CtaLink>
                 )}
@@ -195,7 +195,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 </CtaLink>
                 <a
                   href={`/events/${event.id}/calendar.ics`}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-ink-900 underline-offset-4 hover:underline"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-navy underline-offset-4 hover:underline"
                 >
                   Download .ics (Apple / Outlook)
                 </a>

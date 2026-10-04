@@ -73,17 +73,17 @@ export default function JoinPage() {
           kicker="Welcome"
           title={
             <>
-              Thank <em className="text-gold-light">you.</em>
+              Thank <em className="text-brand-300">you.</em>
             </>
           }
         />
-        <section className="on-light section-y bg-ivory">
+        <section className="on-light section-y bg-brand-50">
           <div className="wrap-narrow">
             <FormShell className="py-16 text-center">
               <div role="status" aria-live="polite">
-                <CheckCircle2 className="mx-auto mb-6 size-12 text-bronze" aria-hidden="true" />
-                <h2 className="display-md text-ink-900">Registration submitted.</h2>
-                <p className="mx-auto mt-4 max-w-md text-stone-600">
+                <CheckCircle2 className="mx-auto mb-6 size-12 text-brand-700" aria-hidden="true" />
+                <h2 className="display-md text-brand-navy">Registration submitted.</h2>
+                <p className="mx-auto mt-4 max-w-md text-body">
                   Thank you for your interest in joining El Shaddai World Ministries. Your registration is being
                   reviewed by our team, and we will be in touch soon.
                 </p>
@@ -91,7 +91,7 @@ export default function JoinPage() {
                   <CtaLink href="/" variant="outline-dark" arrow={false}>
                     Back to home
                   </CtaLink>
-                  <CtaLink href="/contact" variant="dark">
+                  <CtaLink href="/contact" variant="primary">
                     Contact us
                   </CtaLink>
                 </div>
@@ -110,22 +110,22 @@ export default function JoinPage() {
         kicker="Join us"
         title={
           <>
-            Become part of <em className="text-gold-light">our family.</em>
+            Become part of <em className="text-brand-300">our family.</em>
           </>
         }
         description="We are excited to welcome you to El Shaddai World Ministries. Complete the form below to get started."
       />
 
-      <section className="on-light section-y bg-ivory">
+      <section className="on-light section-y bg-brand-50">
         <div className="wrap-narrow">
           <Reveal>
             <FormShell>
-              <h2 className="display-md text-ink-900">Membership registration</h2>
-              <p className="mt-3 text-stone-600">Fields marked with an asterisk are required.</p>
+              <h2 className="display-md text-brand-navy">Membership registration</h2>
+              <p className="mt-3 text-body">Fields marked with an asterisk are required.</p>
 
               <form onSubmit={handleSubmit} className="mt-10 space-y-12">
                 <fieldset>
-                  <legend className="kicker mb-6 text-bronze">About you</legend>
+                  <legend className="kicker mb-6 text-brand-700">About you</legend>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <Field id="firstName" label="First name" required>
                       <input type="text" id="firstName" name="firstName" autoComplete="given-name" value={formData.firstName} onChange={handleChange} required className={inputClass} />
@@ -166,7 +166,7 @@ export default function JoinPage() {
                 </fieldset>
 
                 <fieldset>
-                  <legend className="kicker mb-6 text-bronze">Address</legend>
+                  <legend className="kicker mb-6 text-brand-700">Address</legend>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <Field id="address" label="Street address" className="sm:col-span-2">
                       <input type="text" id="address" name="address" autoComplete="street-address" value={formData.address} onChange={handleChange} className={inputClass} />
@@ -184,7 +184,7 @@ export default function JoinPage() {
                 </fieldset>
 
                 <fieldset>
-                  <legend className="kicker mb-6 text-bronze">Your journey</legend>
+                  <legend className="kicker mb-6 text-brand-700">Your journey</legend>
                   <div className="grid gap-6">
                     <Field id="membershipType" label="I am joining as" required hint="Please select the option that best describes you.">
                       <select
@@ -219,7 +219,7 @@ export default function JoinPage() {
                   <SubmitButton pending={isSubmitting} pendingLabel="Submitting registration…">
                     Submit registration
                   </SubmitButton>
-                  <p className="mt-4 text-center text-sm text-stone-600">
+                  <p className="mt-4 text-center text-sm text-body">
                     By submitting this form, you agree to be contacted by El Shaddai World Ministries.
                   </p>
                 </div>

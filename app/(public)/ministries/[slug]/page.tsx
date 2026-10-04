@@ -67,7 +67,7 @@ export default async function MinistryDetailPage({ params }: { params: Promise<{
         description={ministry.description}
         size="tall"
       >
-        <CtaLink href={joinHref} variant="gold">
+        <CtaLink href={joinHref} variant="primary">
           Join this ministry
         </CtaLink>
         <CtaLink href="/ministries" variant="outline-light" arrow={false}>
@@ -76,18 +76,18 @@ export default async function MinistryDetailPage({ params }: { params: Promise<{
       </PageHero>
 
       {(ministry.vision || ministry.mission) && (
-        <section className="on-light section-y bg-ivory">
+        <section className="on-light section-y bg-brand-50">
           <div className="wrap grid gap-14 lg:grid-cols-2 lg:gap-24">
             {ministry.vision && (
               <Reveal>
-                <p className="kicker mb-5 text-bronze">Our vision</p>
-                <p className="display-sm whitespace-pre-wrap text-ink-900 sm:text-[1.75rem] sm:leading-snug">{ministry.vision}</p>
+                <p className="kicker mb-5 text-brand-700">Our vision</p>
+                <p className="display-sm whitespace-pre-wrap text-brand-navy sm:text-[1.75rem] sm:leading-snug">{ministry.vision}</p>
               </Reveal>
             )}
             {ministry.mission && (
               <Reveal delay={100}>
-                <p className="kicker mb-5 text-bronze">Our mission</p>
-                <p className="display-sm whitespace-pre-wrap text-ink-900 sm:text-[1.75rem] sm:leading-snug">{ministry.mission}</p>
+                <p className="kicker mb-5 text-brand-700">Our mission</p>
+                <p className="display-sm whitespace-pre-wrap text-brand-navy sm:text-[1.75rem] sm:leading-snug">{ministry.mission}</p>
               </Reveal>
             )}
           </div>
@@ -95,46 +95,46 @@ export default async function MinistryDetailPage({ params }: { params: Promise<{
       )}
 
       {(hasMeeting || leaderName || hasContact) && (
-        <section aria-label="Meeting and contact information" className="on-dark section-y bg-ink-900 text-white">
+        <section aria-label="Meeting and contact information" className="on-dark section-y bg-brand-900 text-white">
           <div className="wrap grid gap-12 md:grid-cols-3">
             {hasMeeting && (
               <Reveal>
-                <p className="kicker mb-5 text-gold-light">When &amp; where</p>
+                <p className="kicker mb-5 text-brand-300">When &amp; where</p>
                 <ul className="space-y-4 text-lg">
                   {(ministry.meetingDay || ministry.meetingTime) && (
                     <li className="flex items-start gap-3">
-                      <Calendar className="mt-1 size-5 shrink-0 text-gold-light" aria-hidden="true" />
+                      <Calendar className="mt-1 size-5 shrink-0 text-brand-300" aria-hidden="true" />
                       <span>{[ministry.meetingDay, ministry.meetingTime].filter(Boolean).join(' · ')}</span>
                     </li>
                   )}
                   {ministry.meetingLocation && (
                     <li className="flex items-start gap-3">
-                      <MapPin className="mt-1 size-5 shrink-0 text-gold-light" aria-hidden="true" />
+                      <MapPin className="mt-1 size-5 shrink-0 text-brand-300" aria-hidden="true" />
                       <span>{ministry.meetingLocation}</span>
                     </li>
                   )}
                   {ministry.meetingSchedule && (
-                    <li className="text-stone-400">{ministry.meetingSchedule}</li>
+                    <li className="text-mist">{ministry.meetingSchedule}</li>
                   )}
                 </ul>
               </Reveal>
             )}
             {leaderName && (
               <Reveal delay={80}>
-                <p className="kicker mb-5 text-gold-light">Led by</p>
+                <p className="kicker mb-5 text-brand-300">Led by</p>
                 <p className="flex items-start gap-3 text-lg">
-                  <User className="mt-1 size-5 shrink-0 text-gold-light" aria-hidden="true" />
+                  <User className="mt-1 size-5 shrink-0 text-brand-300" aria-hidden="true" />
                   {leaderName}
                 </p>
               </Reveal>
             )}
             {hasContact && (
               <Reveal delay={160}>
-                <p className="kicker mb-5 text-gold-light">Contact</p>
+                <p className="kicker mb-5 text-brand-300">Contact</p>
                 <ul className="space-y-4 text-lg">
                   {ministry.contactEmail && (
                     <li className="flex items-start gap-3">
-                      <Mail className="mt-1 size-5 shrink-0 text-gold-light" aria-hidden="true" />
+                      <Mail className="mt-1 size-5 shrink-0 text-brand-300" aria-hidden="true" />
                       <a href={`mailto:${ministry.contactEmail}`} className="inline-flex min-h-11 items-center break-all underline-offset-4 hover:underline">
                         {ministry.contactEmail}
                       </a>
@@ -142,7 +142,7 @@ export default async function MinistryDetailPage({ params }: { params: Promise<{
                   )}
                   {ministry.contactPhone && (
                     <li className="flex items-start gap-3">
-                      <Phone className="mt-1 size-5 shrink-0 text-gold-light" aria-hidden="true" />
+                      <Phone className="mt-1 size-5 shrink-0 text-brand-300" aria-hidden="true" />
                       <a href={`tel:${ministry.contactPhone.replace(/\s/g, '')}`} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
                         {ministry.contactPhone}
                       </a>
@@ -156,9 +156,9 @@ export default async function MinistryDetailPage({ params }: { params: Promise<{
       )}
 
       {ministry.events.length > 0 && (
-        <section aria-labelledby="min-events" className="on-light section-y bg-ivory">
+        <section aria-labelledby="min-events" className="on-light section-y bg-brand-50">
           <div className="wrap">
-            <h2 id="min-events" className="display-md mb-12 text-ink-900">
+            <h2 id="min-events" className="display-md mb-12 text-brand-navy">
               Upcoming events
             </h2>
             <div className="grid gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">

@@ -37,41 +37,41 @@ export default async function BooksPage() {
         kicker="Books"
         title={
           <>
-            Words that <em className="text-gold-light">strengthen.</em>
+            Words that <em className="text-brand-300">strengthen.</em>
           </>
         }
         description="Books by Apostle Charles Magaiza, written to inspire, teach and encourage your walk with God."
       />
 
-      <section aria-label="Books" className="on-light section-y bg-ivory">
+      <section aria-label="Books" className="on-light section-y bg-brand-50">
         <div className="wrap">
           {books.length === 0 ? (
             <EmptyState title="New books are coming soon." description="Check back soon for new releases.">
-              <CtaLink href="/sermons" variant="dark">
+              <CtaLink href="/sermons" variant="primary">
                 Explore sermons
               </CtaLink>
             </EmptyState>
           ) : (
             <>
               {/* Lead book */}
-              <Reveal className="grid items-center gap-10 border-b border-stone-200 pb-16 md:grid-cols-12 md:gap-16">
+              <Reveal className="grid items-center gap-10 border-b border-brand-200 pb-16 md:grid-cols-12 md:gap-16">
                 <Link href={`/books/${lead.id}`} className="group md:col-span-4" aria-label={lead.title}>
-                  <div className="relative mx-auto aspect-[2/3] max-w-xs overflow-hidden rounded-xl bg-ink-900 shadow-[0_30px_50px_-30px_rgba(13,15,18,0.6)]">
+                  <div className="relative mx-auto aspect-[2/3] max-w-xs overflow-hidden rounded-xl bg-brand-900 shadow-[0_30px_50px_-30px_rgba(7,27,61,0.6)]">
                     <Photo src={lead.coverImageUrl} alt="" variant={1} zoom sizes="(min-width: 768px) 30vw, 70vw" />
                   </div>
                 </Link>
                 <div className="md:col-span-8">
-                  <p className="kicker mb-4 text-bronze">{lead.isFeatured ? 'Featured' : formatCategory(lead.category)}</p>
-                  <h2 className="display-lg text-ink-900">
+                  <p className="kicker mb-4 text-brand-700">{lead.isFeatured ? 'Featured' : formatCategory(lead.category)}</p>
+                  <h2 className="display-lg text-brand-navy">
                     <Link href={`/books/${lead.id}`} className="link-underline">
                       {lead.title}
                     </Link>
                   </h2>
-                  {lead.subtitle && <p className="display-sm mt-3 text-stone-600">{lead.subtitle}</p>}
-                  <p className="mt-4 text-stone-600">by {lead.author}</p>
-                  {lead.shortDescription && <p className="lead mt-6 max-w-xl text-stone-600">{lead.shortDescription}</p>}
+                  {lead.subtitle && <p className="display-sm mt-3 text-body">{lead.subtitle}</p>}
+                  <p className="mt-4 text-body">by {lead.author}</p>
+                  {lead.shortDescription && <p className="lead mt-6 max-w-xl text-body">{lead.shortDescription}</p>}
                   <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
-                    <CtaLink href={lead.amazonUrl} variant="dark" external>
+                    <CtaLink href={lead.amazonUrl} variant="primary" external>
                       Buy now
                     </CtaLink>
                     <CtaLink href={`/books/${lead.id}`} variant="text-dark">
@@ -86,15 +86,15 @@ export default async function BooksPage() {
                   {rest.map((book, i) => (
                     <Reveal as="li" key={book.id} delay={(i % 4) * 70}>
                       <article className="group relative">
-                        <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-ink-900">
+                        <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-brand-900">
                           <Photo src={book.coverImageUrl} alt="" variant={i} zoom sizes="(min-width: 1024px) 22vw, 45vw" />
                         </div>
-                        <h3 className="display-sm mt-5 line-clamp-2 text-ink-900">
+                        <h3 className="display-sm mt-5 line-clamp-2 text-brand-navy">
                           <Link href={`/books/${book.id}`} className="link-underline after:absolute after:inset-0 after:content-['']">
                             {book.title}
                           </Link>
                         </h3>
-                        <p className="mt-1 text-sm text-stone-600">
+                        <p className="mt-1 text-sm text-body">
                           {book.author}
                           {book.price && <> &middot; {book.currency} {book.price.toString()}</>}
                         </p>

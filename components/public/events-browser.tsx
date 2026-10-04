@@ -26,7 +26,7 @@ export function EventsBrowser({ events }: { events: Ev[] }) {
         title="No upcoming events just yet."
         description="New gatherings are added as they are planned. Our regular services meet every week — we would love to see you."
       >
-        <CtaLink href="/visit" variant="dark">
+        <CtaLink href="/visit" variant="primary">
           Plan your visit
         </CtaLink>
         <CtaLink href="/sermons" variant="text-dark">
@@ -51,8 +51,8 @@ export function EventsBrowser({ events }: { events: Ev[] }) {
               aria-pressed={type === t}
               onClick={() => setType(t)}
               className={cn(
-                'min-h-11 shrink-0 rounded-full border px-5 text-[0.8rem] font-semibold uppercase tracking-[0.1em] transition-colors',
-                type === t ? 'border-ink-900 bg-ink-900 text-ivory' : 'border-stone-200 text-ink-900 hover:border-ink-900',
+                'min-h-11 shrink-0 rounded-lg border px-5 text-[0.8rem] font-semibold uppercase tracking-[0.1em] transition-colors',
+                type === t ? 'border-brand-700 bg-brand-700 text-white' : 'border-brand-200 text-brand-navy hover:border-brand-700',
               )}
             >
               {t === 'ALL' ? 'All events' : formatEventType(t)}
@@ -62,33 +62,33 @@ export function EventsBrowser({ events }: { events: Ev[] }) {
       )}
 
       {featured && (
-        <article className="on-dark group relative mb-14 grid overflow-hidden rounded-2xl bg-ink-900 text-white lg:grid-cols-12">
+        <article className="on-dark group relative mb-14 grid overflow-hidden rounded-2xl bg-brand-900 text-white lg:grid-cols-12">
           <div className="relative min-h-[18rem] lg:col-span-7 lg:min-h-[28rem]">
             <Photo src={featured.imageUrl ?? featured.posterUrl} alt="" variant={1} zoom sizes="(min-width: 1024px) 58vw, 100vw" />
             <DateBlock date={featured.eventDate} className="absolute left-5 top-5" />
           </div>
           <div className="flex flex-col justify-center p-8 sm:p-12 lg:col-span-5">
-            <p className="kicker mb-5 text-gold-light">{featured.isFeatured ? 'Featured event' : 'Next up'}</p>
+            <p className="kicker mb-5 text-brand-300">{featured.isFeatured ? 'Featured event' : 'Next up'}</p>
             <h2 className="display-md">
               <Link href={`/events/${featured.id}`} className="link-underline after:absolute after:inset-0 after:content-['']">
                 {featured.title}
               </Link>
             </h2>
-            <ul className="mt-6 space-y-2 text-stone-300">
+            <ul className="mt-6 space-y-2 text-brand-100">
               <li className="flex items-center gap-2">
-                <Clock className="size-4 shrink-0 text-gold-light" aria-hidden="true" />
+                <Clock className="size-4 shrink-0 text-brand-300" aria-hidden="true" />
                 {dateParts(featured.eventDate).weekday}
                 {featured.startTime && <> &middot; {formatTime(featured.startTime)}</>}
               </li>
               <li className="flex items-center gap-2">
-                <MapPin className="size-4 shrink-0 text-gold-light" aria-hidden="true" />
+                <MapPin className="size-4 shrink-0 text-brand-300" aria-hidden="true" />
                 {featured.isOnline ? 'Online' : featured.location}
               </li>
             </ul>
             {featured.description && (
-              <p className="mt-6 line-clamp-3 text-stone-400">{featured.description}</p>
+              <p className="mt-6 line-clamp-3 text-mist">{featured.description}</p>
             )}
-            <p className="mt-8 inline-flex items-center gap-2 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-gold-light">
+            <p className="mt-8 inline-flex items-center gap-2 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-brand-300">
               Event details
               <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1.5" aria-hidden="true" />
             </p>

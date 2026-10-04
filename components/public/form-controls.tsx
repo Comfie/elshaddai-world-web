@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 /** Shared, accessible form primitives for the public forms (16px text so iOS doesn't zoom). */
 
 export const inputClass =
-  'block w-full min-h-12 rounded-xl border border-stone-200 bg-ivory-50 px-4 py-3 text-base text-ink-900 placeholder:text-stone-500 transition-colors focus:border-ink-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900 disabled:cursor-not-allowed disabled:opacity-60';
+  'block w-full min-h-12 rounded-xl border border-field bg-white px-4 py-3 text-base text-brand-navy placeholder:text-slate transition-colors focus:border-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 disabled:cursor-not-allowed disabled:opacity-60';
 
 export function Field({
   id,
@@ -22,18 +22,18 @@ export function Field({
 }) {
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-2 block text-sm font-semibold text-ink-900">
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold text-brand-navy">
         {label}
         {required && (
           <>
-            <span aria-hidden="true" className="ml-0.5 text-bronze"> *</span>
+            <span aria-hidden="true" className="ml-0.5 text-brand-700"> *</span>
             <span className="sr-only"> (required)</span>
           </>
         )}
       </label>
       {children}
       {hint && (
-        <p id={`${id}-hint`} className="mt-2 text-sm text-stone-600">
+        <p id={`${id}-hint`} className="mt-2 text-sm text-body">
           {hint}
         </p>
       )}
@@ -64,16 +64,16 @@ export function CheckRow({
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className="mt-1 size-5 shrink-0 cursor-pointer rounded border-stone-400 accent-ink-900"
+        className="mt-1 size-5 shrink-0 cursor-pointer rounded border-field accent-brand-700"
       />
-      <span className="text-[0.95rem] leading-snug text-ink-900">{children}</span>
+      <span className="text-[0.95rem] leading-snug text-brand-navy">{children}</span>
     </label>
   );
 }
 
 export function FormShell({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn('rounded-2xl border border-stone-200 bg-ivory-50 p-6 sm:p-10', className)}>{children}</div>
+    <div className={cn('rounded-2xl border border-brand-200 bg-white p-6 sm:p-10', className)}>{children}</div>
   );
 }
 
@@ -93,7 +93,7 @@ export function SubmitButton({
       type="submit"
       disabled={pending}
       className={cn(
-        'inline-flex min-h-12 w-full items-center justify-center rounded-full bg-ink-900 px-8 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-ivory transition-colors hover:bg-ink-700 disabled:cursor-not-allowed disabled:opacity-60',
+        'inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-brand-600 px-8 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60',
         className,
       )}
     >

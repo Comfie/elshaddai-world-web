@@ -23,7 +23,7 @@ export function Accordion({ items, className }: { items: AccordionItem[]; classN
     });
 
   return (
-    <div className={cn('divide-y divide-stone-200 border-y border-stone-200', className)}>
+    <div className={cn('divide-y divide-brand-200 border-y border-brand-200', className)}>
       {items.map((item) => {
         const isOpen = open.has(item.id);
         const panelId = `${base}-${item.id}-panel`;
@@ -39,14 +39,14 @@ export function Accordion({ items, className }: { items: AccordionItem[]; classN
                 onClick={() => toggle(item.id)}
                 className="group flex min-h-16 w-full items-center justify-between gap-6 py-5 text-left"
               >
-                <span className="display-sm text-ink-900 transition-colors group-hover:text-bronze">
+                <span className="display-sm text-brand-navy transition-colors group-hover:text-brand-700">
                   {item.question}
                 </span>
                 <span
                   aria-hidden="true"
                   className={cn(
-                    'grid size-10 shrink-0 place-items-center rounded-full border border-stone-200 text-ink-900 transition-all duration-300',
-                    isOpen && 'rotate-45 border-ink-900 bg-ink-900 text-ivory',
+                    'grid size-10 shrink-0 place-items-center rounded-full border border-brand-200 text-brand-navy transition-all duration-300',
+                    isOpen && 'rotate-45 border-brand-700 bg-brand-700 text-white',
                   )}
                 >
                   <Plus className="size-4" />
@@ -61,7 +61,7 @@ export function Accordion({ items, className }: { items: AccordionItem[]; classN
               data-open={isOpen}
             >
               <div>
-                <div className="max-w-2xl pb-7 leading-relaxed text-stone-600">{item.answer}</div>
+                <div className="max-w-2xl pb-7 leading-relaxed text-body">{item.answer}</div>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Photo } from '@/components/public/photo';
 import { Reveal } from '@/components/public/reveal';
 import { SectionHeader } from '@/components/public/section-header';
-import type { ImageSlot } from '@/lib/site-config';
+import type { ImageSlot } from '@/lib/images';
 
 const steps: {
   eyebrow: string;
@@ -24,7 +24,7 @@ const steps: {
 /** "Take your next step" — large typographic tiles over imagery (not icon cards). */
 export function NextSteps() {
   return (
-    <section aria-labelledby="steps-heading" className="on-light section-y bg-ivory">
+    <section aria-labelledby="steps-heading" className="on-light section-y bg-brand-50">
       <div className="wrap">
         <Reveal>
           <SectionHeader
@@ -43,18 +43,18 @@ export function NextSteps() {
             <Reveal key={step.href + step.eyebrow} className={cn(step.span, i === 0 && 'sm:col-span-2 lg:col-span-7')} delay={i * 70}>
               <Link
                 href={step.href}
-                className="on-dark group relative isolate flex min-h-[18rem] overflow-hidden rounded-2xl bg-ink-950 p-7 text-white sm:min-h-[22rem] sm:p-9 lg:h-[26rem]"
+                className="on-dark group relative isolate flex min-h-[18rem] overflow-hidden rounded-2xl bg-brand-navy p-7 text-white sm:min-h-[22rem] sm:p-9 lg:h-[26rem]"
               >
                 <Photo slot={step.slot} variant={step.variant} zoom sizes="(min-width: 1024px) 40vw, 100vw" />
-                <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/35 to-ink-950/10" />
+                <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/35 to-brand-navy/10" />
                 <div className="relative mt-auto flex w-full items-end justify-between gap-6">
                   <div>
-                    <p className="kicker mb-3 text-gold-light">{step.eyebrow}</p>
+                    <p className="kicker mb-3 text-brand-100">{step.eyebrow}</p>
                     <p className="display-md max-w-sm">{step.title}</p>
                   </div>
                   <span
                     aria-hidden="true"
-                    className="grid size-12 shrink-0 place-items-center rounded-full border border-white/40 transition-all duration-300 group-hover:border-gold group-hover:bg-gold group-hover:text-ink-950"
+                    className="grid size-12 shrink-0 place-items-center rounded-full border border-white/40 transition-all duration-300 group-hover:border-brand-500 group-hover:bg-brand-600 group-hover:text-white"
                   >
                     <ArrowUpRight className="size-5" />
                   </span>

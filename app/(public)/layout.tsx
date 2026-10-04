@@ -18,7 +18,7 @@ export default async function PublicLayout({ children }: { children: React.React
     <div className={cn(displayFont.variable, 'public-site flex min-h-screen flex-col overflow-x-clip')}>
       <a
         href="#main"
-        className="sr-only z-[80] rounded-full bg-gold px-5 py-3 text-sm font-semibold text-ink-950 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className="sr-only z-[80] rounded-lg bg-brand-600 px-5 py-3 text-sm font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
       >
         Skip to content
       </a>

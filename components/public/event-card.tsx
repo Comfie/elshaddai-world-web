@@ -24,11 +24,11 @@ export function DateBlock({ date, className }: { date: Date | string; className?
   return (
     <div
       className={cn(
-        'inline-flex min-w-[4.25rem] flex-col items-center rounded-xl bg-ivory px-3 py-2.5 text-center text-ink-900',
+        'inline-flex min-w-[4.25rem] flex-col items-center rounded-xl bg-brand-50 px-3 py-2.5 text-center text-brand-navy',
         className,
       )}
     >
-      <span className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-bronze">{p.month}</span>
+      <span className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-brand-700">{p.month}</span>
       <span className="font-display text-[2rem] leading-none">{p.day}</span>
     </div>
   );
@@ -48,7 +48,7 @@ export function EventCard({
   const p = dateParts(event.eventDate);
   return (
     <article className="group relative flex flex-col">
-      <div className="relative aspect-[16/11] overflow-hidden rounded-2xl bg-ink-900">
+      <div className="relative aspect-[16/11] overflow-hidden rounded-2xl bg-brand-900">
         <Photo
           src={event.imageUrl ?? event.posterUrl}
           alt=""
@@ -56,15 +56,15 @@ export function EventCard({
           zoom
           sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950/50 via-transparent to-transparent" />
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-brand-navy/50 via-transparent to-transparent" />
         <DateBlock date={event.eventDate} className="absolute left-4 top-4" />
-        <span className="absolute bottom-4 left-4 rounded-full bg-ink-950/70 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur">
+        <span className="absolute bottom-4 left-4 rounded-full bg-brand-navy/85 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur">
           {formatEventType(event.eventType)}
         </span>
       </div>
 
       <div className="mt-5 flex flex-1 flex-col">
-        <h3 className={cn('display-sm', dark ? 'text-white' : 'text-ink-900')}>
+        <h3 className={cn('display-sm', dark ? 'text-white' : 'text-brand-navy')}>
           <Link
             href={`/events/${event.id}`}
             className="link-underline after:absolute after:inset-0 after:content-['']"
@@ -72,7 +72,7 @@ export function EventCard({
             {event.title}
           </Link>
         </h3>
-        <ul className={cn('mt-4 space-y-1.5 text-[0.95rem]', dark ? 'text-stone-400' : 'text-stone-600')}>
+        <ul className={cn('mt-4 space-y-1.5 text-[0.95rem]', dark ? 'text-mist' : 'text-body')}>
           <li className="flex items-center gap-2">
             <Clock className="size-4 shrink-0" aria-hidden="true" />
             <span>
@@ -89,7 +89,7 @@ export function EventCard({
         <p
           className={cn(
             'mt-5 inline-flex items-center gap-2 text-[0.8rem] font-semibold uppercase tracking-[0.14em]',
-            dark ? 'text-gold-light' : 'text-ink-900',
+            dark ? 'text-brand-300' : 'text-brand-navy',
           )}
         >
           Details

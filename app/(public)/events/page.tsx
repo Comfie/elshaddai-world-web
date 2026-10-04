@@ -24,12 +24,12 @@ export default async function EventsPage() {
         kicker="Events"
         title={
           <>
-            What&rsquo;s <em className="text-gold-light">happening.</em>
+            What&rsquo;s <em className="text-brand-300">happening.</em>
           </>
         }
         description="Gatherings, conferences and community moments — come and be part of them."
       />
-      <section aria-label="Upcoming events" className="on-light section-y bg-ivory">
+      <section aria-label="Upcoming events" className="on-light section-y bg-brand-50">
         <div className="wrap">
           <EventsBrowser
             events={events.map((e) => ({

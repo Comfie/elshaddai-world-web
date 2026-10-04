@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Logo } from '@/components/public/logo';
 import { CtaLink } from '@/components/public/cta';
 import { displayFont } from '@/lib/fonts';
-import { NAV_MORE, NAV_PRIMARY, SERVICES } from '@/lib/site-config';
+import { NAV_MORE, NAV_PRIMARY, SUNDAY_EVENING, SUNDAY_MORNING, programTimes } from '@/lib/site-config';
 
 const isActive = (pathname: string, href: string) =>
   href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
@@ -37,8 +37,8 @@ export function SiteHeader() {
       className={cn(
         'on-dark fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-300',
         solid
-          ? 'bg-ink-950/90 shadow-[0_1px_0_0_rgba(255,255,255,0.08)] backdrop-blur-md'
-          : 'bg-gradient-to-b from-ink-950/70 via-ink-950/25 to-transparent',
+          ? 'bg-brand-navy/90 shadow-[0_1px_0_0_rgba(255,255,255,0.08)] backdrop-blur-md'
+          : 'bg-gradient-to-b from-brand-navy/70 via-brand-navy/25 to-transparent',
       )}
     >
       <nav
@@ -86,7 +86,7 @@ export function SiteHeader() {
           <CtaLink href="/give" variant="outline-light" arrow={false} className="min-h-11 px-6 py-2">
             Give
           </CtaLink>
-          <CtaLink href="/visit" variant="gold" arrow={false} className="min-h-11 px-6 py-2">
+          <CtaLink href="/visit" variant="primary" arrow={false} className="min-h-11 px-6 py-2">
             Plan a visit
           </CtaLink>
         </div>
@@ -106,7 +106,7 @@ export function SiteHeader() {
             <Dialog.Content
               className={cn(
                 displayFont.variable,
-                'public-site on-dark drawer-in fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-ink-950 text-white',
+                'public-site on-dark drawer-in fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-brand-navy text-white',
               )}
               aria-describedby="mobile-menu-description"
             >
@@ -140,7 +140,7 @@ export function SiteHeader() {
                         aria-current={isActive(pathname, item.href) ? 'page' : undefined}
                         className={cn(
                           'font-display block py-2 text-[2.5rem] leading-[1.15] tracking-tight transition-colors',
-                          isActive(pathname, item.href) ? 'text-gold-light' : 'text-white hover:text-gold-light',
+                          isActive(pathname, item.href) ? 'text-brand-300' : 'text-white hover:text-brand-300',
                         )}
                       >
                         {item.name}
@@ -153,7 +153,7 @@ export function SiteHeader() {
                         key={item.href}
                         href={item.href}
                         onClick={() => setMenuOpen(false)}
-                        className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-[0.14em] text-stone-400 transition-colors hover:text-white"
+                        className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-[0.14em] text-mist transition-colors hover:text-white"
                       >
                         {item.name}
                       </Link>
@@ -163,17 +163,21 @@ export function SiteHeader() {
 
                 <div className="mt-10 space-y-6">
                   <div className="flex flex-col gap-3 sm:flex-row">
-                    <CtaLink href="/visit" variant="gold" className="flex-1" arrow={false}>
+                    <CtaLink href="/visit" variant="primary" className="flex-1" arrow={false}>
                       Plan a visit
                     </CtaLink>
                     <CtaLink href="/give" variant="outline-light" className="flex-1" arrow={false}>
                       Give
                     </CtaLink>
                   </div>
-                  <p className="text-sm leading-relaxed text-stone-400">
-                    <span className="kicker mb-2 block text-gold-light">Sundays</span>
-                    {SERVICES[0].times.join(' & ')}
-                  </p>
+                  <dl className="grid gap-4 text-sm text-mist sm:grid-cols-2">
+                    {[SUNDAY_MORNING, SUNDAY_EVENING].map((p) => (
+                      <div key={p.id} className="border-l-2 border-brand-500 pl-4">
+                        <dt className="kicker mb-2 text-brand-300">{p.shortName}</dt>
+                        <dd className="text-base text-white">{programTimes(p)}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 </div>
               </nav>
             </Dialog.Content>
@@ -208,7 +212,7 @@ function MoreMenu({ pathname }: { pathname: string }) {
           sideOffset={10}
           className={cn(
             displayFont.variable,
-            'public-site on-dark z-[70] min-w-52 rounded-2xl border border-white/10 bg-ink-900/95 p-2 text-white shadow-2xl backdrop-blur-md',
+            'public-site on-dark z-[70] min-w-52 rounded-2xl border border-white/10 bg-brand-900/95 p-2 text-white shadow-2xl backdrop-blur-md',
             'data-[state=open]:animate-[drawer-in_0.2s_var(--ease-out-quart)]',
           )}
         >
@@ -220,7 +224,7 @@ function MoreMenu({ pathname }: { pathname: string }) {
                 className={cn(
                   'flex min-h-11 cursor-pointer items-center rounded-xl px-4 text-sm font-medium tracking-wide outline-none transition-colors',
                   'text-white/85 data-[highlighted]:bg-white/10 data-[highlighted]:text-white',
-                  isActive(pathname, item.href) && 'text-gold-light',
+                  isActive(pathname, item.href) && 'text-brand-300',
                   'hideFrom' in item && item.hideFrom === 'xl' && 'xl:hidden',
                 )}
               >

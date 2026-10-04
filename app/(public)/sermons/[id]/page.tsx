@@ -91,9 +91,9 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
       {schema && <JsonLd data={schema} />}
 
       {/* Player */}
-      <section className="on-dark relative isolate overflow-hidden bg-ink-950 pb-14 pt-28 text-white sm:pb-20 sm:pt-36">
+      <section className="on-dark relative isolate overflow-hidden bg-brand-navy pb-14 pt-28 text-white sm:pb-20 sm:pt-36">
         <Photo src={thumb} alt="" variant={2} className="scale-110 opacity-30 blur-2xl" />
-        <div aria-hidden="true" className="absolute inset-0 bg-ink-950/70" />
+        <div aria-hidden="true" className="absolute inset-0 bg-brand-navy/70" />
         <div className="wrap relative">
           <CtaLink href="/sermons" variant="text-light" arrow={false} className="mb-8">
             ← All sermons
@@ -116,25 +116,25 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
                 href={sermon.videoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative block aspect-video overflow-hidden rounded-2xl bg-ink-900"
+                className="group relative block aspect-video overflow-hidden rounded-2xl bg-brand-900"
               >
                 <Photo src={thumb} alt="" variant={1} zoom />
-                <span aria-hidden="true" className="absolute inset-0 bg-ink-950/40" />
+                <span aria-hidden="true" className="absolute inset-0 bg-brand-navy/40" />
                 <span className="absolute inset-0 grid place-items-center">
                   <span className="flex flex-col items-center gap-4">
-                    <span className="grid size-20 place-items-center rounded-full bg-gold text-ink-950 transition-transform duration-300 group-hover:scale-110">
+                    <span className="grid size-20 place-items-center rounded-full bg-brand-600 text-white transition-transform duration-300 group-hover:scale-110">
                       <Play className="ml-1 size-8 fill-current" aria-hidden="true" />
                     </span>
-                    <span className="rounded-full bg-ivory px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-ink-900">
+                    <span className="rounded-lg bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-brand-navy">
                       {watchLabel}
                     </span>
                   </span>
                 </span>
               </a>
             ) : thumb || sermon.audioUrl ? (
-              <div className="relative aspect-video overflow-hidden rounded-2xl bg-ink-900">
+              <div className="relative aspect-video overflow-hidden rounded-2xl bg-brand-900">
                 <Photo src={thumb} alt={sermon.title} variant={0} />
-                <div aria-hidden="true" className="absolute inset-0 bg-ink-950/35" />
+                <div aria-hidden="true" className="absolute inset-0 bg-brand-navy/35" />
                 {sermon.audioUrl && (
                   <span className="absolute inset-0 grid place-items-center">
                     <Headphones className="size-14 text-white/90" aria-hidden="true" />
@@ -145,7 +145,7 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
 
             {sermon.audioUrl && isDirectAudio(sermon.audioUrl) && (
               <div className="mt-5 rounded-2xl border border-white/15 bg-white/5 p-4">
-                <p className="kicker mb-3 text-gold-light">Listen</p>
+                <p className="kicker mb-3 text-brand-300">Listen</p>
                 <audio controls preload="none" src={sermon.audioUrl} className="w-full" />
               </div>
             )}
@@ -154,33 +154,33 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
       </section>
 
       {/* Details */}
-      <section className="on-light section-y bg-ivory">
+      <section className="on-light section-y bg-brand-50">
         <div className="wrap grid gap-14 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-8">
-            <p className="kicker mb-5 text-bronze">{sermon.series || formatCategory(sermon.category)}</p>
-            <h1 className="display-lg text-ink-900">{sermon.title}</h1>
-            <p className="mt-6 text-lg text-stone-600">
-              <span className="text-ink-900">{sermon.preacher}</span> &middot; {formatLongDate(sermon.sermonDate)}
+            <p className="kicker mb-5 text-brand-700">{sermon.series || formatCategory(sermon.category)}</p>
+            <h1 className="display-lg text-brand-navy">{sermon.title}</h1>
+            <p className="mt-6 text-lg text-body">
+              <span className="text-brand-navy">{sermon.preacher}</span> &middot; {formatLongDate(sermon.sermonDate)}
             </p>
 
             {sermon.scripture && (
-              <blockquote className="mt-10 border-l-2 border-gold pl-6">
-                <p className="kicker mb-2 text-bronze">Scripture</p>
-                <p className="display-sm text-ink-900">{sermon.scripture}</p>
+              <blockquote className="mt-10 border-l-2 border-brand-500 pl-6">
+                <p className="kicker mb-2 text-brand-700">Scripture</p>
+                <p className="display-sm text-brand-navy">{sermon.scripture}</p>
               </blockquote>
             )}
 
             {sermon.description && (
               <div className="mt-10">
-                <h2 className="kicker mb-4 text-bronze">About this message</h2>
-                <p className="lead max-w-2xl whitespace-pre-wrap text-stone-600">{sermon.description}</p>
+                <h2 className="kicker mb-4 text-brand-700">About this message</h2>
+                <p className="lead max-w-2xl whitespace-pre-wrap text-body">{sermon.description}</p>
               </div>
             )}
 
             {(sermon.topic || sermon.tags.length > 0) && (
               <ul className="mt-10 flex flex-wrap gap-2" aria-label="Topics">
                 {[sermon.topic, ...sermon.tags].filter(Boolean).map((t) => (
-                  <li key={t} className="rounded-full border border-stone-200 px-4 py-1.5 text-sm text-stone-600">
+                  <li key={t} className="rounded-full border border-brand-200 px-4 py-1.5 text-sm text-body">
                     {t}
                   </li>
                 ))}
@@ -191,10 +191,10 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
           <Reveal className="lg:col-span-4" delay={100}>
             <div className="space-y-10 lg:sticky lg:top-28">
               <div>
-                <h2 className="kicker mb-5 text-bronze">Watch &amp; listen</h2>
+                <h2 className="kicker mb-5 text-brand-700">Watch &amp; listen</h2>
                 <div className="flex flex-col items-start gap-3">
                   {sermon.videoUrl && (
-                    <CtaLink href={sermon.videoUrl} variant="dark" external>
+                    <CtaLink href={sermon.videoUrl} variant="primary" external>
                       {watchLabel}
                     </CtaLink>
                   )}
@@ -209,13 +209,13 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
                     </CtaLink>
                   )}
                   {!sermon.videoUrl && !sermon.audioUrl && !sermon.notesUrl && (
-                    <p className="text-stone-600">Media for this message will be added soon.</p>
+                    <p className="text-body">Media for this message will be added soon.</p>
                   )}
                 </div>
               </div>
 
               <div>
-                <h2 className="kicker mb-5 text-bronze">Share</h2>
+                <h2 className="kicker mb-5 text-brand-700">Share</h2>
                 <ShareButtons url={shareUrl} title={sermon.title} />
               </div>
             </div>
@@ -224,9 +224,9 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
       </section>
 
       {related.length > 0 && (
-        <section aria-labelledby="related-heading" className="on-light bg-ivory-200 section-y">
+        <section aria-labelledby="related-heading" className="on-light bg-brand-100 section-y">
           <div className="wrap">
-            <h2 id="related-heading" className="display-md mb-12 text-ink-900">
+            <h2 id="related-heading" className="display-md mb-12 text-brand-navy">
               {sermon.series ? 'More from this series' : 'Keep listening'}
             </h2>
             <div className="grid gap-x-7 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
@@ -235,7 +235,7 @@ export default async function SermonDetailPage({ params }: { params: Promise<{ i
               ))}
             </div>
             <div className="mt-14">
-              <Link href="/sermons" className="link-underline inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.14em] text-ink-900">
+              <Link href="/sermons" className="link-underline inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.14em] text-brand-navy">
                 Explore all sermons
               </Link>
             </div>

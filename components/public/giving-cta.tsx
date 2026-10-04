@@ -16,7 +16,7 @@ export function GivingCTA() {
       reverse
       tone="light"
       cta={
-        <CtaLink href="/give" variant="dark">
+        <CtaLink href="/give" variant="primary">
           Give online
         </CtaLink>
       }

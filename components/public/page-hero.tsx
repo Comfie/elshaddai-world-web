@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Photo } from '@/components/public/photo';
-import type { ImageSlot } from '@/lib/site-config';
+import type { ImageSlot } from '@/lib/images';
 
 /**
  * Hero for inner pages. Dark, photographic and sized to sit beneath the
@@ -32,14 +32,14 @@ export function PageHero({
   return (
     <section
       className={cn(
-        'on-dark relative isolate overflow-hidden bg-ink-950 text-white',
+        'on-dark relative isolate overflow-hidden bg-brand-navy text-white',
         size === 'tall' ? 'min-h-[68vh]' : 'min-h-[52vh]',
         'flex items-end',
       )}
     >
       <Photo slot={slot} src={imageSrc} variant={variant} priority sizes="100vw" />
-      <div aria-hidden="true" className="absolute inset-0 bg-ink-950/40" />
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/50 to-ink-950/30" />
+      <div aria-hidden="true" className="absolute inset-0 bg-brand-navy/40" />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/55 to-brand-700/20" />
 
       <div
         className={cn(
@@ -48,7 +48,8 @@ export function PageHero({
         )}
       >
         <div className={cn('max-w-4xl', align === 'center' && 'mx-auto')}>
-          {kicker && <p className="kicker rise-in mb-6 text-gold-light">{kicker}</p>}
+          <div aria-hidden="true" className="rise-in mb-6 h-1 w-12 rounded-full bg-brand-500" />
+          {kicker && <p className="kicker rise-in mb-6 text-brand-300">{kicker}</p>}
           <Heading
             className="display-lg rise-in [&_em]:italic"
             style={{ ['--rise-delay' as string]: '80ms' }}
@@ -58,7 +59,7 @@ export function PageHero({
           {description && (
             <p
               className={cn(
-                'lead rise-in mt-7 max-w-2xl text-stone-200',
+                'lead rise-in mt-7 max-w-2xl text-brand-100',
                 align === 'center' && 'mx-auto',
               )}
               style={{ ['--rise-delay' as string]: '180ms' }}

@@ -83,21 +83,21 @@ export default function PrayerRequestsPage() {
         kicker="Prayer"
         title={
           <>
-            How can we <em className="text-gold-light">pray</em> for you?
+            How can we <em className="text-brand-300">pray</em> for you?
           </>
         }
         description="“The prayer of a righteous person is powerful and effective.” — James 5:16"
       />
 
-      <section className="on-light section-y bg-ivory">
+      <section className="on-light section-y bg-brand-50">
         <div className="wrap grid gap-14 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-4">
-            <p className="kicker mb-6 text-bronze">You are not alone</p>
-            <ul className="divide-y divide-stone-200 border-y border-stone-200">
+            <p className="kicker mb-6 text-brand-700">You are not alone</p>
+            <ul className="divide-y divide-brand-200 border-y border-brand-200">
               {reassurance.map((r) => (
                 <li key={r.title} className="py-6">
-                  <p className="display-sm text-ink-900">{r.title}</p>
-                  <p className="mt-2 text-stone-600">{r.body}</p>
+                  <p className="display-sm text-brand-navy">{r.title}</p>
+                  <p className="mt-2 text-body">{r.body}</p>
                 </li>
               ))}
             </ul>
@@ -107,20 +107,20 @@ export default function PrayerRequestsPage() {
             {submitted ? (
               <FormShell className="py-16 text-center" >
                 <div role="status" aria-live="polite">
-                  <CheckCircle2 className="mx-auto mb-6 size-12 text-bronze" aria-hidden="true" />
-                  <h2 className="display-md text-ink-900">We are praying with you.</h2>
-                  <p className="mx-auto mt-4 max-w-md text-stone-600">
+                  <CheckCircle2 className="mx-auto mb-6 size-12 text-brand-700" aria-hidden="true" />
+                  <h2 className="display-md text-brand-navy">We are praying with you.</h2>
+                  <p className="mx-auto mt-4 max-w-md text-body">
                     Thank you for sharing. Your request has been received by our prayer team.
                   </p>
                   <div className="mt-8 flex flex-wrap justify-center gap-4">
                     <button
                       type="button"
                       onClick={() => setSubmitted(false)}
-                      className="inline-flex min-h-12 items-center rounded-full border border-ink-900/40 px-7 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-ink-900 hover:bg-ink-900 hover:text-ivory"
+                      className="inline-flex min-h-12 items-center rounded-lg border border-brand-700 px-7 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-brand-700 hover:bg-brand-700 hover:text-white"
                     >
                       Submit another
                     </button>
-                    <CtaLink href="/visit" variant="dark">
+                    <CtaLink href="/visit" variant="primary">
                       Plan your visit
                     </CtaLink>
                   </div>
@@ -128,8 +128,8 @@ export default function PrayerRequestsPage() {
               </FormShell>
             ) : (
               <FormShell>
-                <h2 className="display-md text-ink-900">Submit your request</h2>
-                <p className="mt-3 text-stone-600">
+                <h2 className="display-md text-brand-navy">Submit your request</h2>
+                <p className="mt-3 text-body">
                   All fields are optional except your prayer request.
                 </p>
 
@@ -139,7 +139,7 @@ export default function PrayerRequestsPage() {
                     name="isAnonymous"
                     checked={formData.isAnonymous}
                     onChange={handleChange}
-                    className="rounded-xl bg-ivory-200 px-4 py-3"
+                    className="rounded-xl bg-brand-100 px-4 py-3"
                   >
                     Submit anonymously (your personal information will not be collected)
                   </CheckRow>
@@ -186,8 +186,8 @@ export default function PrayerRequestsPage() {
                     />
                   </Field>
 
-                  <fieldset className="border-t border-stone-200 pt-6">
-                    <legend className="kicker mb-3 text-bronze">Sharing options</legend>
+                  <fieldset className="border-t border-brand-200 pt-6">
+                    <legend className="kicker mb-3 text-brand-700">Sharing options</legend>
                     <CheckRow id="isUrgent" name="isUrgent" checked={formData.isUrgent} onChange={handleChange}>
                       This is an urgent prayer request
                     </CheckRow>
@@ -212,13 +212,13 @@ export default function PrayerRequestsPage() {
         </div>
       </section>
 
-      <section className="on-light bg-ivory-200 py-20 text-center">
+      <section className="on-light bg-brand-100 py-20 text-center">
         <div className="wrap-narrow">
-          <p className="display-sm text-ink-900 sm:text-[1.75rem]">
+          <p className="display-sm text-brand-navy sm:text-[1.75rem]">
             &ldquo;Do not be anxious about anything, but in every situation, by prayer and petition, with
             thanksgiving, present your requests to God.&rdquo;
           </p>
-          <p className="kicker mt-6 text-bronze">Philippians 4:6</p>
+          <p className="kicker mt-6 text-brand-700">Philippians 4:6</p>
         </div>
       </section>
     </>

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { RemoteImg } from '@/components/public/remote-img';
-import { IMAGES, type ImageSlot } from '@/lib/site-config';
+import { resolveSlot, type ImageSlot } from '@/lib/images';
 
 /**
  * Photography surface.
@@ -10,7 +10,7 @@ import { IMAGES, type ImageSlot } from '@/lib/site-config';
  *   a plain lazy <img> for admin-supplied remote URLs of unknown hosts).
  * - Without one it renders a designed, atmospheric placeholder — clearly a
  *   backdrop, never a fake photograph — so layouts look finished and a real
- *   photo can be dropped in later (see IMAGES in lib/site-config.ts).
+ *   photo can be dropped in later (see public/images/README.md).
  *
  * The parent controls size (aspect ratio / height); Photo fills it.
  */
@@ -29,6 +29,8 @@ type PhotoProps = {
   /** Slow scale on hover of a parent with the `group` class. */
   zoom?: boolean;
 };
+
+const TONES = ['deep', 'royal', 'bright'] as const;
 
 const GLOWS = [
   ['72%', '22%'],
@@ -49,8 +51,10 @@ export function Photo({
   variant = 0,
   zoom,
 }: PhotoProps) {
-  const resolved = src ?? (slot ? IMAGES[slot]?.src : null) ?? null;
-  const altText = alt ?? (slot ? IMAGES[slot]?.alt : '') ?? '';
+  const fromSlot = slot ? resolveSlot(slot) : null;
+  const resolved = src ?? fromSlot?.src ?? null;
+  const altText = alt ?? fromSlot?.alt ?? '';
+  const tone = TONES[variant % TONES.length];
   const [px, py] = GLOWS[variant % GLOWS.length];
 
   const zoomClass = zoom
@@ -62,6 +66,7 @@ export function Photo({
       <div
         aria-hidden="true"
         data-placeholder={slot ?? 'photo'}
+        data-tone={tone}
         className={cn('photo-placeholder absolute inset-0 overflow-hidden', className)}
         style={{ ['--px' as string]: px, ['--py' as string]: py }}
       />
@@ -86,6 +91,7 @@ export function Photo({
           {/* Placeholder sits beneath so a failed remote image degrades gracefully. */}
           <div
             aria-hidden="true"
+            data-tone={tone}
             className="photo-placeholder absolute inset-0"
             style={{ ['--px' as string]: px, ['--py' as string]: py }}
           />

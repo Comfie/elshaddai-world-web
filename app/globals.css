@@ -71,29 +71,26 @@
    ========================================================================== */
 
 @theme inline {
-  /* Ink — deep charcoal / near-black */
-  --color-ink-950: #0d0f12;
-  --color-ink-900: #14171c;
-  --color-ink-800: #1d2128;
-  --color-ink-700: #2a2f38;
-  --color-ink-600: #3a404b;
+  /* Brand blue scale — El Shaddai World Ministries.
+     Use these semantic tokens (bg-brand-700, text-brand-navy …) instead of raw hex.
+     Contrast notes (WCAG): white on 600 = 5.1:1, white on 700 = 7.2:1, 700 on 50 = 6.8:1,
+     300 on navy = 8.3:1. Do NOT put 300/500 text on 700 surfaces (use 100 or white). */
+  --color-brand-navy: #071b3d; /* deep navy — darkest sections, header, footer */
+  --color-brand-900: #0a2458; /* midnight blue */
+  --color-brand-800: #0e3b8c; /* between midnight and royal */
+  --color-brand-700: #1252b8; /* royal / brand blue — links, accents on light, CTA hover */
+  --color-brand-600: #1769e0; /* strong cobalt — primary buttons */
+  --color-brand-500: #3693f5; /* bright blue — accents on dark, rules, indicators */
+  --color-brand-300: #79b9ff; /* sky blue — kickers/accents on navy */
+  --color-brand-200: #cfe2fb; /* hairlines and borders on white */
+  --color-brand-100: #eaf4ff; /* very pale blue — tinted sections, text on royal */
+  --color-brand-50: #f5f9ff; /* ice — page tint */
 
-  /* Ivory — warm off-white backgrounds */
-  --color-ivory-50: #fbf9f4;
-  --color-ivory: #f7f3ea;
-  --color-ivory-200: #f1ebdd;
-  --color-ivory-300: #e6dfcd;
-
-  /* Stone — warm greys (borders, muted copy) */
-  --color-stone-200: #d9d2c3;
-  --color-stone-400: #b8b2a4;
-  --color-stone-500: #8c8576;
-  --color-stone-600: #5f5a4f;
-
-  /* Gold / bronze — the single accent family */
-  --color-gold: #c8963e;
-  --color-gold-light: #e0b25f;
-  --color-bronze: #8a5a12;
+  --color-ink: #172033; /* charcoal text */
+  --color-body: #475467; /* paragraph text on light (7.3:1 on ice) */
+  --color-slate: #667085; /* muted slate — hints, placeholders (4.7:1 on ice) */
+  --color-mist: #b9c8e0; /* muted text on navy/midnight (8.8:1+) */
+  --color-field: #7083a3; /* input/checkbox borders — 3.9:1 on white (WCAG 1.4.11) */
 
   --font-display: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-ui: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -176,28 +173,28 @@
 @layer base {
 .public-site {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  background-color: var(--color-ivory);
-  color: var(--color-ink-900);
+  background-color: var(--color-brand-50);
+  color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 }
 
 .public-site ::selection {
-  background: var(--color-gold);
-  color: var(--color-ink-950);
+  background: var(--color-brand-600);
+  color: #fff;
 }
 
 .public-site :focus-visible {
-  outline: 2px solid var(--color-ink-900);
+  outline: 2px solid var(--color-brand-700);
   outline-offset: 3px;
   border-radius: 4px;
 }
 
-/* Gold outlines only on dark surfaces — on ivory they fail 3:1 contrast. */
+/* Sky outlines only on dark surfaces — on light surfaces royal blue keeps >3:1. */
 .public-site .on-dark :focus-visible,
 .public-site .on-dark:focus-visible {
-  outline-color: var(--color-gold-light);
+  outline-color: var(--color-brand-300);
 }
 
 /* Animated underline link ---------------------------------------------------*/
@@ -219,20 +216,37 @@ button[data-state="open"] > .link-underline,
   background-size: 100% 1px;
 }
 
-/* Photo placeholder (replaced automatically once a real image URL is set) ---*/
+/* Photo placeholder — designed blue backdrop, replaced automatically once a
+   real image exists for the slot. Three tones keep neighbouring surfaces from
+   looking identical. A faint ring motif ("light radiating") adds structure. */
 
 .photo-placeholder {
-  background-color: var(--color-ink-900);
+  --ph-a: #071b3d;
+  --ph-b: #0a2458;
+  --ph-glow: rgba(54, 147, 245, 0.34);
+  background-color: var(--ph-a);
   background-image:
-    radial-gradient(60% 55% at var(--px, 70%) var(--py, 25%), rgba(224, 178, 95, 0.5), transparent 70%),
-    radial-gradient(45% 40% at calc(100% - var(--px, 70%)) 95%, rgba(200, 150, 62, 0.24), transparent 70%),
-    linear-gradient(180deg, #1b1f27 0%, #0f1115 100%);
+    radial-gradient(55% 50% at var(--px, 70%) var(--py, 25%), var(--ph-glow), transparent 72%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='xMaxYMin slice'%3E%3Cg fill='none' stroke='%2379b9ff' stroke-opacity='.13' stroke-width='1.2'%3E%3Ccircle cx='680' cy='-40' r='140'/%3E%3Ccircle cx='680' cy='-40' r='240'/%3E%3Ccircle cx='680' cy='-40' r='340'/%3E%3Ccircle cx='680' cy='-40' r='440'/%3E%3Ccircle cx='680' cy='-40' r='540'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(150deg, var(--ph-b) 0%, var(--ph-a) 100%);
+  background-repeat: no-repeat;
+  background-size: cover, cover, cover;
+}
+.photo-placeholder[data-tone="royal"] {
+  --ph-a: #0a2458;
+  --ph-b: #1252b8;
+  --ph-glow: rgba(121, 185, 255, 0.32);
+}
+.photo-placeholder[data-tone="bright"] {
+  --ph-a: #0e3b8c;
+  --ph-b: #1769e0;
+  --ph-glow: rgba(234, 244, 255, 0.24);
 }
 .photo-placeholder::after {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.18;
+  opacity: 0.14;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   pointer-events: none;

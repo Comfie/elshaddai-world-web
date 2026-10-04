@@ -35,19 +35,19 @@ export function SectionHeader({
     >
       <div className={cn('max-w-3xl', align === 'center' && 'mx-auto')}>
         {kicker && (
-          <p className={cn('kicker mb-5', dark ? 'text-gold-light' : 'text-bronze')}>{kicker}</p>
+          <p className={cn('kicker mb-5', dark ? 'text-brand-300' : 'text-brand-700')}>{kicker}</p>
         )}
         <Heading
           className={cn(
             size === 'lg' ? 'display-lg' : 'display-md',
-            dark ? 'text-white' : 'text-ink-900',
+            dark ? 'text-white [&_em]:text-brand-300' : 'text-brand-navy [&_em]:text-brand-700',
             '[&_em]:italic',
           )}
         >
           {title}
         </Heading>
         {description && (
-          <p className={cn('lead mt-6 max-w-2xl', dark ? 'text-stone-400' : 'text-stone-600', align === 'center' && 'mx-auto')}>
+          <p className={cn('lead mt-6 max-w-2xl', dark ? 'text-mist' : 'text-body', align === 'center' && 'mx-auto')}>
             {description}
           </p>
         )}

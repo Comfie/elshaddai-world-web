@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { prisma } from '@/lib/db';
-import { DEFAULT_CONTACT, SITE_NAME } from '@/lib/site-config';
+import { DEFAULT_CONTACT, FACEBOOK_URL, SITE_NAME } from '@/lib/site-config';
 
 /**
  * Church facts shown across the public site.
@@ -13,8 +13,10 @@ export type SiteInfo = {
   name: string;
   email: string | null;
   phone: string | null;
-  addressLines: string[];
-  addressOneLine: string;
+  /** null until the church confirms its address (Settings: church_address). */
+  addressLines: string[] | null;
+  addressOneLine: string | null;
+  /** Facebook is the verified official page; Instagram/YouTube stay hidden until real URLs are set. */
   social: { facebook: string | null; instagram: string | null; youtube: string | null };
   giving: {
     onlineUrl: string | null;
@@ -25,8 +27,9 @@ export type SiteInfo = {
       branchCode: string | null;
     } | null;
   };
-  directionsUrl: string;
-  mapEmbedUrl: string;
+  /** Only generated when an address is confirmed — never guessed. */
+  directionsUrl: string | null;
+  mapEmbedUrl: string | null;
 };
 
 const PLACEHOLDER_PATTERNS = [
@@ -63,7 +66,7 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
   const addressLines = settingsAddress
     ? settingsAddress.split(/\n|,\s*/).map((l) => l.trim()).filter(Boolean)
     : DEFAULT_CONTACT.addressLines;
-  const addressOneLine = addressLines.join(', ');
+  const addressOneLine = addressLines ? addressLines.join(', ') : null;
 
   const accountNumber = clean(s.bank_account_number);
   const bank = accountNumber
@@ -75,7 +78,7 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       }
     : null;
 
-  const q = encodeURIComponent(addressOneLine);
+  const q = addressOneLine ? encodeURIComponent(addressOneLine) : null;
 
   return {
     name: clean(s.church_name) ?? SITE_NAME,
@@ -84,12 +87,12 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
     addressLines,
     addressOneLine,
     social: {
-      facebook: clean(s.facebook_url),
+      facebook: clean(s.facebook_url) ?? FACEBOOK_URL,
       instagram: clean(s.instagram_url),
       youtube: clean(s.youtube_url),
     },
     giving: { onlineUrl: clean(s.give_online_url), bank },
-    directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${q}`,
-    mapEmbedUrl: `https://www.google.com/maps?q=${q}&output=embed`,
+    directionsUrl: q ? `https://www.google.com/maps/dir/?api=1&destination=${q}` : null,
+    mapEmbedUrl: q ? `https://www.google.com/maps?q=${q}&output=embed` : null,
   };
 });

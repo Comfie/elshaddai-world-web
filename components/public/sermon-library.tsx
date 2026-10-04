@@ -70,14 +70,14 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
   return (
     <div>
       {/* Toolbar */}
-      <div className="on-light border-b border-stone-200 bg-ivory">
+      <div className="on-light border-b border-brand-200 bg-brand-50">
         <div className="wrap py-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="relative lg:w-96">
               <label htmlFor="sermon-search" className="sr-only">
                 Search sermons by title, topic or scripture
               </label>
-              <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-stone-500" aria-hidden="true" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate" aria-hidden="true" />
               <input
                 id="sermon-search"
                 type="search"
@@ -85,7 +85,7 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
                 value={query}
                 onChange={(e) => reset(() => setQuery(e.target.value))}
                 placeholder="Search title, topic, scripture"
-                className="h-12 w-full rounded-full border border-stone-200 bg-ivory-50 pl-12 pr-5 text-base text-ink-900 placeholder:text-stone-500 focus:border-ink-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900"
+                className="h-12 w-full rounded-lg border border-field bg-white pl-12 pr-5 text-base text-brand-navy placeholder:text-slate focus:border-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-700"
               />
             </div>
 
@@ -101,10 +101,10 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
                   aria-pressed={category === c.value}
                   onClick={() => reset(() => setCategory(c.value))}
                   className={cn(
-                    'min-h-11 shrink-0 rounded-full border px-5 text-[0.8rem] font-semibold uppercase tracking-[0.1em] transition-colors',
+                    'min-h-11 shrink-0 rounded-lg border px-5 text-[0.8rem] font-semibold uppercase tracking-[0.1em] transition-colors',
                     category === c.value
-                      ? 'border-ink-900 bg-ink-900 text-ivory'
-                      : 'border-stone-200 text-ink-900 hover:border-ink-900',
+                      ? 'border-brand-700 bg-brand-700 text-white'
+                      : 'border-brand-200 text-brand-navy hover:border-brand-700',
                   )}
                 >
                   {c.label}
@@ -113,7 +113,7 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
             </div>
           </div>
 
-          <div className="mt-4 flex min-h-6 flex-wrap items-center gap-3 text-sm text-stone-600" aria-live="polite">
+          <div className="mt-4 flex min-h-6 flex-wrap items-center gap-3 text-sm text-body" aria-live="polite">
             <span>
               {filtered.length} {filtered.length === 1 ? 'message' : 'messages'}
             </span>
@@ -121,7 +121,7 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
               <button
                 type="button"
                 onClick={() => reset(() => setSeries(null))}
-                className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-ink-900 px-3 text-xs font-semibold uppercase tracking-wider text-ivory"
+                className="inline-flex min-h-8 items-center gap-1.5 rounded-lg bg-brand-900 px-3 text-xs font-semibold uppercase tracking-wider text-white"
               >
                 Series: {series} <X className="size-3.5" aria-hidden="true" />
                 <span className="sr-only">Clear series filter</span>
@@ -133,34 +133,34 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
 
       {/* Featured */}
       {featured && (
-        <section aria-label="Featured message" className="on-dark bg-ink-900 text-white">
+        <section aria-label="Featured message" className="on-dark bg-brand-900 text-white">
           <div className="wrap grid items-center gap-10 py-14 lg:grid-cols-12 lg:gap-16 lg:py-20">
             <div className="group relative lg:col-span-7">
-              <div className="relative aspect-video overflow-hidden rounded-2xl bg-ink-950">
+              <div className="relative aspect-video overflow-hidden rounded-2xl bg-brand-navy">
                 <Photo src={sermonThumbnail(featured)} alt="" variant={2} zoom sizes="(min-width: 1024px) 58vw, 100vw" priority />
-                <div aria-hidden="true" className="absolute inset-0 bg-ink-950/25" />
+                <div aria-hidden="true" className="absolute inset-0 bg-brand-navy/10" />
                 <Link href={`/sermons/${featured.id}`} tabIndex={-1} aria-hidden="true" className="absolute inset-0 grid place-items-center">
-                  <span className="grid size-20 place-items-center rounded-full bg-gold text-ink-950 transition-transform duration-300 group-hover:scale-110 sm:size-24">
+                  <span className="grid size-20 place-items-center rounded-lg bg-brand-600 text-white transition-transform duration-300 group-hover:scale-110 sm:size-24">
                     <Play className="ml-1 size-8 fill-current" />
                   </span>
                 </Link>
               </div>
             </div>
             <div className="lg:col-span-5">
-              <p className="kicker mb-5 text-gold-light">{featured.isFeatured ? 'Featured message' : 'Latest message'}</p>
-              {featured.series && <p className="kicker mb-3 text-stone-400">{featured.series}</p>}
+              <p className="kicker mb-5 text-brand-300">{featured.isFeatured ? 'Featured message' : 'Latest message'}</p>
+              {featured.series && <p className="kicker mb-3 text-mist">{featured.series}</p>}
               <h2 className="display-md">
-                <Link href={`/sermons/${featured.id}`} className="link-underline">
+                <Link href={`/sermons/${featured.id}`} className="link-underline inline-block py-1.5">
                   {featured.title}
                 </Link>
               </h2>
               <p className="mt-5 text-lg text-white">{featured.preacher}</p>
-              <p className="text-stone-400">
+              <p className="text-mist">
                 {formatLongDate(featured.sermonDate)}
-                {featured.scripture && <span className="text-gold-light"> &middot; {featured.scripture}</span>}
+                {featured.scripture && <span className="text-brand-300"> &middot; {featured.scripture}</span>}
               </p>
               <div className="mt-8">
-                <CtaLink href={`/sermons/${featured.id}`} variant="gold">
+                <CtaLink href={`/sermons/${featured.id}`} variant="primary">
                   Watch message
                 </CtaLink>
               </div>
@@ -171,9 +171,9 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
 
       {/* Series */}
       {!filtering && seriesList.length > 0 && (
-        <section aria-labelledby="series-heading" className="on-light bg-ivory pt-16 sm:pt-20">
+        <section aria-labelledby="series-heading" className="on-light bg-brand-100 pb-4 pt-16 sm:pt-20">
           <div className="wrap">
-            <h2 id="series-heading" className="kicker mb-6 text-bronze">
+            <h2 id="series-heading" className="kicker mb-6 text-brand-700">
               Browse by series
             </h2>
             <ul className="no-scrollbar -mx-5 flex snap-x gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
@@ -182,13 +182,13 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
                   <button
                     type="button"
                     onClick={() => reset(() => setSeries(s.name))}
-                    className="on-dark group relative block aspect-[4/3] w-full overflow-hidden rounded-2xl bg-ink-950 text-left text-white"
+                    className="on-dark group relative block aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-navy text-left text-white"
                   >
                     <Photo src={sermonThumbnail(s.cover)} alt="" variant={i} zoom sizes="300px" />
-                    <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/45 to-ink-950/10" />
+                    <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/45 to-brand-navy/10" />
                     <span className="absolute inset-x-0 bottom-0 p-5">
                       <span className="display-sm line-clamp-2 block">{s.name}</span>
-                      <span className="kicker mt-2 block text-gold-light">
+                      <span className="kicker mt-2 block text-brand-300">
                         {s.count} {s.count === 1 ? 'message' : 'messages'}
                       </span>
                     </span>
@@ -201,14 +201,14 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
       )}
 
       {/* Grid */}
-      <section aria-label="Sermons" className="on-light bg-ivory section-y">
+      <section aria-label="Sermons" className="on-light bg-brand-50 section-y">
         <div className="wrap">
           {sermons.length === 0 ? (
             <EmptyState
               title="Messages are on their way."
               description="Our sermon library is being prepared. In the meantime we would love to worship with you in person."
             >
-              <CtaLink href="/visit" variant="dark">
+              <CtaLink href="/visit" variant="primary">
                 Plan your visit
               </CtaLink>
             </EmptyState>
@@ -221,14 +221,14 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
                   setCategory('ALL');
                   setSeries(null);
                 }}
-                className="inline-flex min-h-12 items-center rounded-full border border-ink-900/40 px-7 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-ink-900 hover:bg-ink-900 hover:text-ivory"
+                className="inline-flex min-h-12 items-center rounded-lg border border-brand-700 px-7 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-brand-700 hover:bg-brand-700 hover:text-white"
               >
                 Clear filters
               </button>
             </EmptyState>
           ) : (
             <>
-              {featured && <h2 className="display-md mb-12 text-ink-900">All messages</h2>}
+              {featured && <h2 className="display-md mb-12 text-brand-navy">All messages</h2>}
               <div className="grid gap-x-7 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
                 {grid.slice(0, visible).map((s, i) => (
                   <SermonCard key={s.id} sermon={s} variant={i} />
@@ -239,7 +239,7 @@ export function SermonLibrary({ sermons }: { sermons: Sermon[] }) {
                   <button
                     type="button"
                     onClick={() => setVisible((v) => v + PAGE_SIZE)}
-                    className="inline-flex min-h-12 items-center rounded-full border border-ink-900/40 px-8 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-ink-900 transition-colors hover:bg-ink-900 hover:text-ivory"
+                    className="inline-flex min-h-12 items-center rounded-lg border border-brand-700 px-8 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-brand-navy transition-colors hover:bg-brand-900 hover:text-white"
                   >
                     Load more messages
                   </button>

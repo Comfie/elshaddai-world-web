@@ -3,21 +3,25 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const base =
-  'group/cta inline-flex min-h-12 items-center justify-center gap-3 whitespace-nowrap rounded-full px-7 py-3 text-[0.8rem] font-semibold uppercase tracking-[0.14em] transition-colors duration-300';
+  'group/cta inline-flex min-h-12 items-center justify-center gap-3 whitespace-nowrap rounded-lg px-6 py-3 text-[0.8rem] font-semibold uppercase tracking-[0.14em] transition-[color,background-color,border-color] duration-300';
 
+/**
+ * Button hierarchy
+ *  primary        — strong cobalt, white text (5.1:1). One per view where possible.
+ *  white          — white fill, for use *on* blue panels where cobalt would disappear.
+ *  outline-light  — secondary on dark/blue surfaces.
+ *  outline-dark   — secondary on light surfaces (royal border).
+ *  text-*         — tertiary: text + arrow.
+ */
 const variants = {
-  gold: 'bg-gold text-ink-950 hover:bg-gold-light',
-  light: 'bg-ivory text-ink-900 hover:bg-white',
-  dark: 'bg-ink-900 text-ivory hover:bg-ink-700',
-  'outline-light': 'border border-white/50 text-white hover:border-white hover:bg-white/10',
-  'outline-dark': 'border border-ink-900/40 text-ink-900 hover:border-ink-900 hover:bg-ink-900 hover:text-ivory',
+  primary: 'bg-brand-600 text-white hover:bg-brand-700',
+  white: 'bg-white text-brand-navy hover:bg-brand-100',
+  'outline-light': 'border border-white/60 text-white hover:border-white hover:bg-white hover:text-brand-navy',
+  'outline-dark': 'border border-brand-700 text-brand-700 hover:bg-brand-700 hover:text-white',
   // Inline text links
-  'text-light':
-    'min-h-11 rounded-none px-0 py-2 text-white border-b border-white/40 hover:border-white',
-  'text-dark':
-    'min-h-11 rounded-none px-0 py-2 text-ink-900 border-b border-ink-900/30 hover:border-ink-900',
-  'text-gold':
-    'min-h-11 rounded-none px-0 py-2 text-gold-light border-b border-gold-light/40 hover:border-gold-light',
+  'text-light': 'min-h-11 rounded-none px-0 py-2 text-white border-b border-white/40 hover:border-white',
+  'text-dark': 'min-h-11 rounded-none px-0 py-2 text-brand-700 border-b border-brand-700/30 hover:border-brand-700',
+  'text-accent': 'min-h-11 rounded-none px-0 py-2 text-brand-300 border-b border-brand-300/40 hover:border-brand-300',
 } as const;
 
 export type CtaVariant = keyof typeof variants;
@@ -37,7 +41,7 @@ const isExternal = (href: string) => /^(https?:|mailto:|tel:)/.test(href);
 
 export function CtaLink({
   href,
-  variant = 'gold',
+  variant = 'primary',
   children,
   className,
   arrow = true,
@@ -49,7 +53,7 @@ export function CtaLink({
   const Icon = out ? ArrowUpRight : ArrowRight;
   const content = (
     <>
-      <span>{children}</span>
+      <span className="inline-flex items-center gap-2">{children}</span>
       {arrow && (
         <Icon
           aria-hidden="true"

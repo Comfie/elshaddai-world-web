@@ -49,7 +49,7 @@ export default async function AboutPage() {
         kicker="About us"
         title={
           <>
-            Who we are, <em className="text-gold-light">and what we believe.</em>
+            Who we are, <em className="text-brand-300">and what we believe.</em>
           </>
         }
         description="A Bible-believing, Spirit-filled church committed to transforming lives through the power of God’s Word."
@@ -65,7 +65,7 @@ export default async function AboutPage() {
         slot="aboutStory"
         variant={2}
         cta={
-          <CtaLink href="/visit" variant="dark">
+          <CtaLink href="/visit" variant="primary">
             Plan your visit
           </CtaLink>
         }
@@ -85,25 +85,25 @@ export default async function AboutPage() {
       </ImageTextSection>
 
       {/* Vision & mission */}
-      <section className="on-dark section-y bg-ink-950 text-white">
+      <section className="on-dark section-y bg-brand-navy text-white">
         <div className="wrap grid gap-16 lg:grid-cols-2 lg:gap-24">
           <Reveal>
-            <p className="kicker mb-6 text-gold-light">Our vision</p>
+            <p className="kicker mb-6 text-brand-300">Our vision</p>
             <p className="display-md">
               To be a Bible-based, Spirit-filled church that transforms lives, builds strong families, and impacts
               communities.
             </p>
-            <p className="mt-6 max-w-lg text-stone-400">
+            <p className="mt-6 max-w-lg text-mist">
               Through the power of God&rsquo;s Word and the demonstration of His love.
             </p>
           </Reveal>
           <Reveal delay={100}>
-            <p className="kicker mb-6 text-gold-light">Our mission</p>
+            <p className="kicker mb-6 text-brand-300">Our mission</p>
             <p className="display-md">
               To glorify God by making disciples of Jesus Christ through worship, biblical teaching, fellowship and
               service.
             </p>
-            <p className="mt-6 max-w-lg text-stone-400">
+            <p className="mt-6 max-w-lg text-mist">
               Equipping believers to fulfil their God-given purpose.
             </p>
           </Reveal>
@@ -111,7 +111,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Values */}
-      <section aria-labelledby="values-heading" className="on-light section-y bg-ivory">
+      <section aria-labelledby="values-heading" className="on-light section-y bg-brand-50">
         <div className="wrap">
           <Reveal>
             <SectionHeader
@@ -120,13 +120,13 @@ export default async function AboutPage() {
               description="These values guide everything we do as a church family."
             />
           </Reveal>
-          <ol className="mt-16 grid gap-x-16 border-t border-stone-200 md:grid-cols-2">
+          <ol className="mt-16 grid gap-x-16 border-t border-brand-200 md:grid-cols-2">
             {values.map((v, i) => (
-              <Reveal as="li" key={v.title} delay={(i % 2) * 80} className="flex gap-6 border-b border-stone-200 py-9">
-                <span className="kicker mt-3 w-8 shrink-0 text-bronze">{String(i + 1).padStart(2, '0')}</span>
+              <Reveal as="li" key={v.title} delay={(i % 2) * 80} className="flex gap-6 border-b border-brand-200 py-9">
+                <span className="kicker mt-3 w-8 shrink-0 text-brand-700">{String(i + 1).padStart(2, '0')}</span>
                 <div>
-                  <h3 className="display-md text-ink-900">{v.title}</h3>
-                  <p className="mt-3 max-w-md text-stone-600">{v.body}</p>
+                  <h3 className="display-md text-brand-navy">{v.title}</h3>
+                  <p className="mt-3 max-w-md text-body">{v.body}</p>
                 </div>
               </Reveal>
             ))}
@@ -135,7 +135,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Beliefs */}
-      <section aria-labelledby="beliefs-heading" className="on-light section-y bg-ivory-200">
+      <section aria-labelledby="beliefs-heading" className="on-light section-y bg-brand-100">
         <div className="wrap grid gap-12 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-4">
             <SectionHeader
@@ -151,7 +151,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Leadership */}
-      <section aria-labelledby="leadership-heading" className="on-dark section-y bg-ink-900 text-white">
+      <section aria-labelledby="leadership-heading" className="on-dark section-y bg-brand-900 text-white">
         <div className="wrap">
           <Reveal>
             <SectionHeader tone="dark" kicker="Leadership" title={<span id="leadership-heading">Our <em>leadership.</em></span>} />
@@ -168,10 +168,10 @@ export default async function AboutPage() {
                 Messages and books from Apostle Charles Magaiza are available to watch, listen to and read.
               </p>
               <div className="flex flex-wrap gap-x-8 gap-y-2 pt-2">
-                <CtaLink href="/sermons" variant="text-gold">
+                <CtaLink href="/sermons" variant="text-accent">
                   Sermons
                 </CtaLink>
-                <CtaLink href="/books" variant="text-gold">
+                <CtaLink href="/books" variant="text-accent">
                   Books
                 </CtaLink>
               </div>

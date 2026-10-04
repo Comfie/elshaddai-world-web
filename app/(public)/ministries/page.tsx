@@ -27,13 +27,13 @@ export default async function MinistriesPage() {
         kicker="Ministries"
         title={
           <>
-            There&rsquo;s a place <em className="text-gold-light">for you here.</em>
+            There&rsquo;s a place <em className="text-brand-300">for you here.</em>
           </>
         }
         description="Find a community to grow with, serve alongside and belong to."
       />
 
-      <section aria-labelledby="ministries-list" className="on-light section-y bg-ivory">
+      <section aria-labelledby="ministries-list" className="on-light section-y bg-brand-50">
         <div className="wrap">
           <h2 id="ministries-list" className="sr-only">
             Our ministries
@@ -43,7 +43,7 @@ export default async function MinistriesPage() {
               title="Ministries are being added."
               description="Check back soon, or get in touch and we will help you find the right place to connect."
             >
-              <CtaLink href="/contact" variant="dark">
+              <CtaLink href="/contact" variant="primary">
                 Contact us
               </CtaLink>
             </EmptyState>
@@ -59,7 +59,7 @@ export default async function MinistriesPage() {
         </div>
       </section>
 
-      <section className="on-light section-y bg-ivory-200">
+      <section className="on-light section-y bg-brand-100">
         <div className="wrap">
           <Reveal>
             <SectionHeader
@@ -73,7 +73,7 @@ export default async function MinistriesPage() {
               description="Tell us a little about yourself and we will help you find the right ministry."
             />
             <div className="mt-10 flex justify-center">
-              <CtaLink href="/contact" variant="dark">
+              <CtaLink href="/contact" variant="primary">
                 Talk to us
               </CtaLink>
             </div>

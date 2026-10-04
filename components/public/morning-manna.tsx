@@ -34,12 +34,16 @@ export function MorningManna({ info }: { info: SiteInfo }) {
             Start your morning <em className="text-brand-300">with the Word.</em>
           </h2>
           <p className="lead mt-7 max-w-xl text-brand-100">
-            Begin your weekday with Morning Manna &mdash; a focused time in God&rsquo;s Word with Apostle Juliana.
+            Begin your weekday with Morning Manna &mdash; a focused time in God&rsquo;s Word with Apostle Juliana,
+            streamed live on the El Shaddai Facebook page.
           </p>
 
           <dl className="mt-9 inline-flex flex-col gap-1 border-l-2 border-brand-500 pl-5">
             <dt className="sr-only">When</dt>
-            <dd className="kicker text-brand-100">{programDays(MORNING_MANNA)}</dd>
+            <dd className="kicker text-brand-100">
+              {programDays(MORNING_MANNA)}
+              {MORNING_MANNA.access && <> &middot; {MORNING_MANNA.access.chip}</>}
+            </dd>
             <dd className="font-display whitespace-nowrap text-[clamp(1.75rem,6vw,2.75rem)] leading-tight">
               {programTimes(MORNING_MANNA)}
             </dd>
@@ -50,9 +54,9 @@ export function MorningManna({ info }: { info: SiteInfo }) {
               <CtaLink
                 href={info.social.facebook}
                 variant="primary"
-                aria-label={facebookLabel(info.name, 'Follow on Facebook')}
+                aria-label={facebookLabel(info.name, 'Watch live on Facebook')}
               >
-                Follow on Facebook
+                Watch live on Facebook
               </CtaLink>
             </div>
           )}

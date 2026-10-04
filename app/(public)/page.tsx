@@ -3,6 +3,7 @@ import { HeroSection } from '@/components/public/hero-section';
 import { ThisWeek } from '@/components/public/this-week';
 import { MorningManna } from '@/components/public/morning-manna';
 import { StayConnected } from '@/components/public/stay-connected';
+import { ChildrenFeature } from '@/components/public/children-feature';
 import { ImageTextSection } from '@/components/public/image-text-section';
 import { FeaturedSermon } from '@/components/public/featured-sermon';
 import { NextSteps } from '@/components/public/next-steps';
@@ -19,6 +20,7 @@ import { Reveal } from '@/components/public/reveal';
 import { JsonLd } from '@/components/public/json-ld';
 import { getRecentSermons, getUpcomingEvents, getWebsiteMinistries } from '@/lib/public-data';
 import { getSiteInfo } from '@/lib/site-info';
+import { getChildrenMinistry, isChildrenMinistry } from '@/lib/children';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, programmeSchema } from '@/lib/site-config';
 
 export const revalidate = 60;
@@ -36,15 +38,18 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [info, sermons, ministries, events] = await Promise.all([
+  const [info, sermons, allMinistries, events, childrenMinistry] = await Promise.all([
     getSiteInfo(),
     getRecentSermons(4),
-    getWebsiteMinistries(6),
+    getWebsiteMinistries(8),
     getUpcomingEvents(3),
+    getChildrenMinistry(),
   ]);
+  // The Children's Ministry has its own feature band + page, so it is not repeated in the grid.
+  const ministries = allMinistries.filter((m) => !isChildrenMinistry(m)).slice(0, 6);
 
-  // Structured data is generated from verified facts only: no address/geo until the
-  // church confirms its location, and opening hours come from WEEKLY_PROGRAM.
+  // Structured data is generated from verified facts only (no geo coordinates); opening
+  // hours come from WEEKLY_PROGRAM and the address from the church-confirmed config.
   const churchSchema = {
     '@context': 'https://schema.org',
     '@type': 'Church',
@@ -53,10 +58,12 @@ export default async function HomePage() {
     description: SITE_DESCRIPTION,
     ...(info.email && { email: info.email }),
     ...(info.phone && { telephone: info.phone }),
+    // Built only from the confirmed address: last line = locality, the rest = street/place.
     ...(info.addressLines && {
       address: {
         '@type': 'PostalAddress',
-        streetAddress: info.addressLines[0],
+        streetAddress: info.addressLines.slice(0, -1).join(', ') || info.addressLines[0],
+        addressLocality: info.addressLines[info.addressLines.length - 1],
         addressCountry: 'ZA',
       },
     }),
@@ -93,6 +100,8 @@ export default async function HomePage() {
         </p>
         <p>Whoever you are and wherever you are on your journey, there is a seat for you here.</p>
       </ImageTextSection>
+
+      <ChildrenFeature ministry={childrenMinistry} />
 
       <FeaturedSermon sermons={sermons} />
 

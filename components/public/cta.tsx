@@ -3,7 +3,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const base =
-  'group/cta inline-flex min-h-12 items-center justify-center gap-3 whitespace-nowrap rounded-lg px-6 py-3 text-[0.8rem] font-semibold uppercase tracking-[0.14em] transition-[color,background-color,border-color] duration-300';
+  'group/cta inline-flex min-h-12 max-w-full items-center justify-center gap-3 rounded-lg px-6 py-3 text-center sm:whitespace-nowrap text-[0.8rem] font-semibold uppercase tracking-[0.14em] transition-[color,background-color,border-color] duration-300';
 
 /**
  * Button hierarchy

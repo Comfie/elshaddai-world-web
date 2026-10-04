@@ -14,7 +14,7 @@ export const SITE_NAME = 'El Shaddai World Ministries';
 export const SITE_SHORT_NAME = 'El Shaddai';
 export const SITE_TAGLINE = "Transforming Lives Through God's Love";
 export const SITE_DESCRIPTION =
-  'A Bible-believing, Spirit-filled church where people encounter God, grow in faith and discover their purpose. Join us for Sunday worship, Morning Prayer and Morning Manna.';
+  'A Bible-believing, Spirit-filled church in Fourways where people encounter God, grow in faith and discover their purpose. Join us for Sunday worship, Morning Prayer and Morning Manna.';
 
 /** Verified official Facebook page (supplied by the church). */
 export const FACEBOOK_URL = 'https://www.facebook.com/ElShaddaiWorld';
@@ -50,6 +50,12 @@ export type ProgramItem = {
   endTime: string;
   category: ProgramCategory;
   tagline?: string;
+  /**
+   * How a non-Sunday programme is attended (confirmed by the church).
+   * NOTE: the Zoom link itself is deliberately NOT published — it is shared in
+   * the church WhatsApp group, so the site only explains how to get it.
+   */
+  access?: { format: 'Zoom' | 'Facebook Live'; chip: string; note: string };
 };
 
 export const WEEKLY_PROGRAM: ProgramItem[] = [
@@ -62,6 +68,11 @@ export const WEEKLY_PROGRAM: ProgramItem[] = [
     endTime: '06:00',
     category: 'prayer',
     tagline: 'Start your day in prayer',
+    access: {
+      format: 'Zoom',
+      chip: 'On Zoom',
+      note: 'The Zoom link is shared in the church WhatsApp group.',
+    },
   },
   {
     id: 'morning-manna',
@@ -73,6 +84,11 @@ export const WEEKLY_PROGRAM: ProgramItem[] = [
     endTime: '06:30',
     category: 'devotional',
     tagline: 'Start your day in the Word',
+    access: {
+      format: 'Facebook Live',
+      chip: 'Live on Facebook',
+      note: 'Streamed live on the El Shaddai Facebook page.',
+    },
   },
   {
     id: 'sunday-morning',
@@ -137,17 +153,21 @@ export const programmeSchema = () =>
   }));
 
 /**
- * Church contact defaults. The email appears in the existing system. The
- * phone number and physical address that used to be shown were placeholders
- * or contradicted each other (Pretoria vs Randburg), so both are intentionally
- * `null` until the church confirms them — set `church_phone` / `church_address`
- * in the Settings table (or here). No directions, map or geo data is generated
- * while the address is unknown.
+ * Church contact defaults.
+ *
+ * ADDRESS — confirmed by the church: "El Shaddai World Centre, Farmall,
+ * Chartwell, Fourways". (The old site contradicted itself with Pretoria and
+ * Randburg; both are gone.) Only what the church stated is shown — no street
+ * number or postal code has been invented. For an exact map pin, set the
+ * Settings key `church_maps_url` to the Google Maps share link.
+ *
+ * PHONE — the number that used to be shown was a placeholder; it stays `null`
+ * until supplied (Settings: `church_phone`).
  */
 export const DEFAULT_CONTACT = {
   email: 'info@elshaddaiworld.org',
   phone: null as string | null,
-  addressLines: null as string[] | null,
+  addressLines: ['El Shaddai World Centre', 'Farmall, Chartwell', 'Fourways'] as string[] | null,
 };
 
 /**
@@ -172,7 +192,11 @@ export const VISIT_FAQS: { id: string; question: string; answer: string | null }
     question: 'Is there anything during the week?',
     answer: `Yes. ${MORNING_PRAYER.name} is ${programDays(MORNING_PRAYER)}, ${programTimes(MORNING_PRAYER)}, and ${MORNING_MANNA.name} ${MORNING_MANNA.subtitle} is ${programDays(MORNING_MANNA)}, ${programTimes(MORNING_MANNA)}.`,
   },
-  { id: 'weekday-where', question: 'Where do Morning Prayer and Morning Manna take place?', answer: null },
+  {
+    id: 'weekday-where',
+    question: 'Where do Morning Prayer and Morning Manna take place?',
+    answer: `${MORNING_MANNA.name} is streamed live on our Facebook page. ${MORNING_PRAYER.name} is on Zoom — the link is shared in our church WhatsApp group, and if you are new we will gladly help you join: just send us a message.`,
+  },
   { id: 'parking', question: 'Where do I park?', answer: null },
   { id: 'wear', question: 'What should I wear?', answer: null },
   { id: 'arrival', question: 'What happens when I arrive?', answer: null },
@@ -190,6 +214,7 @@ export const NAV_PRIMARY = [
 ] as const;
 
 export const NAV_MORE = [
+  { name: 'Children', href: '/children' },
   { name: 'Prayer', href: '/prayer-requests', hideFrom: 'xl' },
   { name: 'Books', href: '/books' },
   { name: 'Join Us', href: '/join' },

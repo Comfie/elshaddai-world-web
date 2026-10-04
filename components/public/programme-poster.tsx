@@ -32,6 +32,7 @@ export function ProgrammePoster({
             <p className="display-md">{program.name}</p>
             <p className="mt-2 text-brand-100">
               {programDays(program)} · {programTimes(program)}
+              {program.access && <> · {program.access.chip}</>}
             </p>
           </div>
         </>
@@ -57,6 +58,7 @@ export function ProgrammePoster({
             <p className="font-display mt-2 whitespace-nowrap text-[clamp(1.5rem,5vw,2.25rem)]">
               {programTimes(program)}
             </p>
+            {program.access && <p className="kicker mt-3 text-brand-100">{program.access.chip}</p>}
           </div>
         </div>
       )}

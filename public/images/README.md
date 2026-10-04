@@ -24,6 +24,8 @@ under ~400 KB each. Keep faces in the centre/right of hero images.
 | `programmes/morning-manna.jpg` | Morning Manna | 1600×1200 |
 | `leadership/apostle-juliana.jpg` | Morning Manna host portrait | 1200×1500 |
 | `leadership/apostle-charles-magaiza.jpg` | About page leadership | 1200×1500 |
+| `ministries/children/hero.jpg`, `ministries/children/story.jpg` | Children's ministry page (a ministry record's own images from the admin take priority) | 2400×1400 / 1600×1200 |
+| `ministries/children/moment-1.jpg … moment-3.jpg` | Optional "moments" gallery on /children (appears automatically) | 1200×1500 |
 | `ministries/default.jpg`, `sermons/default.jpg`, `events/default.jpg` | Fallback artwork when a record has no image | 1600×1000 |
 
 Ministry, sermon and event images entered in the admin keep working as before

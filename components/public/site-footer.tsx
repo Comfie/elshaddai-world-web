@@ -17,6 +17,7 @@ import { facebookLabel } from '@/lib/social';
 const explore = [
   { name: 'About', href: '/about' },
   { name: 'Ministries', href: '/ministries' },
+  { name: "Children's Ministry", href: '/children' },
   { name: 'Sermons', href: '/sermons' },
   { name: 'Events', href: '/events' },
   { name: 'Books', href: '/books' },
@@ -94,6 +95,7 @@ export function SiteFooter({ info }: { info: SiteInfo }) {
                     {p.subtitle && <span className="block">{p.subtitle}</span>}
                     <span className="mt-1 block">{programDays(p, true)}</span>
                     <span className="block whitespace-nowrap">{programTimes(p)}</span>
+                    {p.access && <span className="block text-brand-300">{p.access.chip}</span>}
                   </li>
                 ))}
               </ul>

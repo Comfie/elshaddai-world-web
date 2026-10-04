@@ -11,18 +11,28 @@ const TOPIC_TO_CATEGORY: Record<string, string> = {
   prayer: 'PRAYER_REQUEST',
   partnership: 'PARTNERSHIP',
   media: 'MEDIA_INQUIRY',
+  children: 'VISITOR_INFO',
 };
 
-export function ContactForm() {
+export function ContactForm({
+  defaults,
+  heading = 'Send us a message',
+  intro = 'We’ll get back to you as soon as we can.',
+}: {
+  /** Pre-selected values (URL params still win). */
+  defaults?: { category?: string; subject?: string };
+  heading?: string;
+  intro?: string;
+} = {}) {
   const params = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState(() => ({
     name: '',
     email: '',
     phone: '',
-    subject: params.get('subject')?.slice(0, 200) ?? '',
+    subject: params.get('subject')?.slice(0, 200) ?? defaults?.subject ?? '',
     message: '',
-    category: TOPIC_TO_CATEGORY[params.get('topic') ?? ''] ?? 'GENERAL',
+    category: TOPIC_TO_CATEGORY[params.get('topic') ?? ''] ?? defaults?.category ?? 'GENERAL',
   }));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -71,8 +81,8 @@ export function ContactForm() {
 
   return (
     <FormShell>
-      <h2 className="display-md text-brand-navy">Send us a message</h2>
-      <p className="mt-3 text-body">We&rsquo;ll get back to you as soon as we can.</p>
+      <h2 className="display-md text-brand-navy">{heading}</h2>
+      <p className="mt-3 text-body">{intro}</p>
 
       <form onSubmit={handleSubmit} className="mt-10 grid gap-6 sm:grid-cols-2">
         <Field id="name" label="Your name" required>

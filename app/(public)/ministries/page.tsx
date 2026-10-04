@@ -6,6 +6,8 @@ import { CtaLink } from '@/components/public/cta';
 import { Reveal } from '@/components/public/reveal';
 import { SectionHeader } from '@/components/public/section-header';
 import { getWebsiteMinistries } from '@/lib/public-data';
+import { ChildrenFeature } from '@/components/public/children-feature';
+import { getChildrenMinistry, isChildrenMinistry } from '@/lib/children';
 
 export const revalidate = 60;
 
@@ -18,7 +20,8 @@ export const metadata: Metadata = {
 };
 
 export default async function MinistriesPage() {
-  const ministries = await getWebsiteMinistries();
+  const [allMinistries, childrenMinistry] = await Promise.all([getWebsiteMinistries(), getChildrenMinistry()]);
+  const ministries = allMinistries.filter((m) => !isChildrenMinistry(m));
 
   return (
     <>
@@ -38,6 +41,7 @@ export default async function MinistriesPage() {
           <h2 id="ministries-list" className="sr-only">
             Our ministries
           </h2>
+          <ChildrenFeature ministry={childrenMinistry} layout="banner" />
           {ministries.length === 0 ? (
             <EmptyState
               title="Ministries are being added."

@@ -116,6 +116,7 @@ export default async function ContactPage() {
                         <span className="text-brand-navy">{p.name}</span>
                         <span className="block text-sm">
                           {programDays(p, true)} &middot; {programTimes(p)}
+                          {p.access && <> &middot; {p.access.chip}</>}
                         </span>
                       </li>
                     ))}
@@ -135,7 +136,7 @@ export default async function ContactPage() {
       {info.mapEmbedUrl && (
         <section aria-label="Map" className="on-light bg-brand-50 pb-[clamp(4.5rem,9vw,8.5rem)]">
           <div className="wrap">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-brand-200 bg-brand-100 sm:aspect-[16/7]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-brand-200 bg-brand-100 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-700 sm:aspect-[16/7]">
               <iframe
                 title={`Map showing the location of ${info.name}`}
                 src={info.mapEmbedUrl}

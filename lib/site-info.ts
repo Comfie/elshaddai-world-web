@@ -27,7 +27,7 @@ export type SiteInfo = {
       branchCode: string | null;
     } | null;
   };
-  /** Only generated when an address is confirmed — never guessed. */
+  /** Only generated when an address is confirmed — never guessed. `church_maps_url` (Settings) overrides it with an exact pin. */
   directionsUrl: string | null;
   mapEmbedUrl: string | null;
 };
@@ -78,7 +78,9 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       }
     : null;
 
-  const q = addressOneLine ? encodeURIComponent(addressOneLine) : null;
+  // "South Africa" is appended to the *search query only* (not displayed) so maps resolve the right Fourways.
+  const q = addressOneLine ? encodeURIComponent(`${addressOneLine}, South Africa`) : null;
+  const mapsOverride = clean(s.church_maps_url);
 
   return {
     name: clean(s.church_name) ?? SITE_NAME,
@@ -92,7 +94,7 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       youtube: clean(s.youtube_url),
     },
     giving: { onlineUrl: clean(s.give_online_url), bank },
-    directionsUrl: q ? `https://www.google.com/maps/dir/?api=1&destination=${q}` : null,
+    directionsUrl: mapsOverride ?? (q ? `https://www.google.com/maps/dir/?api=1&destination=${q}` : null),
     mapEmbedUrl: q ? `https://www.google.com/maps?q=${q}&output=embed` : null,
   };
 });

@@ -91,7 +91,7 @@ export default async function VisitPage() {
             />
           </Reveal>
 
-          <div className="mt-14 grid gap-4 md:grid-cols-2 lg:gap-6">
+          <div className="mt-14 grid gap-4 lg:grid-cols-2 lg:gap-6">
             {[SUNDAY_MORNING, SUNDAY_EVENING].map((s, i) => (
               <Reveal key={s.id} delay={i * 90}>
                 <ProgrammeSurface
@@ -136,14 +136,19 @@ export default async function VisitPage() {
           <Reveal className="lg:col-span-8" delay={100}>
             <ul className="divide-y divide-brand-200 border-y border-brand-200">
               {[MORNING_PRAYER, MORNING_MANNA].map((p) => (
-                <li key={p.id} className="flex flex-col gap-3 py-8 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
-                  <div>
+                <li key={p.id} className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3 py-8">
+                  <div className="min-w-0 flex-1 basis-64">
                     <div className="flex flex-wrap items-center gap-3">
                       <h3 className="display-sm text-brand-navy">{p.name}</h3>
                       <TodayBadge days={p.days} className="border border-brand-200" />
                     </div>
                     {p.subtitle && <p className="mt-1 text-body">{p.subtitle}</p>}
                     <p className="kicker mt-3 text-brand-700">{programDays(p)}</p>
+                    {p.access && (
+                      <p className="mt-3 max-w-md text-body">
+                        <span className="font-semibold text-brand-navy">{p.access.chip}.</span> {p.access.note}
+                      </p>
+                    )}
                   </div>
                   <p className="font-display whitespace-nowrap text-[clamp(1.6rem,6vw,2.25rem)] leading-none text-brand-navy">
                     {programTimes(p)}
@@ -151,10 +156,22 @@ export default async function VisitPage() {
                 </li>
               ))}
             </ul>
-            <div className="mt-8">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <CtaLink href="/contact?topic=visitor&subject=How%20do%20I%20join%20Morning%20Prayer%3F" variant="primary">
+                Ask how to join Zoom
+              </CtaLink>
               <CtaLink href="/prayer-requests" variant="outline-dark">
                 Submit a prayer request
               </CtaLink>
+              {info.social.facebook && (
+                <CtaLink
+                  href={info.social.facebook}
+                  variant="outline-dark"
+                  aria-label={facebookLabel(info.name, 'Watch Morning Manna on Facebook')}
+                >
+                  Watch Morning Manna on Facebook
+                </CtaLink>
+              )}
             </div>
           </Reveal>
         </div>
@@ -245,7 +262,7 @@ export default async function VisitPage() {
 
           <Reveal className="lg:col-span-7" delay={100}>
             {info.mapEmbedUrl ? (
-              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-brand-200 bg-brand-100 lg:aspect-auto lg:h-full lg:min-h-[26rem]">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-brand-200 bg-brand-100 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-700 lg:aspect-auto lg:h-full lg:min-h-[26rem]">
                 <iframe
                   title={`Map showing the location of ${info.name}`}
                   src={info.mapEmbedUrl}
@@ -280,13 +297,12 @@ export default async function VisitPage() {
                 <p className="kicker mb-4 text-brand-300">Children &amp; families</p>
                 <h2 className="display-md">Bringing little ones?</h2>
                 <p className="mt-4 max-w-md text-brand-100">
-                  Families are very welcome. Please get in touch ahead of your visit and we will explain what is
-                  available for children and parents.
-                  <NeedsConfirmation what="children's ministry details" />
+                  Every child belongs at El Shaddai, and families are very welcome at both Sunday services. See our heart
+                  for children and ask us anything before you come.
                 </p>
                 <div className="mt-7">
-                  <CtaLink href="/contact?topic=visitor" variant="text-light">
-                    Ask about children&rsquo;s ministry
+                  <CtaLink href="/children" variant="white">
+                    Children&rsquo;s ministry
                   </CtaLink>
                 </div>
               </div>

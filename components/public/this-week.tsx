@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { CtaLink } from '@/components/public/cta';
 import { ProgrammeSurface } from '@/components/public/programme-surface';
@@ -62,10 +62,22 @@ export function ThisWeek({ info }: { info: SiteInfo }) {
                     ))}
                   </ul>
 
-                  <div className="mt-auto pt-8">
+                  {info.addressLines && (
+                    <p className="mt-6 flex items-start gap-3 text-brand-100">
+                      <MapPin className="mt-1 size-5 shrink-0" aria-hidden="true" />
+                      <span>{info.addressLines.join(', ')}</span>
+                    </p>
+                  )}
+
+                  <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
                     <CtaLink href="/visit" variant="white">
                       Plan your visit
                     </CtaLink>
+                    {info.directionsUrl && (
+                      <CtaLink href={info.directionsUrl} variant="outline-light" external>
+                        Get directions
+                      </CtaLink>
+                    )}
                   </div>
                 </div>
               </ProgrammeSurface>
@@ -76,7 +88,7 @@ export function ThisWeek({ info }: { info: SiteInfo }) {
                   program={MORNING_PRAYER}
                   slot="morningPrayer"
                   variant={0}
-                  link={<TextLink href="/prayer-requests">Submit a prayer request</TextLink>}
+                  link={<TextLink href="/contact?topic=visitor&subject=How%20do%20I%20join%20Morning%20Prayer%3F">Ask how to join</TextLink>}
                 />
                 <SupportingBlock
                   program={MORNING_MANNA}
@@ -84,8 +96,8 @@ export function ThisWeek({ info }: { info: SiteInfo }) {
                   variant={2}
                   link={
                     info.social.facebook ? (
-                      <CtaLink href={info.social.facebook} variant="text-light" aria-label={facebookLabel(info.name, 'Follow on Facebook')}>
-                        Follow on Facebook
+                      <CtaLink href={info.social.facebook} variant="text-light" aria-label={facebookLabel(info.name, 'Watch live on Facebook')}>
+                        Watch live on Facebook
                       </CtaLink>
                     ) : (
                       <TextLink href="#morning-manna">About Morning Manna</TextLink>
@@ -127,8 +139,15 @@ function SupportingBlock({
         <h3 className="display-sm mt-4 uppercase tracking-wide">{program.name}</h3>
         {program.subtitle && <p className="mt-1 text-brand-100">{program.subtitle}</p>}
         <p className={`${timeClass} mt-5`}>{programTimes(program)}</p>
-        <p className="kicker mt-5 text-brand-300">{program.tagline}</p>
-        <div className="mt-4">{link}</div>
+        {program.access && (
+          <p className="mt-5 inline-flex w-fit items-center gap-2 rounded-md bg-white/10 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-brand-300" />
+            {program.access.chip}
+          </p>
+        )}
+        <p className="kicker mt-4 text-brand-300">{program.tagline}</p>
+        {program.access && <p className="mt-2 text-sm text-brand-100">{program.access.note}</p>}
+        <div className="mt-3">{link}</div>
       </div>
     </ProgrammeSurface>
   );

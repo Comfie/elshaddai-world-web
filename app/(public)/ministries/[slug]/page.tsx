@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { isChildrenMinistry } from '@/lib/children';
 import { Calendar, Mail, MapPin, Phone, User } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { safeQuery } from '@/lib/public-data';
@@ -50,6 +51,8 @@ export default async function MinistryDetailPage({ params }: { params: Promise<{
   const { slug } = await params;
   const [ministry, info] = await Promise.all([getMinistry(slug), getSiteInfo()]);
   if (!ministry) notFound();
+  // The Children's Ministry has its own dedicated page.
+  if (isChildrenMinistry(ministry)) redirect('/children');
 
   const leaderName = ministry.leaderName || ministry.leader?.name;
   const hasMeeting =

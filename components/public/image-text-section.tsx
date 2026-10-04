@@ -16,6 +16,7 @@ export function ImageTextSection({
   variant = 1,
   className,
   id,
+  art,
 }: {
   kicker?: string;
   title: React.ReactNode;
@@ -28,6 +29,8 @@ export function ImageTextSection({
   variant?: number;
   className?: string;
   id?: string;
+  /** Decorative overlay shown on top of the photo surface (use only while no photo exists). */
+  art?: React.ReactNode;
 }) {
   const dark = tone === 'dark';
   return (
@@ -61,6 +64,7 @@ export function ImageTextSection({
             />
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-brand-900 sm:aspect-[5/6]">
               <Photo slot={slot} src={imageSrc} variant={variant} zoom sizes="(min-width: 1024px) 40vw, 100vw" />
+              {art}
             </div>
           </div>
         </Reveal>

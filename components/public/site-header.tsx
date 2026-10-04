@@ -132,7 +132,7 @@ export function SiteHeader() {
 
               <nav aria-label="Mobile" className="wrap flex flex-1 flex-col justify-between pb-10 pt-6">
                 <ul className="space-y-1">
-                  {[...NAV_PRIMARY, { name: 'Prayer', href: '/prayer-requests' }].map((item) => (
+                  {[...NAV_PRIMARY, { name: 'Children', href: '/children' }, { name: 'Prayer', href: '/prayer-requests' }].map((item) => (
                     <li key={item.href}>
                       <Link
                         href={item.href}
@@ -148,7 +148,7 @@ export function SiteHeader() {
                     </li>
                   ))}
                   <li className="mt-4 flex flex-wrap gap-x-6 border-t border-white/10 pt-5">
-                    {NAV_MORE.filter((i) => i.name !== 'Prayer').map((item) => (
+                    {NAV_MORE.filter((i) => i.name !== 'Prayer' && i.name !== 'Children').map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}

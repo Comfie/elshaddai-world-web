@@ -156,27 +156,47 @@ export default async function AboutPage() {
           <Reveal>
             <SectionHeader tone="dark" kicker="Leadership" title={<span id="leadership-heading">Our <em>leadership.</em></span>} />
           </Reveal>
-          <Reveal className="mt-14" delay={100}>
-            <LeadershipCard
-              name="Apostle Charles Magaiza"
-              role="Preacher & author"
-              initials="CM"
-              slot="aboutLeader"
-              needsConfirmation="title, biography and portrait"
-            >
-              <p>
-                Messages and books from Apostle Charles Magaiza are available to watch, listen to and read.
-              </p>
-              <div className="flex flex-wrap gap-x-8 gap-y-2 pt-2">
-                <CtaLink href="/sermons" variant="text-accent">
-                  Sermons
-                </CtaLink>
-                <CtaLink href="/books" variant="text-accent">
-                  Books
-                </CtaLink>
-              </div>
-            </LeadershipCard>
-          </Reveal>
+          <div className="mt-14 grid gap-6 md:grid-cols-2">
+            <Reveal delay={100}>
+              <LeadershipCard
+                name="Apostle Charles Magaiza"
+                role="Preacher & author"
+                initials="CM"
+                slot="aboutLeader"
+                needsConfirmation="title, biography and portrait"
+              >
+                <p>Messages and books from Apostle Charles Magaiza are available to watch, listen to and read.</p>
+                <div className="flex flex-wrap gap-x-8 gap-y-2 pt-1">
+                  <CtaLink href="/sermons" variant="text-accent">
+                    Sermons
+                  </CtaLink>
+                  <CtaLink href="/books" variant="text-accent">
+                    Books
+                  </CtaLink>
+                </div>
+              </LeadershipCard>
+            </Reveal>
+            <Reveal delay={180}>
+              <LeadershipCard
+                name="Apostle Juliana"
+                role="Morning Manna"
+                initials="AJ"
+                slot="apostleJuliana"
+                needsConfirmation="full name, biography and portrait"
+              >
+                <p>
+                  Apostle Juliana is the wife of Apostle Charles Magaiza. Morning Manna with Apostle Juliana is a
+                  focused time in God&rsquo;s Word, streamed live on the El Shaddai Facebook page every weekday
+                  morning.
+                </p>
+                <div className="pt-1">
+                  <CtaLink href="/#morning-manna" variant="text-accent">
+                    About Morning Manna
+                  </CtaLink>
+                </div>
+              </LeadershipCard>
+            </Reveal>
+          </div>
         </div>
       </section>
 

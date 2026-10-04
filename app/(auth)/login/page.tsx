@@ -1,22 +1,27 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
+import { Suspense, useId, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { getSession, signIn, signOut } from 'next-auth/react';
+import { AlertCircle, Info, Loader2 } from 'lucide-react';
+import { AuthShell } from '@/components/auth/auth-shell';
+import { PasswordField } from '@/components/auth/password-field';
+import { Field, inputClass } from '@/components/public/form-controls';
+import { safeRedirectPath } from '@/lib/safe-redirect';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/admin';
+  const helpId = useId();
+  const errorId = useId();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [memberOnly, setMemberOnly] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,142 +29,153 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
+      const result = await signIn('credentials', { email, password, redirect: false });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        setError('That email and password do not match. Please check them and try again.');
         setIsLoading(false);
-      } else {
-        router.push(callbackUrl);
-        router.refresh();
+        return;
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
+
+      // Member-level accounts can sign in but have no dashboard access. Say so
+      // instead of bouncing them silently back to the home page.
+      const session = await getSession();
+      if ((session?.user as { role?: string } | undefined)?.role === 'MEMBER') {
+        setMemberOnly(true);
+        setIsLoading(false);
+        return;
+      }
+
+      const target = safeRedirectPath(searchParams.get('callbackUrl'), window.location.origin);
+      router.push(target);
+      router.refresh();
+    } catch {
+      setError('Something went wrong. Please try again.');
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            El Shaddai World Ministries
-          </h1>
-          <p className="text-blue-200">Church Management System</p>
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    setMemberOnly(false);
+    setPassword('');
+  };
+
+  if (memberOnly) {
+    return (
+      <AuthShell title="You are signed in" subtitle="Thank you for being part of our church family.">
+        <div role="status" className="flex gap-3 rounded-xl border border-brand-200 bg-brand-100 p-4 text-sm text-brand-navy">
+          <Info className="mt-0.5 size-5 shrink-0 text-brand-700" aria-hidden="true" />
+          <p>
+            This account does not have access to the church dashboard. If you should have it, please ask a church
+            administrator to update your account.
+          </p>
         </div>
-
-        <Card className="border-blue-200 shadow-2xl">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-blue-900">Sign In</CardTitle>
-            <CardDescription>
-              Enter your credentials to access the admin portal
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="flex items-center gap-2 rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-200">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="pastor@elshaddaiworld.org"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Password
-                  </label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-blue-600 hover:text-blue-700"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-blue-900 hover:bg-blue-800 text-white"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  'Sign In'
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link
-                href="/register"
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Register here
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="mt-6 text-center">
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <Link
             href="/"
-            className="text-sm text-blue-200 hover:text-white transition-colors"
+            className="inline-flex min-h-12 items-center justify-center rounded-lg bg-brand-600 px-6 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-700"
           >
-            ← Back to Homepage
+            Back to the website
           </Link>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="inline-flex min-h-12 items-center justify-center rounded-lg border border-brand-700 px-6 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-brand-700 transition-colors hover:bg-brand-700 hover:text-white"
+          >
+            Sign out
+          </button>
         </div>
-      </div>
-    </div>
+      </AuthShell>
+    );
+  }
+
+  return (
+    <AuthShell
+      title="Welcome back"
+      subtitle="Sign in to the El Shaddai World Ministries dashboard."
+      footer={
+        <p>
+          Need access? Ask a church administrator to create your account. Not a team member yet?{' '}
+          <Link href="/join" className="font-medium text-brand-700 underline underline-offset-4">
+            Join the church family
+          </Link>
+          .
+        </p>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div
+            id={errorId}
+            role="alert"
+            className="flex gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+          >
+            <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+            <p>{error}</p>
+          </div>
+        )}
+
+        <Field id="email" label="Email address" required>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="username"
+            inputMode="email"
+            autoCapitalize="none"
+            spellCheck={false}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? errorId : undefined}
+            className={inputClass}
+          />
+        </Field>
+
+        <Field id="password" label="Password" required>
+          <PasswordField
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            invalid={!!error}
+            describedBy={error ? errorId : undefined}
+          />
+        </Field>
+
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowHelp((s) => !s)}
+            aria-expanded={showHelp}
+            aria-controls={helpId}
+            className="inline-flex min-h-11 items-center text-sm font-medium text-brand-700 underline-offset-4 hover:underline"
+          >
+            Forgot your password?
+          </button>
+          <div id={helpId} hidden={!showHelp} className="mt-1 rounded-xl bg-brand-100 p-4 text-sm text-brand-navy">
+            Please ask a church administrator to reset your password for you.
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-8 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoading && <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />}
+          {isLoading ? 'Signing in…' : 'Sign in'}
+        </button>
+      </form>
+    </AuthShell>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 px-4">
-        <div className="text-white">Loading...</div>
-      </div>
-    }>
+    <Suspense fallback={null}>
       <LoginForm />
     </Suspense>
   );

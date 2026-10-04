@@ -1,240 +1,170 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Info, Loader2 } from 'lucide-react';
+import { AuthShell } from '@/components/auth/auth-shell';
+import { PasswordField } from '@/components/auth/password-field';
+import { Field, inputClass } from '@/components/public/form-controls';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const errorId = useId();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (!success) return;
+    const t = setTimeout(() => router.push('/login'), 2000);
+    return () => clearTimeout(t);
+  }, [success, router]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
+      setError('The two passwords do not match.');
       return;
     }
-
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
-      setIsLoading(false);
+      setError('Your password must be at least 8 characters long.');
       return;
     }
 
+    setIsLoading(true);
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password }),
       });
-
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Registration failed');
+        setError(data.error || 'Registration failed. Please try again.');
         setIsLoading(false);
         return;
       }
-
       setSuccess(true);
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
-    } catch (error) {
-      setError('An error occurred. Please try again.');
+    } catch {
+      setError('Something went wrong. Please try again.');
       setIsLoading(false);
     }
   };
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 px-4">
-        <Card className="w-full max-w-md border-blue-200 shadow-2xl">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <CheckCircle2 className="h-16 w-16 text-green-600 mb-4" />
-            <h2 className="text-2xl font-bold text-blue-900 mb-2">
-              Registration Successful!
-            </h2>
-            <p className="text-gray-600 text-center mb-4">
-              Your account has been created. Redirecting to login page...
-            </p>
-            <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-          </CardContent>
-        </Card>
-      </div>
+      <AuthShell title="Account created">
+        <div role="status" className="flex flex-col items-center py-4 text-center">
+          <CheckCircle2 className="size-12 text-brand-700" aria-hidden="true" />
+          <p className="mt-5 text-body">Your account is ready. Taking you to the sign-in page&hellip;</p>
+          <Loader2 className="mt-4 size-5 animate-spin text-brand-700 motion-reduce:animate-none" aria-hidden="true" />
+          <Link href="/login" className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-brand-700 underline underline-offset-4">
+            Go to sign in now
+          </Link>
+        </div>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            El Shaddai World Ministries
-          </h1>
-          <p className="text-blue-200">Church Management System</p>
-        </div>
-
-        <Card className="border-blue-200 shadow-2xl">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-blue-900">Create Account</CardTitle>
-            <CardDescription>
-              Register for access to the church management system
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="flex items-center gap-2 rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-200">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="name"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="john@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
-                <p className="text-xs text-gray-500">
-                  Must be at least 8 characters long
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="confirmPassword"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Confirm Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-blue-900 hover:bg-blue-800 text-white"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account...
-                  </>
-                ) : (
-                  'Create Account'
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link
-                href="/login"
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Sign in here
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="mt-6 text-center">
-          <Link
-            href="/"
-            className="text-sm text-blue-200 hover:text-white transition-colors"
-          >
-            ← Back to Homepage
+    <AuthShell
+      title="Create an account"
+      subtitle="Register with your name and email."
+      footer={
+        <p>
+          Already have an account?{' '}
+          <Link href="/login" className="font-medium text-brand-700 underline underline-offset-4">
+            Sign in
           </Link>
-        </div>
+        </p>
+      }
+    >
+      <div className="mb-6 flex gap-3 rounded-xl border border-brand-200 bg-brand-100 p-4 text-sm text-brand-navy">
+        <Info className="mt-0.5 size-5 shrink-0 text-brand-700" aria-hidden="true" />
+        <p>
+          Accounts created here are member-level and do not include dashboard access. Staff accounts are created by a
+          church administrator.
+        </p>
       </div>
-    </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div id={errorId} role="alert" className="flex gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+            <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+            <p>{error}</p>
+          </div>
+        )}
+
+        <Field id="name" label="Full name" required>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            autoComplete="name"
+            className={inputClass}
+          />
+        </Field>
+
+        <Field id="email" label="Email address" required>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            spellCheck={false}
+            className={inputClass}
+          />
+        </Field>
+
+        <Field id="password" label="Password" required hint="At least 8 characters.">
+          <PasswordField
+            id="password"
+            value={formData.password}
+            onChange={handleChange}
+            autoComplete="new-password"
+            minLength={8}
+            describedBy="password-hint"
+          />
+        </Field>
+
+        <Field id="confirmPassword" label="Confirm password" required>
+          <PasswordField
+            id="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            autoComplete="new-password"
+            invalid={!!error && error.includes('match')}
+            describedBy={error && error.includes('match') ? errorId : undefined}
+          />
+        </Field>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-8 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoading && <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />}
+          {isLoading ? 'Creating account…' : 'Create account'}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

@@ -9,9 +9,14 @@ export function Logo({ className, tone = 'dark' }: { className?: string; tone?: 
     <span className={cn('inline-flex items-center gap-3', className)}>
       <span
         aria-hidden="true"
-        className="relative grid size-9 shrink-0 place-items-center rounded-full border border-brand-500/70"
+        className={cn(
+          'relative grid size-9 shrink-0 place-items-center rounded-full border',
+          tone === 'light' ? 'border-brand-500/70' : 'border-brand-600/50',
+        )}
       >
-        <span className="font-display text-[1.05rem] leading-none text-brand-300">ES</span>
+        <span className={cn('font-display text-[1.05rem] leading-none', tone === 'light' ? 'text-brand-300' : 'text-brand-700')}>
+          ES
+        </span>
       </span>
       <span className="flex flex-col leading-none">
         <span className={cn('font-display text-[1.35rem] tracking-tight', tone === 'light' ? 'text-white' : 'text-brand-navy')}>

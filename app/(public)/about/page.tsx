@@ -154,18 +154,26 @@ export default async function AboutPage() {
       <section aria-labelledby="leadership-heading" className="on-dark section-y bg-brand-900 text-white">
         <div className="wrap">
           <Reveal>
-            <SectionHeader tone="dark" kicker="Leadership" title={<span id="leadership-heading">Our <em>leadership.</em></span>} />
+            <SectionHeader
+              tone="dark"
+              kicker="Leadership"
+              title={<span id="leadership-heading">Our <em>visionaries.</em></span>}
+              description="Apostle Charles Magaiza and Apostle Juliana Magaiza are the visionaries of El Shaddai World Ministries."
+            />
           </Reveal>
           <div className="mt-14 grid gap-6 md:grid-cols-2">
             <Reveal delay={100}>
               <LeadershipCard
                 name="Apostle Charles Magaiza"
-                role="Preacher & author"
+                role="Visionary · Preacher & author"
                 initials="CM"
                 slot="aboutLeader"
                 needsConfirmation="title, biography and portrait"
               >
-                <p>Messages and books from Apostle Charles Magaiza are available to watch, listen to and read.</p>
+                <p>
+                  Together with his wife, Apostle Juliana, Apostle Charles Magaiza is a visionary of El Shaddai World
+                  Ministries. His messages and books are available to watch, listen to and read.
+                </p>
                 <div className="flex flex-wrap gap-x-8 gap-y-2 pt-1">
                   <CtaLink href="/sermons" variant="text-accent">
                     Sermons
@@ -178,18 +186,22 @@ export default async function AboutPage() {
             </Reveal>
             <Reveal delay={180}>
               <LeadershipCard
-                name="Apostle Juliana"
-                role="Morning Manna"
+                name="Apostle Juliana Magaiza"
+                role="Visionary · Preacher"
                 initials="AJ"
                 slot="apostleJuliana"
-                needsConfirmation="full name, biography and portrait"
+                needsConfirmation="biography and portrait"
               >
                 <p>
-                  Apostle Juliana is the wife of Apostle Charles Magaiza. Morning Manna with Apostle Juliana is a
-                  focused time in God&rsquo;s Word, streamed live on the El Shaddai Facebook page every weekday
-                  morning.
+                  Apostle Juliana is a visionary of El Shaddai World Ministries, together with her husband, Apostle
+                  Charles Magaiza. She preaches at the Sunday morning service most of the time, and Morning Manna with
+                  Apostle Juliana is a focused time in God&rsquo;s Word, streamed live on the El Shaddai Facebook page
+                  every weekday morning.
                 </p>
-                <div className="pt-1">
+                <div className="flex flex-wrap gap-x-8 gap-y-2 pt-1">
+                  <CtaLink href="/visit" variant="text-accent">
+                    Join us on Sunday
+                  </CtaLink>
                   <CtaLink href="/#morning-manna" variant="text-accent">
                     About Morning Manna
                   </CtaLink>

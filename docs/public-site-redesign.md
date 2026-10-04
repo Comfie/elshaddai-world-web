@@ -93,13 +93,13 @@ In development builds these show an amber **"Needs confirmation"** tag; producti
 | Phone number | Old site showed `+27 12 345 6789` (dummy). **Hidden** until `church_phone` is set. |
 | Church address | **Confirmed**: "El Shaddai World Centre, Farmall, Chartwell, Fourways" (as given; no street number or postal code was invented). Shown in the footer, Visit, Contact and children's pages; powers Get-directions links, the map embeds and the structured-data address. Directions/maps search for the address text, so for an exact pin set `church_maps_url`. |
 | Morning Prayer / Morning Manna access | **Confirmed**: Manna live on the church Facebook page; Prayer on Zoom with the link shared in the church WhatsApp group (link never published). |
-| Apostle Juliana | **Confirmed**: wife of Apostle Charles Magaiza; Morning Manna is "with Apostle Juliana". Shown on About beside Apostle Charles. Still needed: her full name/title as she wishes it shown, a short bio and a portrait (`leadership/apostle-juliana.jpg`). |
+| Apostle Juliana Magaiza | **Confirmed**: wife of Apostle Charles Magaiza; she and Apostle Charles are the visionaries of El Shaddai; she preaches at the Sunday morning service most of the time; Morning Manna is "with Apostle Juliana". Shown on About beside Apostle Charles. Still needed: a short bio and portraits for both (`leadership/apostle-juliana.jpg`, `leadership/apostle-charles-magaiza.jpg`). |
 | Email `info@elshaddaiworld.org` | Kept (used site-wide, in seed). Confirm it is monitored. |
 | Bank details | Old site showed account `1234567890` (dummy). **Hidden**; page says "contact the office" until `bank_*` Settings exist. |
 | Online giving link | "Coming soon" until `give_online_url` is set. |
 | Tax/non-profit wording (Give) | Existing copy kept. Legal claim — confirm registration & Section 18A receipts. |
 | Social links | **Facebook** (`https://www.facebook.com/ElShaddaiWorld`) is verified and shown. Instagram/YouTube stay hidden until real URLs are supplied. |
-| Leadership | Placeholder people (John Doe, Jane Smith, Mike Johnson) stay **removed**. One card for Apostle Charles Magaiza (already the default preacher/author in the CRM) is retained — confirm title, bio, portrait. Apostle Juliana is treated as a separate person. |
+| Leadership | Placeholder people (John Doe, Jane Smith, Mike Johnson) stay **removed**. The About page presents Apostle Charles Magaiza and Apostle Juliana Magaiza as the visionaries — confirm the exact titles/wording each wants shown. |
 | Vision, mission, values, beliefs, "Our Story" | Existing copy retained — leadership should sign off. |
 | Office hours (Contact) | **Removed** (unverified, conflicted with the real programme). Re-add if confirmed. |
 | Visit page FAQ | Answered from the programme: arrival, service length, weekday gatherings and where they take place. **Unanswered** (fallback shown): parking, dress, arrival experience, children's ministry specifics, accessibility, first-timer expectations. Fill `answer` in `VISIT_FAQS`. |

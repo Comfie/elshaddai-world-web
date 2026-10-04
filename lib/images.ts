@@ -42,7 +42,7 @@ export const IMAGE_SLOTS = {
   childrenMoment3: { file: 'ministries/children/moment-3.jpg', alt: 'Children worshipping at El Shaddai' },
 
   // People (only add once the church confirms and supplies the photo)
-  apostleJuliana: { file: 'leadership/apostle-juliana.jpg', alt: 'Apostle Juliana' },
+  apostleJuliana: { file: 'leadership/apostle-juliana.jpg', alt: 'Apostle Juliana Magaiza' },
   aboutLeader: { file: 'leadership/apostle-charles-magaiza.jpg', alt: 'Apostle Charles Magaiza' },
 
   // Fallback artwork for records that have no image of their own

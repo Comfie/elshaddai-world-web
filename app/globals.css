@@ -64,55 +64,275 @@
   }
 }
 
-/* Custom Animations */
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
+/* ==========================================================================
+   PUBLIC SITE DESIGN SYSTEM  (El Shaddai World Ministries)
+   Scoped to public pages through the classes below — the admin/CRM styles
+   above are untouched.
+   ========================================================================== */
+
+@theme inline {
+  /* Brand blue scale — El Shaddai World Ministries.
+     Use these semantic tokens (bg-brand-700, text-brand-navy …) instead of raw hex.
+     Contrast notes (WCAG): white on 600 = 5.1:1, white on 700 = 7.2:1, 700 on 50 = 6.8:1,
+     300 on navy = 8.3:1. Do NOT put 300/500 text on 700 surfaces (use 100 or white). */
+  --color-brand-navy: #071b3d; /* deep navy — darkest sections, header, footer */
+  --color-brand-900: #0a2458; /* midnight blue */
+  --color-brand-800: #0e3b8c; /* between midnight and royal */
+  --color-brand-700: #1252b8; /* royal / brand blue — links, accents on light, CTA hover */
+  --color-brand-600: #1769e0; /* strong cobalt — primary buttons */
+  --color-brand-500: #3693f5; /* bright blue — accents on dark, rules, indicators */
+  --color-brand-300: #79b9ff; /* sky blue — kickers/accents on navy */
+  --color-brand-200: #cfe2fb; /* hairlines and borders on white */
+  --color-brand-100: #eaf4ff; /* very pale blue — tinted sections, text on royal */
+  --color-brand-50: #f5f9ff; /* ice — page tint */
+
+  --color-ink: #172033; /* charcoal text */
+  --color-body: #475467; /* paragraph text on light (7.3:1 on ice) */
+  --color-slate: #667085; /* muted slate — hints, placeholders (4.7:1 on ice) */
+  --color-mist: #b9c8e0; /* muted text on navy/midnight (8.8:1+) */
+  --color-field: #7083a3; /* input/checkbox borders — 3.9:1 on white (WCAG 1.4.11) */
+
+  --font-display: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-ui: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-@keyframes fade-in-up {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
+/* Layout primitives ------------------------------------------------------- */
+
+@utility wrap {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+@utility wrap-narrow {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 52rem;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+@utility section-y {
+  padding-block: clamp(4.5rem, 9vw, 8.5rem);
+}
+
+/* Typography ----------------------------------------------------------------*/
+
+@utility display-xl {
+  font-family: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(3.25rem, 9.5vw, 5.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+@utility display-lg {
+  font-family: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.6rem, 6.4vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@utility display-md {
+  font-family: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+@utility display-sm {
+  font-family: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+@utility lead {
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  line-height: 1.65;
+}
+
+@utility kicker {
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Page base ----------------------------------------------------------------*/
+
+@layer base {
+.public-site {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--color-brand-50);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+}
+
+.public-site ::selection {
+  background: var(--color-brand-600);
+  color: #fff;
+}
+
+.public-site :focus-visible {
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Sky outlines only on dark surfaces — on light surfaces royal blue keeps >3:1. */
+.public-site .on-dark :focus-visible,
+.public-site .on-dark:focus-visible {
+  outline-color: var(--color-brand-300);
+}
+
+/* Animated underline link ---------------------------------------------------*/
+
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 0.35s var(--ease-out-quart);
+}
+a:hover > .link-underline,
+a:focus-visible > .link-underline,
+a[aria-current="page"] > .link-underline,
+button:hover > .link-underline,
+button:focus-visible > .link-underline,
+button[data-state="open"] > .link-underline,
+.link-underline[data-active="true"] {
+  background-size: 100% 1px;
+}
+
+/* Photo placeholder — designed blue backdrop, replaced automatically once a
+   real image exists for the slot. Three tones keep neighbouring surfaces from
+   looking identical. A faint ring motif ("light radiating") adds structure. */
+
+.photo-placeholder {
+  --ph-a: #071b3d;
+  --ph-b: #0a2458;
+  --ph-glow: rgba(54, 147, 245, 0.34);
+  background-color: var(--ph-a);
+  background-image:
+    radial-gradient(55% 50% at var(--px, 70%) var(--py, 25%), var(--ph-glow), transparent 72%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='xMaxYMin slice'%3E%3Cg fill='none' stroke='%2379b9ff' stroke-opacity='.13' stroke-width='1.2'%3E%3Ccircle cx='680' cy='-40' r='140'/%3E%3Ccircle cx='680' cy='-40' r='240'/%3E%3Ccircle cx='680' cy='-40' r='340'/%3E%3Ccircle cx='680' cy='-40' r='440'/%3E%3Ccircle cx='680' cy='-40' r='540'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(150deg, var(--ph-b) 0%, var(--ph-a) 100%);
+  background-repeat: no-repeat;
+  background-size: cover, cover, cover;
+}
+.photo-placeholder[data-tone="royal"] {
+  --ph-a: #0a2458;
+  --ph-b: #1252b8;
+  --ph-glow: rgba(121, 185, 255, 0.32);
+}
+.photo-placeholder[data-tone="bright"] {
+  --ph-a: #0e3b8c;
+  --ph-b: #1769e0;
+  --ph-glow: rgba(234, 244, 255, 0.24);
+}
+.photo-placeholder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Scroll reveal ------------------------------------------------------------ */
+
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.8s var(--ease-out-quart), transform 0.8s var(--ease-out-quart);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Hero entrance (CSS only, runs once) ---------------------------------------*/
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: none; }
+}
+.rise-in {
+  animation: rise-in 0.9s var(--ease-out-quart) both;
+  animation-delay: var(--rise-delay, 0ms);
+}
+
+@keyframes slow-zoom {
+  from { transform: scale(1.04); }
+  to   { transform: scale(1.1); }
+}
+.slow-zoom {
+  animation: slow-zoom 24s ease-out both;
+}
+
+/* Accordion ---------------------------------------------------------------- */
+
+.accordion-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s var(--ease-out-quart);
+}
+.accordion-panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.accordion-panel > div {
+  overflow: hidden;
+}
+
+/* Mobile drawer ------------------------------------------------------------ */
+
+@keyframes drawer-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+.drawer-in {
+  animation: drawer-in 0.32s var(--ease-out-quart) both;
+}
+
+/* Hide scrollbars on horizontal chip rows ----------------------------------*/
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Reduced motion — respect the user's preference everywhere ------------------*/
+
+@media (prefers-reduced-motion: reduce) {
+  .public-site *,
+  .public-site *::before,
+  .public-site *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
   }
-  100% {
+  [data-reveal="hidden"] {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out;
-}
-
-.animation-delay-200 {
-  animation-delay: 0.2s;
-  animation-fill-mode: backwards;
-}
-
-.animation-delay-400 {
-  animation-delay: 0.4s;
-  animation-fill-mode: backwards;
+  .slow-zoom {
+    animation: none;
+  }
 }

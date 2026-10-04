@@ -1,264 +1,172 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ShoppingCart, Download, ExternalLink, Calendar, BookOpen, Star } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 import { prisma } from '@/lib/db';
-import { format } from 'date-fns';
-import Image from 'next/image';
+import { safeQuery } from '@/lib/public-data';
+import { Photo } from '@/components/public/photo';
+import { CtaLink } from '@/components/public/cta';
+import { Reveal } from '@/components/public/reveal';
+import { PlanVisitCTA } from '@/components/public/plan-visit-cta';
+import { JsonLd } from '@/components/public/json-ld';
+import { getSiteInfo } from '@/lib/site-info';
+import { formatCategory, formatLongDate } from '@/lib/format';
+
+export const revalidate = 60;
 
 async function getBook(id: string) {
-  const book = await prisma.book.findUnique({
-    where: { id },
-  });
-
-  if (!book || !book.isAvailable) {
-    return null;
-  }
-
-  return book;
+  const book = await prisma.book.findUnique({ where: { id } });
+  return book && book.isAvailable ? book : null;
 }
 
-async function getRelatedBooks(categoryId: string, currentBookId: string) {
-  return await prisma.book.findMany({
-    where: {
-      category: categoryId as any,
-      id: { not: currentBookId },
-      isAvailable: true,
-    },
-    take: 3,
-    orderBy: { createdAt: 'desc' },
-  });
-}
-
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const book = await getBook(id);
-
-  if (!book) {
-    return {
-      title: 'Book Not Found',
-    };
-  }
-
+  const book = await safeQuery(() => getBook(id), null);
+  if (!book) return { title: 'Book not found' };
+  const description = book.shortDescription || book.description.slice(0, 160);
   return {
-    title: `${book.title} by ${book.author} | El Shaddai World Ministries`,
-    description: book.shortDescription || book.description.substring(0, 160),
+    title: `${book.title} by ${book.author}`,
+    description,
+    alternates: { canonical: `/books/${book.id}` },
+    openGraph: {
+      title: `${book.title} by ${book.author}`,
+      description,
+      url: `/books/${book.id}`,
+      type: 'book',
+      ...(book.coverImageUrl && { images: [{ url: book.coverImageUrl }] }),
+    },
   };
 }
 
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const book = await getBook(id);
+  const [book, info] = await Promise.all([getBook(id), getSiteInfo()]);
+  if (!book) notFound();
 
-  if (!book) {
-    notFound();
-  }
+  const related = await prisma.book.findMany({
+    where: { category: book.category, id: { not: book.id }, isAvailable: true },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+  });
 
-  const relatedBooks = await getRelatedBooks(book.category, book.id);
+  const details = [
+    ['ISBN', book.isbn],
+    ['Publisher', book.publisher],
+    ['Published', book.publishedDate ? formatLongDate(book.publishedDate) : null],
+    ['Edition', book.edition],
+    ['Pages', book.pageCount?.toString()],
+    ['Language', book.language],
+  ].filter((d): d is [string, string] => !!d[1]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Breadcrumb & Back */}
-      <section className="bg-white border-b">
-        <div className="mx-auto max-w-7xl px-6 py-4 lg:px-8">
-          <Link
-            href="/books"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-blue-700 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Books
-          </Link>
+    <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Book',
+          name: book.title,
+          author: { '@type': 'Person', name: book.author },
+          description: book.shortDescription || book.description,
+          ...(book.isbn && { isbn: book.isbn }),
+          ...(book.coverImageUrl && { image: book.coverImageUrl }),
+          inLanguage: book.language,
+        }}
+      />
+      <section className="on-dark relative isolate overflow-hidden bg-brand-navy pb-16 pt-32 text-white sm:pb-24 sm:pt-40">
+        <Photo src={book.coverImageUrl} alt="" variant={1} className="scale-125 opacity-25 blur-3xl" />
+        <div aria-hidden="true" className="absolute inset-0 bg-brand-navy/70" />
+        <div className="wrap relative">
+          <CtaLink href="/books" variant="text-light" arrow={false} className="mb-10">
+            ← All books
+          </CtaLink>
+          <div className="grid items-center gap-12 md:grid-cols-12 md:gap-16">
+            <div className="md:col-span-4">
+              <div className="relative mx-auto aspect-[2/3] max-w-xs overflow-hidden rounded-xl bg-brand-900 shadow-2xl">
+                <Photo src={book.coverImageUrl} alt={`Cover of ${book.title}`} variant={1} priority sizes="(min-width: 768px) 30vw, 70vw" />
+              </div>
+            </div>
+            <div className="md:col-span-8">
+              <p className="kicker mb-5 text-brand-300">{formatCategory(book.category)}</p>
+              <h1 className="display-lg">{book.title}</h1>
+              {book.subtitle && <p className="display-sm mt-3 text-brand-100">{book.subtitle}</p>}
+              <p className="mt-5 text-lg text-brand-100">by {book.author}</p>
+              {book.price && (
+                <p className="font-display mt-6 text-3xl text-white">
+                  {book.currency} {book.price.toString()}
+                </p>
+              )}
+              <div className="mt-8 flex flex-wrap items-center gap-4">
+                <CtaLink href={book.amazonUrl} variant="primary" external>
+                  Buy on Amazon
+                </CtaLink>
+                {book.samplePdfUrl && (
+                  <CtaLink href={book.samplePdfUrl} variant="outline-light" external arrow={false}>
+                    <Download className="size-4" aria-hidden="true" /> Download sample
+                  </CtaLink>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Book Detail */}
-      <section className="py-12">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-5">
-            {/* Book Cover - Left Side */}
-            <div className="lg:col-span-2">
-              <div className="sticky top-8">
-                <Card className="overflow-hidden">
-                  <div className="relative aspect-[2/3] bg-gray-100">
-                    {book.coverImageUrl ? (
-                      <Image
-                        src={book.coverImageUrl}
-                        alt={book.title}
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <BookOpen className="h-24 w-24 text-gray-400" />
-                      </div>
-                    )}
-                    {book.isFeatured && (
-                      <div className="absolute top-4 right-4">
-                        <Badge className="bg-yellow-500 text-white">
-                          <Star className="h-3 w-3 mr-1" />
-                          Featured
-                        </Badge>
-                      </div>
-                    )}
+      <section className="on-light section-y bg-brand-50">
+        <div className="wrap grid gap-14 lg:grid-cols-12 lg:gap-20">
+          <Reveal className="lg:col-span-8">
+            <h2 className="kicker mb-5 text-brand-700">About this book</h2>
+            <p className="lead max-w-2xl whitespace-pre-wrap text-body">{book.description}</p>
+            {book.tags.length > 0 && (
+              <ul className="mt-10 flex flex-wrap gap-2" aria-label="Tags">
+                {book.tags.map((t) => (
+                  <li key={t} className="rounded-full border border-brand-200 px-4 py-1.5 text-sm text-body">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Reveal>
+          {details.length > 0 && (
+            <Reveal className="lg:col-span-4" delay={100}>
+              <h2 className="kicker mb-5 text-brand-700">Book details</h2>
+              <dl className="divide-y divide-brand-200 border-y border-brand-200">
+                {details.map(([k, v]) => (
+                  <div key={k} className="flex justify-between gap-6 py-4">
+                    <dt className="text-body">{k}</dt>
+                    <dd className="text-right text-brand-navy">{v}</dd>
                   </div>
-
-                  <CardContent className="p-6 space-y-4">
-                    <a
-                      href={book.amazonUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block"
-                    >
-                      <Button size="lg" className="w-full bg-blue-900 hover:bg-blue-800 text-lg">
-                        <ShoppingCart className="h-5 w-5 mr-2" />
-                        Buy on Amazon
-                      </Button>
-                    </a>
-
-                    {book.samplePdfUrl && (
-                      <a
-                        href={book.samplePdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block"
-                      >
-                        <Button variant="outline" size="lg" className="w-full border-blue-600 text-blue-600">
-                          <Download className="h-5 w-5 mr-2" />
-                          Download Sample
-                        </Button>
-                      </a>
-                    )}
-
-                    {book.price && (
-                      <div className="pt-4 border-t">
-                        <p className="text-sm text-gray-600 mb-1">Price</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {book.currency} {book.price.toString()}
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Book Information - Right Side */}
-            <div className="lg:col-span-3 space-y-8">
-              {/* Title & Author */}
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">
-                  {book.title}
-                </h1>
-                {book.subtitle && (
-                  <h2 className="text-2xl text-gray-700 mb-4">{book.subtitle}</h2>
-                )}
-                <p className="text-xl text-gray-700 font-medium">by {book.author}</p>
-              </div>
-
-              {/* Tags & Category */}
-              <div className="flex flex-wrap gap-2">
-                <Badge className="bg-blue-900">
-                  {book.category.replace('_', ' ')}
-                </Badge>
-                {book.tags.map((tag) => (
-                  <Badge key={tag} variant="outline">
-                    {tag}
-                  </Badge>
                 ))}
-              </div>
-
-              {/* Description */}
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">About This Book</h3>
-                <div className="prose prose-lg max-w-none">
-                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                    {book.description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Book Details */}
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Book Details</h3>
-                  <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {book.isbn && (
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">ISBN</dt>
-                        <dd className="text-sm text-gray-900 mt-1">{book.isbn}</dd>
-                      </div>
-                    )}
-                    {book.publisher && (
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Publisher</dt>
-                        <dd className="text-sm text-gray-900 mt-1">{book.publisher}</dd>
-                      </div>
-                    )}
-                    {book.publishedDate && (
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Published</dt>
-                        <dd className="text-sm text-gray-900 mt-1">
-                          {format(new Date(book.publishedDate), 'MMMM d, yyyy')}
-                        </dd>
-                      </div>
-                    )}
-                    {book.edition && (
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Edition</dt>
-                        <dd className="text-sm text-gray-900 mt-1">{book.edition}</dd>
-                      </div>
-                    )}
-                    {book.pageCount && (
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Pages</dt>
-                        <dd className="text-sm text-gray-900 mt-1">{book.pageCount}</dd>
-                      </div>
-                    )}
-                    <div>
-                      <dt className="text-sm font-medium text-gray-500">Language</dt>
-                      <dd className="text-sm text-gray-900 mt-1">{book.language}</dd>
-                    </div>
-                  </dl>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Related Books */}
-          {relatedBooks.length > 0 && (
-            <div className="mt-16">
-              <h2 className="text-3xl font-bold text-gray-900 mb-8">More Books You May Like</h2>
-              <div className="grid gap-6 md:grid-cols-3">
-                {relatedBooks.map((relatedBook) => (
-                  <Link key={relatedBook.id} href={`/books/${relatedBook.id}`}>
-                    <Card className="hover:shadow-xl transition-shadow">
-                      <div className="relative aspect-[3/4] bg-gray-100">
-                        {relatedBook.coverImageUrl && (
-                          <Image
-                            src={relatedBook.coverImageUrl}
-                            alt={relatedBook.title}
-                            fill
-                            className="object-cover"
-                          />
-                        )}
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold text-gray-900 line-clamp-2">
-                          {relatedBook.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">{relatedBook.author}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </div>
+              </dl>
+            </Reveal>
           )}
         </div>
       </section>
-    </div>
+
+      {related.length > 0 && (
+        <section aria-labelledby="more-books" className="on-light section-y bg-brand-100">
+          <div className="wrap">
+            <h2 id="more-books" className="display-md mb-12 text-brand-navy">
+              More books
+            </h2>
+            <ul className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+              {related.map((b, i) => (
+                <li key={b.id} className="group relative">
+                  <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-brand-900">
+                    <Photo src={b.coverImageUrl} alt="" variant={i} zoom sizes="(min-width: 1024px) 22vw, 45vw" />
+                  </div>
+                  <h3 className="display-sm mt-5 line-clamp-2 text-brand-navy">
+                    <Link href={`/books/${b.id}`} className="link-underline after:absolute after:inset-0 after:content-['']">
+                      {b.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-1 text-sm text-body">{b.author}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      <PlanVisitCTA info={info} />
+    </>
   );
 }

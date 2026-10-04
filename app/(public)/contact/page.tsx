@@ -1,134 +1,153 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { Facebook, Mail, MapPin, Phone } from 'lucide-react';
+import { PageHero } from '@/components/public/page-hero';
 import { ContactForm } from '@/components/public/contact-form';
+import { CtaLink } from '@/components/public/cta';
+import { Reveal } from '@/components/public/reveal';
+import { NeedsConfirmation } from '@/components/public/needs-confirmation';
+import { WEEKLY_PROGRAM, programDays, programTimes } from '@/lib/site-config';
+import { getSiteInfo } from '@/lib/site-info';
+import { facebookLabel } from '@/lib/social';
 
-export default function ContactPage() {
+export const revalidate = 300;
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Get in touch with El Shaddai World Ministries — questions, prayer, visitor information and more.',
+  alternates: { canonical: '/contact' },
+  openGraph: { title: 'Contact | El Shaddai World Ministries', url: '/contact' },
+};
+
+export default async function ContactPage() {
+  const info = await getSiteInfo();
+
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-6">
-              Get In Touch
-            </h1>
-            <p className="text-xl text-blue-100">
-              We'd love to hear from you. Reach out to us with any questions or prayer requests.
-            </p>
-          </div>
-        </div>
-      </section>
+    <>
+      <PageHero
+        variant={2}
+        kicker="Contact"
+        title={
+          <>
+            We&rsquo;d love to <em className="text-brand-300">hear from you.</em>
+          </>
+        }
+        description="Questions, prayer, or planning a visit — send us a message and we will get back to you."
+      />
 
-      {/* Contact Info & Form */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {/* Contact Information */}
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-blue-900 mb-4">Contact Information</h2>
-                <p className="text-gray-600 mb-6">
-                  Feel free to reach out to us through any of these channels. We're here to serve you!
-                </p>
-              </div>
-
-              <Card className="border-blue-200">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-blue-100 p-3">
-                      <MapPin className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg text-blue-900">Our Location</CardTitle>
-                      <CardDescription>Visit us at</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">
-                    5th Road, Northwold<br />
-                    Randburg, Gauteng<br />
-                    South Africa, 2188
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-blue-200">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-blue-100 p-3">
-                      <Mail className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg text-blue-900">Contact Us</CardTitle>
-                      <CardDescription>Get in touch with us</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-blue-600" />
-                    <a href="tel:+27123456789" className="text-gray-600 hover:text-blue-600">
-                      +27 12 345 6789
+      <section className="on-light section-y bg-brand-50">
+        <div className="wrap grid gap-14 lg:grid-cols-12 lg:gap-20">
+          <Reveal className="lg:col-span-5">
+            <p className="kicker mb-6 text-brand-700">Find us</p>
+            <ul className="divide-y divide-brand-200 border-y border-brand-200">
+              <li className="flex gap-5 py-7">
+                <MapPin className="mt-1 size-5 shrink-0 text-brand-700" aria-hidden="true" />
+                <div>
+                  <p className="display-sm text-brand-navy">Visit</p>
+                  {info.addressLines ? (
+                    <>
+                      <address className="mt-2 not-italic leading-relaxed text-body">
+                        {info.addressLines.map((l) => (
+                          <span key={l} className="block">
+                            {l}
+                          </span>
+                        ))}
+                      </address>
+                      {info.directionsUrl && (
+                        <CtaLink href={info.directionsUrl} variant="text-dark" external className="mt-2">
+                          Get directions
+                        </CtaLink>
+                      )}
+                    </>
+                  ) : (
+                    <p className="mt-2 text-body">
+                      Planning to visit? Send us a message and we will share exactly where to come.
+                      <NeedsConfirmation what="church address (Settings: church_address)" />
+                    </p>
+                  )}
+                </div>
+              </li>
+              {info.email && (
+                <li className="flex gap-5 py-7">
+                  <Mail className="mt-1 size-5 shrink-0 text-brand-700" aria-hidden="true" />
+                  <div>
+                    <p className="display-sm text-brand-navy">Email</p>
+                    <a href={`mailto:${info.email}`} className="mt-2 inline-flex min-h-11 items-center break-all text-body underline-offset-4 hover:underline">
+                      {info.email}
                     </a>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-blue-600" />
-                    <a href="mailto:info@elshaddaiworld.org" className="text-gray-600 hover:text-blue-600">
-                      info@elshaddaiworld.org
+                </li>
+              )}
+              {info.phone && (
+                <li className="flex gap-5 py-7">
+                  <Phone className="mt-1 size-5 shrink-0 text-brand-700" aria-hidden="true" />
+                  <div>
+                    <p className="display-sm text-brand-navy">Phone</p>
+                    <a href={`tel:${info.phone.replace(/\s/g, '')}`} className="mt-2 inline-flex min-h-11 items-center text-body underline-offset-4 hover:underline">
+                      {info.phone}
                     </a>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-blue-200">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-blue-100 p-3">
-                      <Clock className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg text-blue-900">Office Hours</CardTitle>
-                      <CardDescription>When we're available</CardDescription>
-                    </div>
+                </li>
+              )}
+              {info.social.facebook && (
+                <li className="flex gap-5 py-7">
+                  <Facebook className="mt-1 size-5 shrink-0 text-brand-700" aria-hidden="true" />
+                  <div>
+                    <p className="display-sm text-brand-navy">Facebook</p>
+                    <a
+                      href={info.social.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={facebookLabel(info.name, 'Message or follow us on Facebook')}
+                      className="mt-2 inline-flex min-h-11 items-center text-body underline-offset-4 hover:underline"
+                    >
+                      Message or follow us on Facebook
+                    </a>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-1 text-sm text-gray-600">
-                    <p>Monday - Friday: 9:00 AM - 5:00 PM</p>
-                    <p>Saturday: 9:00 AM - 1:00 PM</p>
-                    <p>Sunday: Before and after services</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                </li>
+              )}
+              <li className="py-7">
+                <p className="display-sm text-brand-navy">When we gather</p>
+                <ul className="mt-4 space-y-3 text-body">
+                  {WEEKLY_PROGRAM.slice()
+                    .sort((a, b) => b.days.length - a.days.length || a.startTime.localeCompare(b.startTime))
+                    .map((p) => (
+                      <li key={p.id}>
+                        <span className="text-brand-navy">{p.name}</span>
+                        <span className="block text-sm">
+                          {programDays(p, true)} &middot; {programTimes(p)}
+                          {p.access && <> &middot; {p.access.chip}</>}
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              </li>
+            </ul>
+          </Reveal>
 
-            {/* Contact Form */}
-            <div>
+          <Reveal className="lg:col-span-7" delay={100}>
+            <Suspense fallback={null}>
               <ContactForm />
-            </div>
-          </div>
+            </Suspense>
+          </Reveal>
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="bg-blue-50 py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-blue-900 mb-6 text-center">Find Us</h2>
-          <div className="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3583.8662839567766!2d28.011726!3d-26.102222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1e957331c3c8d6a9%3A0x8a1b1c5d5e6f7a8b!2s5th%20Rd%2C%20Northwold%2C%20Randburg%2C%202188!5e0!3m2!1sen!2sza!4v1234567890"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="El Shaddai World Ministries Location"
-            />
+      {info.mapEmbedUrl && (
+        <section aria-label="Map" className="on-light bg-brand-50 pb-[clamp(4.5rem,9vw,8.5rem)]">
+          <div className="wrap">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-brand-200 bg-brand-100 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-700 sm:aspect-[16/7]">
+              <iframe
+                title={`Map showing the location of ${info.name}`}
+                src={info.mapEmbedUrl}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="absolute inset-0 h-full w-full border-0"
+              />
+            </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      )}
+    </>
   );
 }

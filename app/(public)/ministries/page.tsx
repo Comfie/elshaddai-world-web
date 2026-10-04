@@ -1,123 +1,89 @@
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight } from 'lucide-react';
-import { prisma } from '@/lib/db';
+import type { Metadata } from 'next';
+import { PageHero } from '@/components/public/page-hero';
+import { MinistryCard } from '@/components/public/ministry-card';
+import { EmptyState } from '@/components/public/empty-state';
+import { CtaLink } from '@/components/public/cta';
+import { Reveal } from '@/components/public/reveal';
+import { SectionHeader } from '@/components/public/section-header';
+import { getWebsiteMinistries } from '@/lib/public-data';
+import { ChildrenFeature } from '@/components/public/children-feature';
+import { getChildrenMinistry, isChildrenMinistry } from '@/lib/children';
 
-async function getMinistries() {
-  const ministries = await prisma.ministry.findMany({
-    where: {
-      isActive: true,
-      displayOnWebsite: true,
-    },
-    include: {
-      _count: {
-        select: {
-          members: true,
-        },
-      },
-    },
-    orderBy: { sortOrder: 'asc' },
-  });
+export const revalidate = 60;
 
-  return ministries;
-}
+export const metadata: Metadata = {
+  title: 'Ministries',
+  description:
+    'Find your place at El Shaddai World Ministries — ministries for women, men, young people and more.',
+  alternates: { canonical: '/ministries' },
+  openGraph: { title: 'Ministries | El Shaddai World Ministries', url: '/ministries' },
+};
 
 export default async function MinistriesPage() {
-  const ministries = await getMinistries();
+  const [allMinistries, childrenMinistry] = await Promise.all([getWebsiteMinistries(), getChildrenMinistry()]);
+  const ministries = allMinistries.filter((m) => !isChildrenMinistry(m));
 
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-6">
-              Our Ministries
-            </h1>
-            <p className="text-xl text-blue-100">
-              Find your place to serve, grow, and make a difference
-            </p>
-          </div>
-        </div>
-      </section>
+    <>
+      <PageHero
+        variant={4}
+        kicker="Ministries"
+        title={
+          <>
+            There&rsquo;s a place <em className="text-brand-300">for you here.</em>
+          </>
+        }
+        description="Find a community to grow with, serve alongside and belong to."
+      />
 
-      {/* Ministries Grid */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <section aria-labelledby="ministries-list" className="on-light section-y bg-brand-50">
+        <div className="wrap">
+          <h2 id="ministries-list" className="sr-only">
+            Our ministries
+          </h2>
+          <ChildrenFeature ministry={childrenMinistry} layout="banner" />
           {ministries.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-lg text-gray-600">
-                Check back soon for our ministry opportunities!
-              </p>
-            </div>
+            <EmptyState
+              title="Ministries are being added."
+              description="Check back soon, or get in touch and we will help you find the right place to connect."
+            >
+              <CtaLink href="/contact" variant="primary">
+                Contact us
+              </CtaLink>
+            </EmptyState>
           ) : (
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {ministries.map((ministry) => (
-                <Link key={ministry.id} href={`/ministries/${ministry.slug}`}>
-                  <Card className="h-full hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-blue-200 group overflow-hidden">
-                    {ministry.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg relative">
-                        <img
-                          src={ministry.imageUrl}
-                          alt={ministry.name}
-                          className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      </div>
-                    )}
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <CardTitle className="text-xl text-blue-900 group-hover:text-blue-700 transition-colors">
-                          {ministry.name}
-                        </CardTitle>
-                        <ArrowRight className="h-5 w-5 text-blue-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
-                      </div>
-                      {ministry.description && (
-                        <CardDescription className="line-clamp-3">
-                          {ministry.description}
-                        </CardDescription>
-                      )}
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between">
-                        <Badge variant="secondary" className="text-xs group-hover:bg-blue-100 transition-colors">
-                          {ministry._count.members} members
-                        </Badge>
-                        {ministry.meetingDay && (
-                          <span className="text-xs text-blue-600">
-                            {ministry.meetingDay}
-                            {ministry.meetingTime && ` • ${ministry.meetingTime}`}
-                          </span>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {ministries.map((m, i) => (
+                <Reveal key={m.id} delay={(i % 3) * 80}>
+                  <MinistryCard ministry={m} variant={i} />
+                </Reveal>
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-blue-50 py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-blue-900 sm:text-4xl mb-4">
-              Want to Get Involved?
-            </h2>
-            <p className="text-lg text-gray-600 mb-8">
-              We'd love to help you find the perfect ministry fit for your gifts and passions.
-            </p>
-            <Link href="/contact">
-              <button className="rounded-md bg-blue-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">
-                Contact Us
-              </button>
-            </Link>
-          </div>
+      <section className="on-light section-y bg-brand-100">
+        <div className="wrap">
+          <Reveal>
+            <SectionHeader
+              align="center"
+              kicker="Get involved"
+              title={
+                <>
+                  Not sure where <em>to begin?</em>
+                </>
+              }
+              description="Tell us a little about yourself and we will help you find the right ministry."
+            />
+            <div className="mt-10 flex justify-center">
+              <CtaLink href="/contact" variant="primary">
+                Talk to us
+              </CtaLink>
+            </div>
+          </Reveal>
         </div>
       </section>
-    </div>
+    </>
   );
 }

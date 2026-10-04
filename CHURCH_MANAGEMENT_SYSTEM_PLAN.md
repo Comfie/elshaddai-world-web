@@ -977,7 +977,7 @@ async function main() {
     { key: 'church_email', value: 'info@elshaddaiworld.org', category: 'general', description: 'Main church email' },
     { key: 'church_phone', value: '+27 XX XXX XXXX', category: 'general', description: 'Church phone number' },
     { key: 'church_address', value: 'Church Address Here', category: 'general', description: 'Church physical address' },
-    { key: 'service_times', value: 'Sunday 9:00 AM & 11:00 AM', category: 'general', description: 'Service times' },
+    { key: 'service_times', value: '<generated from lib/site-config.ts WEEKLY_PROGRAM>', category: 'general', description: 'Service times' },
     { key: 'facebook_url', value: 'https://facebook.com/elshaddai', category: 'social', description: 'Facebook page URL' },
     { key: 'youtube_url', value: 'https://youtube.com/elshaddai', category: 'social', description: 'YouTube channel URL' },
     { key: 'instagram_url', value: 'https://instagram.com/elshaddai', category: 'social', description: 'Instagram URL' },

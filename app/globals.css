@@ -64,55 +64,261 @@
   }
 }
 
-/* Custom Animations */
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
+/* ==========================================================================
+   PUBLIC SITE DESIGN SYSTEM  (El Shaddai World Ministries)
+   Scoped to public pages through the classes below — the admin/CRM styles
+   above are untouched.
+   ========================================================================== */
+
+@theme inline {
+  /* Ink — deep charcoal / near-black */
+  --color-ink-950: #0d0f12;
+  --color-ink-900: #14171c;
+  --color-ink-800: #1d2128;
+  --color-ink-700: #2a2f38;
+  --color-ink-600: #3a404b;
+
+  /* Ivory — warm off-white backgrounds */
+  --color-ivory-50: #fbf9f4;
+  --color-ivory: #f7f3ea;
+  --color-ivory-200: #f1ebdd;
+  --color-ivory-300: #e6dfcd;
+
+  /* Stone — warm greys (borders, muted copy) */
+  --color-stone-200: #d9d2c3;
+  --color-stone-400: #b8b2a4;
+  --color-stone-500: #8c8576;
+  --color-stone-600: #5f5a4f;
+
+  /* Gold / bronze — the single accent family */
+  --color-gold: #c8963e;
+  --color-gold-light: #e0b25f;
+  --color-bronze: #8a5a12;
+
+  --font-display: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-ui: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-@keyframes fade-in-up {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
+/* Layout primitives ------------------------------------------------------- */
+
+@utility wrap {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+@utility wrap-narrow {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 52rem;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+@utility section-y {
+  padding-block: clamp(4.5rem, 9vw, 8.5rem);
+}
+
+/* Typography ----------------------------------------------------------------*/
+
+@utility display-xl {
+  font-family: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(3.25rem, 9.5vw, 5.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+@utility display-lg {
+  font-family: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.6rem, 6.4vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@utility display-md {
+  font-family: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+@utility display-sm {
+  font-family: var(--font-instrument), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+@utility lead {
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  line-height: 1.65;
+}
+
+@utility kicker {
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Page base ----------------------------------------------------------------*/
+
+@layer base {
+.public-site {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--color-ivory);
+  color: var(--color-ink-900);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+}
+
+.public-site ::selection {
+  background: var(--color-gold);
+  color: var(--color-ink-950);
+}
+
+.public-site :focus-visible {
+  outline: 2px solid var(--color-ink-900);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Gold outlines only on dark surfaces — on ivory they fail 3:1 contrast. */
+.public-site .on-dark :focus-visible,
+.public-site .on-dark:focus-visible {
+  outline-color: var(--color-gold-light);
+}
+
+/* Animated underline link ---------------------------------------------------*/
+
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 0.35s var(--ease-out-quart);
+}
+a:hover > .link-underline,
+a:focus-visible > .link-underline,
+a[aria-current="page"] > .link-underline,
+button:hover > .link-underline,
+button:focus-visible > .link-underline,
+button[data-state="open"] > .link-underline,
+.link-underline[data-active="true"] {
+  background-size: 100% 1px;
+}
+
+/* Photo placeholder (replaced automatically once a real image URL is set) ---*/
+
+.photo-placeholder {
+  background-color: var(--color-ink-900);
+  background-image:
+    radial-gradient(60% 55% at var(--px, 70%) var(--py, 25%), rgba(224, 178, 95, 0.5), transparent 70%),
+    radial-gradient(45% 40% at calc(100% - var(--px, 70%)) 95%, rgba(200, 150, 62, 0.24), transparent 70%),
+    linear-gradient(180deg, #1b1f27 0%, #0f1115 100%);
+}
+.photo-placeholder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Scroll reveal ------------------------------------------------------------ */
+
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.8s var(--ease-out-quart), transform 0.8s var(--ease-out-quart);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Hero entrance (CSS only, runs once) ---------------------------------------*/
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: none; }
+}
+.rise-in {
+  animation: rise-in 0.9s var(--ease-out-quart) both;
+  animation-delay: var(--rise-delay, 0ms);
+}
+
+@keyframes slow-zoom {
+  from { transform: scale(1.04); }
+  to   { transform: scale(1.1); }
+}
+.slow-zoom {
+  animation: slow-zoom 24s ease-out both;
+}
+
+/* Accordion ---------------------------------------------------------------- */
+
+.accordion-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s var(--ease-out-quart);
+}
+.accordion-panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.accordion-panel > div {
+  overflow: hidden;
+}
+
+/* Mobile drawer ------------------------------------------------------------ */
+
+@keyframes drawer-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+.drawer-in {
+  animation: drawer-in 0.32s var(--ease-out-quart) both;
+}
+
+/* Hide scrollbars on horizontal chip rows ----------------------------------*/
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Reduced motion — respect the user's preference everywhere ------------------*/
+
+@media (prefers-reduced-motion: reduce) {
+  .public-site *,
+  .public-site *::before,
+  .public-site *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
   }
-  100% {
+  [data-reveal="hidden"] {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out;
-}
-
-.animation-delay-200 {
-  animation-delay: 0.2s;
-  animation-fill-mode: backwards;
-}
-
-.animation-delay-400 {
-  animation-delay: 0.4s;
-  animation-fill-mode: backwards;
+  .slow-zoom {
+    animation: none;
+  }
 }

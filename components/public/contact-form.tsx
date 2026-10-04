@@ -1,20 +1,29 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
+import { Field, FormShell, SubmitButton, inputClass } from '@/components/public/form-controls';
+
+// ?topic= lets other pages deep-link into a pre-selected category.
+const TOPIC_TO_CATEGORY: Record<string, string> = {
+  visitor: 'VISITOR_INFO',
+  prayer: 'PRAYER_REQUEST',
+  partnership: 'PARTNERSHIP',
+  media: 'MEDIA_INQUIRY',
+};
 
 export function ContactForm() {
+  const params = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     name: '',
     email: '',
     phone: '',
-    subject: '',
+    subject: params.get('subject')?.slice(0, 200) ?? '',
     message: '',
-    category: 'GENERAL',
-  });
+    category: TOPIC_TO_CATEGORY[params.get('topic') ?? ''] ?? 'GENERAL',
+  }));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -61,126 +70,107 @@ export function ContactForm() {
   };
 
   return (
-    <Card className="border-blue-200">
-      <CardHeader>
-        <CardTitle className="text-2xl text-blue-900">Send Us a Message</CardTitle>
-        <CardDescription>
-          Fill out the form below and we'll get back to you as soon as possible
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Your Name *
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              disabled={isSubmitting}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            />
-          </div>
+    <FormShell>
+      <h2 className="display-md text-ink-900">Send us a message</h2>
+      <p className="mt-3 text-stone-600">We&rsquo;ll get back to you as soon as we can.</p>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address *
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              disabled={isSubmitting}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            >
-              <option value="GENERAL">General Inquiry</option>
-              <option value="PRAYER_REQUEST">Prayer Request</option>
-              <option value="VISITOR_INFO">Visitor Information</option>
-              <option value="PARTNERSHIP">Partnership</option>
-              <option value="MEDIA_INQUIRY">Media Inquiry</option>
-              <option value="SUGGESTION">Suggestion</option>
-              <option value="COMPLAINT">Complaint</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-              Subject *
-            </label>
-            <input
-              type="text"
-              id="subject"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              required
-              disabled={isSubmitting}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-              Message *
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              rows={6}
-              value={formData.message}
-              onChange={handleChange}
-              required
-              minLength={10}
-              disabled={isSubmitting}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-            />
-          </div>
-
-          <Button
-            type="submit"
+      <form onSubmit={handleSubmit} className="mt-10 grid gap-6 sm:grid-cols-2">
+        <Field id="name" label="Your name" required>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            autoComplete="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
             disabled={isSubmitting}
-            className="w-full bg-blue-900 hover:bg-blue-800"
+            className={inputClass}
+          />
+        </Field>
+
+        <Field id="email" label="Email address" required>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autoComplete="email"
+            inputMode="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            disabled={isSubmitting}
+            className={inputClass}
+          />
+        </Field>
+
+        <Field id="phone" label="Phone number">
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            autoComplete="tel"
+            inputMode="tel"
+            value={formData.phone}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            className={inputClass}
+          />
+        </Field>
+
+        <Field id="category" label="Category">
+          <select
+            id="category"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            className={inputClass}
           >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+            <option value="GENERAL">General Inquiry</option>
+            <option value="PRAYER_REQUEST">Prayer Request</option>
+            <option value="VISITOR_INFO">Visitor Information</option>
+            <option value="PARTNERSHIP">Partnership</option>
+            <option value="MEDIA_INQUIRY">Media Inquiry</option>
+            <option value="SUGGESTION">Suggestion</option>
+            <option value="COMPLAINT">Complaint</option>
+          </select>
+        </Field>
+
+        <Field id="subject" label="Subject" required className="sm:col-span-2">
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            value={formData.subject}
+            onChange={handleChange}
+            required
+            disabled={isSubmitting}
+            className={inputClass}
+          />
+        </Field>
+
+        <Field id="message" label="Message" required hint="At least 10 characters." className="sm:col-span-2">
+          <textarea
+            id="message"
+            name="message"
+            rows={6}
+            value={formData.message}
+            onChange={handleChange}
+            required
+            minLength={10}
+            disabled={isSubmitting}
+            aria-describedby="message-hint"
+            className={`${inputClass} resize-y`}
+          />
+        </Field>
+
+        <div className="sm:col-span-2">
+          <SubmitButton pending={isSubmitting} pendingLabel="Sending…">
+            Send message
+          </SubmitButton>
+        </div>
+      </form>
+    </FormShell>
   );
 }

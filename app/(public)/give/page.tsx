@@ -1,240 +1,198 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Heart, CreditCard, Building, Smartphone, Info } from 'lucide-react';
+import type { Metadata } from 'next';
+import { PageHero } from '@/components/public/page-hero';
+import { CtaLink } from '@/components/public/cta';
+import { Reveal } from '@/components/public/reveal';
+import { SectionHeader } from '@/components/public/section-header';
+import { NeedsConfirmation } from '@/components/public/needs-confirmation';
+import { PlanVisitCTA } from '@/components/public/plan-visit-cta';
+import { getSiteInfo } from '@/lib/site-info';
 
-export default function GivePage() {
-  const givingMethods = [
-    {
-      icon: CreditCard,
-      title: 'Online Giving',
-      description: 'Give securely online using your credit/debit card',
-      details: 'Coming soon - Online giving portal integration',
-    },
-    {
-      icon: Building,
-      title: 'Bank Transfer',
-      description: 'Transfer directly to our church account',
-      details: (
-        <div className="space-y-1 text-sm">
-          <p><span className="font-medium">Bank:</span> First National Bank</p>
-          <p><span className="font-medium">Account Name:</span> El Shaddai World Ministries</p>
-          <p><span className="font-medium">Account Number:</span> 1234567890</p>
-          <p><span className="font-medium">Branch Code:</span> 250655</p>
-          <p className="text-xs text-gray-500 mt-2">
-            Please use your name and "Offering" or "Tithe" as reference
-          </p>
-        </div>
-      ),
-    },
-    {
-      icon: Smartphone,
-      title: 'Mobile Payment',
-      description: 'Give using mobile money services',
-      details: 'Contact the church office for mobile payment options',
-    },
-  ];
+export const revalidate = 300;
+
+export const metadata: Metadata = {
+  title: 'Give',
+  description:
+    'Give to El Shaddai World Ministries and help sustain our ministries, outreach and mission. Every gift makes a difference.',
+  alternates: { canonical: '/give' },
+  openGraph: { title: 'Give | El Shaddai World Ministries', url: '/give' },
+};
+
+const reasons = [
+  { title: 'Worship', body: 'Giving is an act of worship and obedience to God.' },
+  { title: 'Ministry', body: 'Your gifts support our ministries and outreach programmes.' },
+  { title: 'Kingdom growth', body: 'Together we are building God’s kingdom locally and globally.' },
+];
+
+const supports = [
+  { title: 'Ministry & programmes', items: ['Sunday services and worship', 'Children and youth programmes', 'Small groups and discipleship', 'Prayer and counselling ministries'] },
+  { title: 'Community outreach', items: ['Food and clothing assistance', 'Community service projects', 'Evangelism and missions', 'Support for those in need'] },
+  { title: 'Facilities & operations', items: ['Building maintenance and utilities', 'Audio/visual equipment', 'Office operations', 'Technology and communications'] },
+  { title: 'Staff & leadership', items: ['Pastoral staff support', 'Ministry leaders', 'Administrative team', 'Leadership development'] },
+];
+
+export default async function GivePage() {
+  const info = await getSiteInfo();
+  const { onlineUrl, bank } = info.giving;
 
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <Heart className="h-16 w-16 mx-auto mb-6 text-blue-300" />
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-6">
-              Give to El Shaddai
-            </h1>
-            <p className="text-xl text-blue-100">
-              Your generosity helps us spread the Gospel and serve our community
+    <>
+      <PageHero
+        slot="giving"
+        variant={4}
+        kicker="Giving"
+        title={
+          <>
+            Generosity <em className="text-gold-light">changes</em> lives.
+          </>
+        }
+        description="Your generosity helps us spread the Gospel and serve our community. Give as you feel led — we are grateful for every gift."
+      />
+
+      <section className="on-light section-y bg-ivory">
+        <div className="wrap-narrow text-center">
+          <Reveal>
+            <p className="kicker mb-6 text-bronze">Why we give</p>
+            <p className="display-md text-ink-900">
+              &ldquo;Each of you should give what you have decided in your heart to give, not reluctantly or under
+              compulsion, for God loves a cheerful giver.&rdquo;
             </p>
-          </div>
+            <p className="kicker mt-6 text-stone-600">2 Corinthians 9:7</p>
+          </Reveal>
+        </div>
+        <div className="wrap mt-20">
+          <ul className="grid gap-10 border-t border-stone-200 pt-10 md:grid-cols-3">
+            {reasons.map((r, i) => (
+              <Reveal as="li" key={r.title} delay={i * 80}>
+                <p className="display-sm text-ink-900">{r.title}</p>
+                <p className="mt-3 max-w-xs text-stone-600">{r.body}</p>
+              </Reveal>
+            ))}
+          </ul>
         </div>
       </section>
 
-      {/* Giving Philosophy */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="text-3xl font-bold text-blue-900 mb-4">Why We Give</h2>
-            <p className="text-lg text-gray-600">
-              "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver." - 2 Corinthians 9:7
-            </p>
-          </div>
+      <section aria-labelledby="ways-heading" className="on-dark section-y bg-ink-900 text-white">
+        <div className="wrap">
+          <Reveal>
+            <SectionHeader tone="dark" kicker="Ways to give" title={<span id="ways-heading">Choose what <em>suits you.</em></span>} />
+          </Reveal>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-            <Card className="text-center border-blue-200">
-              <CardHeader>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                  <Heart className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-blue-900">Worship</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Giving is an act of worship and obedience to God
+          <div className="mt-14 grid gap-5 lg:grid-cols-3">
+            <Reveal className="rounded-2xl border border-white/10 p-8 sm:p-10">
+              <p className="kicker mb-4 text-gold-light">Online</p>
+              <h3 className="display-sm">Give online</h3>
+              {onlineUrl ? (
+                <>
+                  <p className="mt-4 text-stone-400">Give securely online using your card.</p>
+                  <div className="mt-8">
+                    <CtaLink href={onlineUrl} variant="gold" external>
+                      Give online
+                    </CtaLink>
+                  </div>
+                </>
+              ) : (
+                <p className="mt-4 text-stone-400">
+                  Online giving is coming soon. In the meantime, please use another way to give or contact the church
+                  office.
+                  <NeedsConfirmation what="online giving link (Settings: give_online_url)" />
                 </p>
-              </CardContent>
-            </Card>
+              )}
+            </Reveal>
 
-            <Card className="text-center border-blue-200">
-              <CardHeader>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                  <Users className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-blue-900">Ministry</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Your gifts support our ministries and outreach programs
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center border-blue-200">
-              <CardHeader>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                  <Globe className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-blue-900">Kingdom Growth</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Together we're building God's kingdom locally and globally
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Giving Methods */}
-      <section className="bg-blue-50 py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center mb-12">
-            <h2 className="text-3xl font-bold text-blue-900 mb-4">Ways to Give</h2>
-            <p className="text-lg text-gray-600">
-              Choose the method that works best for you
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            {givingMethods.map((method) => {
-              const Icon = method.icon;
-              return (
-                <Card key={method.title} className="border-blue-200">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="rounded-full bg-blue-100 p-3">
-                        <Icon className="h-6 w-6 text-blue-600" />
+            <Reveal className="rounded-2xl border border-white/10 p-8 sm:p-10" delay={80}>
+              <p className="kicker mb-4 text-gold-light">Bank transfer</p>
+              <h3 className="display-sm">Transfer directly</h3>
+              {bank ? (
+                <>
+                  <dl className="mt-5 space-y-3 text-stone-300">
+                    {bank.bankName && (
+                      <div>
+                        <dt className="text-sm text-stone-400">Bank</dt>
+                        <dd>{bank.bankName}</dd>
                       </div>
-                      <CardTitle className="text-xl text-blue-900">{method.title}</CardTitle>
-                    </div>
-                    <CardDescription>{method.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {typeof method.details === 'string' ? (
-                      <p className="text-sm text-gray-600">{method.details}</p>
-                    ) : (
-                      method.details
                     )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+                    <div>
+                      <dt className="text-sm text-stone-400">Account name</dt>
+                      <dd>{bank.accountName}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-stone-400">Account number</dt>
+                      <dd>{bank.accountNumber}</dd>
+                    </div>
+                    {bank.branchCode && (
+                      <div>
+                        <dt className="text-sm text-stone-400">Branch code</dt>
+                        <dd>{bank.branchCode}</dd>
+                      </div>
+                    )}
+                  </dl>
+                  <p className="mt-5 text-sm text-stone-400">
+                    Please use your name and &ldquo;Offering&rdquo; or &ldquo;Tithe&rdquo; as the reference.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="mt-4 text-stone-400">
+                    Please contact the church office for our banking details.
+                    <NeedsConfirmation what="bank details (Settings: bank_*)" />
+                  </p>
+                  <div className="mt-8">
+                    <CtaLink href="/contact" variant="outline-light">
+                      Contact the office
+                    </CtaLink>
+                  </div>
+                </>
+              )}
+            </Reveal>
 
-      {/* What Your Giving Supports */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center mb-12">
-            <h2 className="text-3xl font-bold text-blue-900 mb-4">Your Impact</h2>
-            <p className="text-lg text-gray-600">
-              See how your generosity makes a difference
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <Card className="border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-blue-900">Ministry & Programs</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>• Sunday services and worship</li>
-                  <li>• Children and youth programs</li>
-                  <li>• Small groups and discipleship</li>
-                  <li>• Prayer and counseling ministries</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-blue-900">Community Outreach</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>• Food and clothing assistance</li>
-                  <li>• Community service projects</li>
-                  <li>• Evangelism and missions</li>
-                  <li>• Support for those in need</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-blue-900">Facility & Operations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>• Building maintenance and utilities</li>
-                  <li>• Audio/visual equipment</li>
-                  <li>• Office operations</li>
-                  <li>• Technology and communications</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-blue-900">Staff & Leadership</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>• Pastoral staff support</li>
-                  <li>• Ministry leaders</li>
-                  <li>• Administrative team</li>
-                  <li>• Leadership development</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Tax Information */}
-      <section className="bg-blue-50 py-12">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Card className="border-blue-200">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Info className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-blue-900">Tax Information</CardTitle>
+            <Reveal className="rounded-2xl border border-white/10 p-8 sm:p-10" delay={160}>
+              <p className="kicker mb-4 text-gold-light">Mobile</p>
+              <h3 className="display-sm">Mobile payment</h3>
+              <p className="mt-4 text-stone-400">Contact the church office for mobile payment options.</p>
+              <div className="mt-8">
+                <CtaLink href="/contact" variant="outline-light">
+                  Get in touch
+                </CtaLink>
               </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600">
-                El Shaddai World Ministries is a registered non-profit organization. All donations are tax-deductible to the extent allowed by law. Tax receipts will be issued for all qualifying donations at the end of each financial year.
-              </p>
-            </CardContent>
-          </Card>
+            </Reveal>
+          </div>
         </div>
       </section>
-    </div>
+
+      <section aria-labelledby="impact-heading" className="on-light section-y bg-ivory">
+        <div className="wrap">
+          <Reveal>
+            <SectionHeader
+              kicker="Your impact"
+              title={<span id="impact-heading">What your giving <em>supports.</em></span>}
+            />
+          </Reveal>
+          <div className="mt-14 grid gap-x-12 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
+            {supports.map((s, i) => (
+              <Reveal key={s.title} delay={i * 70}>
+                <h3 className="display-sm border-b border-stone-200 pb-4 text-ink-900">{s.title}</h3>
+                <ul className="mt-5 space-y-2 text-stone-600">
+                  {s.items.map((it) => (
+                    <li key={it}>{it}</li>
+                  ))}
+                </ul>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal className="mt-20 rounded-2xl border border-stone-200 bg-ivory-50 p-8 sm:p-10">
+            <p className="kicker mb-3 text-bronze">Tax information</p>
+            <p className="max-w-3xl text-stone-600">
+              El Shaddai World Ministries is a registered non-profit organisation. All donations are tax-deductible to
+              the extent allowed by law. Tax receipts will be issued for all qualifying donations at the end of each
+              financial year.
+              <NeedsConfirmation what="non-profit / tax-receipt (Section 18A) wording" />
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      <PlanVisitCTA info={info} />
+    </>
   );
 }
-
-// Import missing components
-import { Globe, Users } from 'lucide-react';

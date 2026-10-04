@@ -1,299 +1,249 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, BookOpen, Download, Play, Video as VideoIcon, User, Tag } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Download, Headphones, Play } from 'lucide-react';
 import { prisma } from '@/lib/db';
-import { format } from 'date-fns';
+import { safeQuery } from '@/lib/public-data';
+import { CtaLink } from '@/components/public/cta';
+import { Photo } from '@/components/public/photo';
+import { Reveal } from '@/components/public/reveal';
+import { ShareButtons } from '@/components/public/share-buttons';
+import { SermonCard } from '@/components/public/sermon-card';
+import { PlanVisitCTA } from '@/components/public/plan-visit-cta';
+import { JsonLd } from '@/components/public/json-ld';
+import { getSiteInfo } from '@/lib/site-info';
+import { formatCategory, formatLongDate } from '@/lib/format';
+import { extractYouTubeId, getVideoType, isDirectAudio, sermonThumbnail } from '@/lib/media';
+import { SITE_URL } from '@/lib/site-config';
 
-async function getSermon(id: string) {
-  return await prisma.sermon.findUnique({
-    where: { id },
-  });
-}
+export const revalidate = 60;
 
-async function getRelatedSermons(category: string, currentSermonId: string) {
-  return await prisma.sermon.findMany({
+const getSermon = (id: string) => prisma.sermon.findUnique({ where: { id } });
+
+async function getRelatedSermons(sermon: { id: string; series: string | null; category: string }) {
+  const candidates = await prisma.sermon.findMany({
     where: {
-      category: category as any,
-      id: { not: currentSermonId },
+      id: { not: sermon.id },
+      OR: [
+        ...(sermon.series ? [{ series: sermon.series }] : []),
+        { category: sermon.category as never },
+      ],
     },
-    take: 3,
     orderBy: { sermonDate: 'desc' },
+    take: 12,
   });
+  // Same series first, then same category, newest first within each.
+  return candidates
+    .sort((a, b) => Number(b.series === sermon.series && !!sermon.series) - Number(a.series === sermon.series && !!sermon.series))
+    .slice(0, 3);
 }
 
-function extractYouTubeId(url: string) {
-  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-  return match ? match[1] : null;
-}
-
-function extractFacebookVideoId(url: string) {
-  // Match various Facebook video URL formats
-  const patterns = [
-    /facebook\.com\/share\/v\/([a-zA-Z0-9_-]+)/,  // New share format: facebook.com/share/v/ID
-    /facebook\.com\/.*\/videos\/(\d+)/,            // Classic format: facebook.com/.../videos/ID
-    /fb\.watch\/([a-zA-Z0-9_-]+)/,                // Short URL: fb.watch/ID
-    /facebook\.com\/watch\/?\?v=(\d+)/,            // Watch format: facebook.com/watch?v=ID
-  ];
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-}
-
-function getVideoType(url: string): 'youtube' | 'facebook' | 'other' {
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    return 'youtube';
-  }
-  if (url.includes('facebook.com') || url.includes('fb.watch')) {
-    return 'facebook';
-  }
-  return 'other';
-}
-
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const sermon = await getSermon(id);
+  const sermon = await safeQuery(() => getSermon(id), null);
+  if (!sermon) return { title: 'Sermon not found' };
 
-  if (!sermon) {
-    return { title: 'Sermon Not Found' };
-  }
-
+  const description =
+    sermon.description?.slice(0, 160) ||
+    `Watch “${sermon.title}” by ${sermon.preacher} at El Shaddai World Ministries.`;
+  const image = sermonThumbnail(sermon);
   return {
-    title: `${sermon.title} | El Shaddai World Ministries`,
-    description: sermon.description || `Watch ${sermon.title} by ${sermon.preacher}`,
+    title: sermon.title,
+    description,
+    alternates: { canonical: `/sermons/${sermon.id}` },
+    openGraph: {
+      title: sermon.title,
+      description,
+      type: 'video.other',
+      url: `/sermons/${sermon.id}`,
+      ...(image && { images: [{ url: image }] }),
+    },
   };
 }
 
 export default async function SermonDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sermon = await getSermon(id);
+  if (!sermon) notFound();
 
-  if (!sermon) {
-    notFound();
-  }
+  const [related, info] = await Promise.all([getRelatedSermons(sermon), getSiteInfo()]);
 
-  const relatedSermons = await getRelatedSermons(sermon.category, sermon.id);
-
-  // Detect video type and extract IDs
-  const videoType = sermon.videoUrl ? getVideoType(sermon.videoUrl) : null;
+  const videoType = getVideoType(sermon.videoUrl);
   const youtubeId = videoType === 'youtube' && sermon.videoUrl ? extractYouTubeId(sermon.videoUrl) : null;
-  const facebookVideoId = videoType === 'facebook' && sermon.videoUrl ? extractFacebookVideoId(sermon.videoUrl) : null;
+  const thumb = sermonThumbnail(sermon);
+  const shareUrl = `${SITE_URL}/sermons/${sermon.id}`;
+  const watchLabel =
+    videoType === 'youtube' ? 'Watch on YouTube' : videoType === 'facebook' ? 'Watch on Facebook' : 'Watch video';
+
+  const schema = sermon.videoUrl && {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: sermon.title,
+    description: sermon.description || sermon.title,
+    uploadDate: sermon.sermonDate.toISOString(),
+    ...(thumb && { thumbnailUrl: thumb }),
+    ...(youtubeId && { embedUrl: `https://www.youtube-nocookie.com/embed/${youtubeId}` }),
+    contentUrl: sermon.videoUrl,
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <section className="bg-white border-b">
-        <div className="mx-auto max-w-7xl px-6 py-4 lg:px-8">
-          <Link
-            href="/sermons"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-blue-700 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Sermons
-          </Link>
+    <>
+      {schema && <JsonLd data={schema} />}
+
+      {/* Player */}
+      <section className="on-dark relative isolate overflow-hidden bg-ink-950 pb-14 pt-28 text-white sm:pb-20 sm:pt-36">
+        <Photo src={thumb} alt="" variant={2} className="scale-110 opacity-30 blur-2xl" />
+        <div aria-hidden="true" className="absolute inset-0 bg-ink-950/70" />
+        <div className="wrap relative">
+          <CtaLink href="/sermons" variant="text-light" arrow={false} className="mb-8">
+            ← All sermons
+          </CtaLink>
+
+          <div className="mx-auto max-w-5xl">
+            {youtubeId ? (
+              <div className="relative aspect-video overflow-hidden rounded-2xl bg-black">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1&playsinline=1`}
+                  title={sermon.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full border-0"
+                />
+              </div>
+            ) : sermon.videoUrl ? (
+              <a
+                href={sermon.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block aspect-video overflow-hidden rounded-2xl bg-ink-900"
+              >
+                <Photo src={thumb} alt="" variant={1} zoom />
+                <span aria-hidden="true" className="absolute inset-0 bg-ink-950/40" />
+                <span className="absolute inset-0 grid place-items-center">
+                  <span className="flex flex-col items-center gap-4">
+                    <span className="grid size-20 place-items-center rounded-full bg-gold text-ink-950 transition-transform duration-300 group-hover:scale-110">
+                      <Play className="ml-1 size-8 fill-current" aria-hidden="true" />
+                    </span>
+                    <span className="rounded-full bg-ivory px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-ink-900">
+                      {watchLabel}
+                    </span>
+                  </span>
+                </span>
+              </a>
+            ) : thumb || sermon.audioUrl ? (
+              <div className="relative aspect-video overflow-hidden rounded-2xl bg-ink-900">
+                <Photo src={thumb} alt={sermon.title} variant={0} />
+                <div aria-hidden="true" className="absolute inset-0 bg-ink-950/35" />
+                {sermon.audioUrl && (
+                  <span className="absolute inset-0 grid place-items-center">
+                    <Headphones className="size-14 text-white/90" aria-hidden="true" />
+                  </span>
+                )}
+              </div>
+            ) : null}
+
+            {sermon.audioUrl && isDirectAudio(sermon.audioUrl) && (
+              <div className="mt-5 rounded-2xl border border-white/15 bg-white/5 p-4">
+                <p className="kicker mb-3 text-gold-light">Listen</p>
+                <audio controls preload="none" src={sermon.audioUrl} className="w-full" />
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="py-8">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-6">
-              {youtubeId ? (
-                <Card className="overflow-hidden">
-                  <div className="relative aspect-video bg-black">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`}
-                      title={sermon.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      loading="lazy"
-                      className="absolute inset-0 w-full h-full border-0"
-                      style={{ border: 0 }}
-                    />
-                  </div>
-                </Card>
-              ) : facebookVideoId ? (
-                <Card className="overflow-hidden group cursor-pointer">
-                  <a href={sermon.videoUrl!} target="_blank" rel="noopener noreferrer">
-                    <div className="relative aspect-video bg-gradient-to-br from-blue-600 to-blue-800">
-                      {sermon.thumbnailUrl ? (
-                        <img src={sermon.thumbnailUrl} alt={sermon.title} className="object-cover w-full h-full" />
-                      ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <VideoIcon className="h-24 w-24 text-white opacity-50" />
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center transition-all group-hover:bg-black/60">
-                        <div className="bg-blue-600 rounded-full p-6 mb-4 transform transition-transform group-hover:scale-110">
-                          <Play className="h-12 w-12 text-white fill-white" />
-                        </div>
-                        <div className="bg-white/90 px-6 py-3 rounded-full">
-                          <p className="text-blue-900 font-semibold text-lg flex items-center gap-2">
-                            <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                            </svg>
-                            Watch on Facebook
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                </Card>
-              ) : sermon.thumbnailUrl ? (
-                <Card className="overflow-hidden">
-                  <div className="relative aspect-video bg-gray-900">
-                    <img src={sermon.thumbnailUrl} alt={sermon.title} className="object-cover w-full h-full" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <VideoIcon className="h-20 w-20 text-white opacity-80" />
-                    </div>
-                  </div>
-                </Card>
-              ) : null}
+      {/* Details */}
+      <section className="on-light section-y bg-ivory">
+        <div className="wrap grid gap-14 lg:grid-cols-12 lg:gap-20">
+          <Reveal className="lg:col-span-8">
+            <p className="kicker mb-5 text-bronze">{sermon.series || formatCategory(sermon.category)}</p>
+            <h1 className="display-lg text-ink-900">{sermon.title}</h1>
+            <p className="mt-6 text-lg text-stone-600">
+              <span className="text-ink-900">{sermon.preacher}</span> &middot; {formatLongDate(sermon.sermonDate)}
+            </p>
 
-              <div className="space-y-4">
-                <div>
-                  <h1 className="text-4xl font-bold text-gray-900 mb-3">{sermon.title}</h1>
-                  <div className="flex flex-wrap items-center gap-4 text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <User className="h-5 w-5" />
-                      <span>{sermon.preacher}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
-                      <span>{format(new Date(sermon.sermonDate), 'MMMM d, yyyy')}</span>
-                    </div>
-                  </div>
-                </div>
+            {sermon.scripture && (
+              <blockquote className="mt-10 border-l-2 border-gold pl-6">
+                <p className="kicker mb-2 text-bronze">Scripture</p>
+                <p className="display-sm text-ink-900">{sermon.scripture}</p>
+              </blockquote>
+            )}
 
-                <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-blue-900">{sermon.category.replace('_', ' ')}</Badge>
-                  {sermon.series && <Badge variant="secondary">{sermon.series}</Badge>}
-                  {sermon.topic && <Badge variant="outline">{sermon.topic}</Badge>}
-                  {sermon.tags.map((tag) => (
-                    <Badge key={tag} variant="outline">
-                      <Tag className="h-3 w-3 mr-1" />
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-
-                {sermon.scripture && (
-                  <Card className="bg-blue-50 border-blue-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <BookOpen className="h-6 w-6 text-blue-700 mt-1" />
-                        <div>
-                          <p className="text-sm font-medium text-blue-900 mb-1">Scripture Reference</p>
-                          <p className="text-lg font-semibold text-blue-800">{sermon.scripture}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {sermon.description && (
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">About This Message</h3>
-                      <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{sermon.description}</p>
-                    </CardContent>
-                  </Card>
-                )}
+            {sermon.description && (
+              <div className="mt-10">
+                <h2 className="kicker mb-4 text-bronze">About this message</h2>
+                <p className="lead max-w-2xl whitespace-pre-wrap text-stone-600">{sermon.description}</p>
               </div>
-            </div>
+            )}
 
-            <div className="space-y-6">
-              <Card>
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="font-bold text-lg text-gray-900 mb-4">Actions</h3>
+            {(sermon.topic || sermon.tags.length > 0) && (
+              <ul className="mt-10 flex flex-wrap gap-2" aria-label="Topics">
+                {[sermon.topic, ...sermon.tags].filter(Boolean).map((t) => (
+                  <li key={t} className="rounded-full border border-stone-200 px-4 py-1.5 text-sm text-stone-600">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Reveal>
+
+          <Reveal className="lg:col-span-4" delay={100}>
+            <div className="space-y-10 lg:sticky lg:top-28">
+              <div>
+                <h2 className="kicker mb-5 text-bronze">Watch &amp; listen</h2>
+                <div className="flex flex-col items-start gap-3">
                   {sermon.videoUrl && (
-                    <a href={sermon.videoUrl} target="_blank" rel="noopener noreferrer" className="block">
-                      <Button variant="outline" size="lg" className="w-full">
-                        <Play className="h-5 w-5 mr-2" />
-                        {videoType === 'youtube' ? 'Watch on YouTube' : videoType === 'facebook' ? 'Watch on Facebook' : 'Watch Video'}
-                      </Button>
-                    </a>
+                    <CtaLink href={sermon.videoUrl} variant="dark" external>
+                      {watchLabel}
+                    </CtaLink>
                   )}
                   {sermon.audioUrl && (
-                    <a href={sermon.audioUrl} target="_blank" rel="noopener noreferrer" className="block">
-                      <Button variant="outline" size="lg" className="w-full">
-                        <Play className="h-5 w-5 mr-2" />
-                        Listen to Audio
-                      </Button>
-                    </a>
+                    <CtaLink href={sermon.audioUrl} variant="outline-dark" external>
+                      Listen to audio
+                    </CtaLink>
                   )}
                   {sermon.notesUrl && (
-                    <a href={sermon.notesUrl} target="_blank" rel="noopener noreferrer" className="block">
-                      <Button variant="outline" size="lg" className="w-full">
-                        <Download className="h-5 w-5 mr-2" />
-                        Download Notes
-                      </Button>
-                    </a>
+                    <CtaLink href={sermon.notesUrl} variant="outline-dark" external arrow={false}>
+                      <Download className="size-4" aria-hidden="true" /> Sermon notes
+                    </CtaLink>
                   )}
-                </CardContent>
-              </Card>
+                  {!sermon.videoUrl && !sermon.audioUrl && !sermon.notesUrl && (
+                    <p className="text-stone-600">Media for this message will be added soon.</p>
+                  )}
+                </div>
+              </div>
 
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-lg text-gray-900 mb-4">Details</h3>
-                  <dl className="space-y-3">
-                    <div>
-                      <dt className="text-sm font-medium text-gray-500">Date</dt>
-                      <dd className="text-sm text-gray-900 mt-1">{format(new Date(sermon.sermonDate), 'EEEE, MMMM d, yyyy')}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm font-medium text-gray-500">Preacher</dt>
-                      <dd className="text-sm text-gray-900 mt-1">{sermon.preacher}</dd>
-                    </div>
-                    {sermon.series && (
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Series</dt>
-                        <dd className="text-sm text-gray-900 mt-1">{sermon.series}</dd>
-                      </div>
-                    )}
-                    {sermon.topic && (
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Topic</dt>
-                        <dd className="text-sm text-gray-900 mt-1">{sermon.topic}</dd>
-                      </div>
-                    )}
-                  </dl>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {relatedSermons.length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-8">More Sermons</h2>
-              <div className="grid gap-6 md:grid-cols-3">
-                {relatedSermons.map((relatedSermon) => (
-                  <Link key={relatedSermon.id} href={`/sermons/${relatedSermon.id}`}>
-                    <Card className="hover:shadow-xl transition-shadow">
-                      <div className="relative aspect-video bg-gray-900">
-                        {relatedSermon.thumbnailUrl && (
-                          <img src={relatedSermon.thumbnailUrl} alt={relatedSermon.title} className="object-cover w-full h-full" />
-                        )}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/20">
-                          <Play className="h-12 w-12 text-white" />
-                        </div>
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{relatedSermon.title}</h3>
-                        <p className="text-sm text-gray-600">{format(new Date(relatedSermon.sermonDate), 'MMM d, yyyy')}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
+              <div>
+                <h2 className="kicker mb-5 text-bronze">Share</h2>
+                <ShareButtons url={shareUrl} title={sermon.title} />
               </div>
             </div>
-          )}
+          </Reveal>
         </div>
       </section>
-    </div>
+
+      {related.length > 0 && (
+        <section aria-labelledby="related-heading" className="on-light bg-ivory-200 section-y">
+          <div className="wrap">
+            <h2 id="related-heading" className="display-md mb-12 text-ink-900">
+              {sermon.series ? 'More from this series' : 'Keep listening'}
+            </h2>
+            <div className="grid gap-x-7 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((s, i) => (
+                <SermonCard key={s.id} sermon={s} variant={i} />
+              ))}
+            </div>
+            <div className="mt-14">
+              <Link href="/sermons" className="link-underline inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.14em] text-ink-900">
+                Explore all sermons
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <PlanVisitCTA info={info} />
+    </>
   );
 }

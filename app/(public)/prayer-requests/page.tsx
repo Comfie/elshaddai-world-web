@@ -1,40 +1,43 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Heart, Shield, Users } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageHero } from '@/components/public/page-hero';
+import { CtaLink } from '@/components/public/cta';
+import { Reveal } from '@/components/public/reveal';
+import { CheckRow, Field, FormShell, SubmitButton, inputClass } from '@/components/public/form-controls';
+
+const initialForm = {
+  name: '',
+  email: '',
+  phone: '',
+  isAnonymous: false,
+  category: 'GENERAL',
+  request: '',
+  isUrgent: false,
+  isPublic: false,
+  shareWithPastors: true,
+  shareWithLeaders: false,
+};
+
+const reassurance = [
+  { title: 'We care', body: 'Your request matters to us. Our prayer team is committed to praying for you.' },
+  { title: 'Confidential', body: 'Your privacy is important. Choose to submit anonymously or privately.' },
+  { title: 'Community', body: 'Join our church family in prayer. You may optionally share with the prayer wall.' },
+];
 
 export default function PrayerRequestsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    isAnonymous: false,
-    category: 'GENERAL',
-    request: '',
-    isUrgent: false,
-    isPublic: false,
-    shareWithPastors: true,
-    shareWithLeaders: false,
-  });
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState(initialForm);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-
     if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData({
-        ...formData,
-        [name]: checked,
-      });
+      setFormData({ ...formData, [name]: (e.target as HTMLInputElement).checked });
     } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+      setFormData({ ...formData, [name]: value });
     }
   };
 
@@ -42,32 +45,26 @@ export default function PrayerRequestsPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // The API validates optional strings strictly (e.g. email must be a valid
+    // address *if present*), so blank optional fields are omitted rather than
+    // sent as "". Anonymous requests send no personal details at all.
+    const payload: Record<string, unknown> = { ...formData };
+    for (const key of ['name', 'email', 'phone'] as const) {
+      if (formData.isAnonymous || formData[key].trim() === '') delete payload[key];
+    }
+
     try {
       const response = await fetch('/api/prayer-requests', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
-
       const data = await response.json();
 
       if (response.ok) {
         toast.success(data.message || 'Prayer request submitted successfully!');
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          isAnonymous: false,
-          category: 'GENERAL',
-          request: '',
-          isUrgent: false,
-          isPublic: false,
-          shareWithPastors: true,
-          shareWithLeaders: false,
-        });
+        setFormData(initialForm);
+        setSubmitted(true);
       } else {
         toast.error(data.error || 'Failed to submit prayer request');
       }
@@ -80,269 +77,150 @@ export default function PrayerRequestsPage() {
   };
 
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <Heart className="h-16 w-16 mx-auto mb-6 text-blue-300" />
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-6">
-              Prayer Requests
-            </h1>
-            <p className="text-xl text-blue-100">
-              "The prayer of a righteous person is powerful and effective." - James 5:16
-            </p>
-          </div>
-        </div>
-      </section>
+    <>
+      <PageHero
+        variant={4}
+        kicker="Prayer"
+        title={
+          <>
+            How can we <em className="text-gold-light">pray</em> for you?
+          </>
+        }
+        description="“The prayer of a righteous person is powerful and effective.” — James 5:16"
+      />
 
-      {/* Info Section */}
-      <section className="py-16 bg-blue-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-            <Card className="text-center border-blue-200">
-              <CardHeader>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                  <Heart className="h-8 w-8 text-blue-600" />
+      <section className="on-light section-y bg-ivory">
+        <div className="wrap grid gap-14 lg:grid-cols-12 lg:gap-20">
+          <Reveal className="lg:col-span-4">
+            <p className="kicker mb-6 text-bronze">You are not alone</p>
+            <ul className="divide-y divide-stone-200 border-y border-stone-200">
+              {reassurance.map((r) => (
+                <li key={r.title} className="py-6">
+                  <p className="display-sm text-ink-900">{r.title}</p>
+                  <p className="mt-2 text-stone-600">{r.body}</p>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+
+          <Reveal className="lg:col-span-8" delay={100}>
+            {submitted ? (
+              <FormShell className="py-16 text-center" >
+                <div role="status" aria-live="polite">
+                  <CheckCircle2 className="mx-auto mb-6 size-12 text-bronze" aria-hidden="true" />
+                  <h2 className="display-md text-ink-900">We are praying with you.</h2>
+                  <p className="mx-auto mt-4 max-w-md text-stone-600">
+                    Thank you for sharing. Your request has been received by our prayer team.
+                  </p>
+                  <div className="mt-8 flex flex-wrap justify-center gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setSubmitted(false)}
+                      className="inline-flex min-h-12 items-center rounded-full border border-ink-900/40 px-7 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-ink-900 hover:bg-ink-900 hover:text-ivory"
+                    >
+                      Submit another
+                    </button>
+                    <CtaLink href="/visit" variant="dark">
+                      Plan your visit
+                    </CtaLink>
+                  </div>
                 </div>
-                <CardTitle className="text-blue-900">We Care</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Your prayer request matters to us. Our prayer team is committed to praying for you.
+              </FormShell>
+            ) : (
+              <FormShell>
+                <h2 className="display-md text-ink-900">Submit your request</h2>
+                <p className="mt-3 text-stone-600">
+                  All fields are optional except your prayer request.
                 </p>
-              </CardContent>
-            </Card>
 
-            <Card className="text-center border-blue-200">
-              <CardHeader>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                  <Shield className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-blue-900">Confidential</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Your privacy is important. Choose to submit anonymously or privately.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center border-blue-200">
-              <CardHeader>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                  <Users className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-blue-900">Community</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Join our church family in prayer. Optionally share with our prayer wall.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Prayer Request Form */}
-      <section className="py-16">
-        <div className="mx-auto max-w-3xl px-6 lg:px-8">
-          <Card className="border-blue-200">
-            <CardHeader>
-              <CardTitle className="text-2xl text-blue-900">Submit Your Prayer Request</CardTitle>
-              <CardDescription>
-                Fill out the form below and our prayer team will be notified. All fields are optional except your prayer request.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Anonymous Checkbox */}
-                <div className="flex items-center gap-2 p-4 bg-blue-50 rounded-md">
-                  <input
-                    type="checkbox"
+                <form onSubmit={handleSubmit} className="mt-10 space-y-8">
+                  <CheckRow
                     id="isAnonymous"
                     name="isAnonymous"
                     checked={formData.isAnonymous}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600"
-                  />
-                  <label htmlFor="isAnonymous" className="text-sm font-medium text-gray-700">
-                    Submit anonymously (your personal information will not be collected)
-                  </label>
-                </div>
-
-                {/* Personal Information - Hidden if anonymous */}
-                {!formData.isAnonymous && (
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                        Your Name
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Category */}
-                <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                    Prayer Category
-                  </label>
-                  <select
-                    id="category"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                    className="rounded-xl bg-ivory-200 px-4 py-3"
                   >
-                    <option value="GENERAL">General</option>
-                    <option value="HEALTH">Health/Healing</option>
-                    <option value="FAMILY">Family</option>
-                    <option value="FINANCIAL">Financial</option>
-                    <option value="EMPLOYMENT">Employment</option>
-                    <option value="SPIRITUAL">Spiritual Growth</option>
-                    <option value="SALVATION">Salvation</option>
-                    <option value="DIRECTION">Guidance/Direction</option>
-                    <option value="OTHER">Other</option>
-                  </select>
-                </div>
+                    Submit anonymously (your personal information will not be collected)
+                  </CheckRow>
 
-                {/* Prayer Request */}
-                <div>
-                  <label htmlFor="request" className="block text-sm font-medium text-gray-700 mb-1">
-                    Your Prayer Request *
-                  </label>
-                  <textarea
-                    id="request"
-                    name="request"
-                    rows={6}
-                    value={formData.request}
-                    onChange={handleChange}
-                    required
-                    minLength={10}
-                    placeholder="Share what you would like us to pray about..."
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 resize-none"
-                  />
-                </div>
+                  {!formData.isAnonymous && (
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <Field id="name" label="Your name" className="sm:col-span-2">
+                        <input id="name" name="name" type="text" autoComplete="name" value={formData.name} onChange={handleChange} className={inputClass} />
+                      </Field>
+                      <Field id="email" label="Email address">
+                        <input id="email" name="email" type="email" autoComplete="email" inputMode="email" value={formData.email} onChange={handleChange} className={inputClass} />
+                      </Field>
+                      <Field id="phone" label="Phone number">
+                        <input id="phone" name="phone" type="tel" autoComplete="tel" inputMode="tel" value={formData.phone} onChange={handleChange} className={inputClass} />
+                      </Field>
+                    </div>
+                  )}
 
-                {/* Options */}
-                <div className="space-y-3 border-t pt-4">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="isUrgent"
-                      name="isUrgent"
-                      checked={formData.isUrgent}
+                  <Field id="category" label="Prayer category">
+                    <select id="category" name="category" value={formData.category} onChange={handleChange} className={inputClass}>
+                      <option value="GENERAL">General</option>
+                      <option value="HEALTH">Health/Healing</option>
+                      <option value="FAMILY">Family</option>
+                      <option value="FINANCIAL">Financial</option>
+                      <option value="EMPLOYMENT">Employment</option>
+                      <option value="SPIRITUAL">Spiritual Growth</option>
+                      <option value="SALVATION">Salvation</option>
+                      <option value="DIRECTION">Guidance/Direction</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </Field>
+
+                  <Field id="request" label="Your prayer request" required hint="Share what you would like us to pray about (at least 10 characters).">
+                    <textarea
+                      id="request"
+                      name="request"
+                      rows={6}
+                      value={formData.request}
                       onChange={handleChange}
-                      className="h-4 w-4 text-blue-600"
+                      required
+                      minLength={10}
+                      aria-describedby="request-hint"
+                      className={`${inputClass} resize-y`}
                     />
-                    <label htmlFor="isUrgent" className="text-sm text-gray-700">
+                  </Field>
+
+                  <fieldset className="border-t border-stone-200 pt-6">
+                    <legend className="kicker mb-3 text-bronze">Sharing options</legend>
+                    <CheckRow id="isUrgent" name="isUrgent" checked={formData.isUrgent} onChange={handleChange}>
                       This is an urgent prayer request
-                    </label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="isPublic"
-                      name="isPublic"
-                      checked={formData.isPublic}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-blue-600"
-                    />
-                    <label htmlFor="isPublic" className="text-sm text-gray-700">
+                    </CheckRow>
+                    <CheckRow id="isPublic" name="isPublic" checked={formData.isPublic} onChange={handleChange}>
                       Share on public prayer wall (others can pray for this request)
-                    </label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="shareWithPastors"
-                      name="shareWithPastors"
-                      checked={formData.shareWithPastors}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-blue-600"
-                    />
-                    <label htmlFor="shareWithPastors" className="text-sm text-gray-700">
+                    </CheckRow>
+                    <CheckRow id="shareWithPastors" name="shareWithPastors" checked={formData.shareWithPastors} onChange={handleChange}>
                       Share with pastoral team (recommended)
-                    </label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="shareWithLeaders"
-                      name="shareWithLeaders"
-                      checked={formData.shareWithLeaders}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-blue-600"
-                    />
-                    <label htmlFor="shareWithLeaders" className="text-sm text-gray-700">
+                    </CheckRow>
+                    <CheckRow id="shareWithLeaders" name="shareWithLeaders" checked={formData.shareWithLeaders} onChange={handleChange}>
                       Share with ministry leaders
-                    </label>
-                  </div>
-                </div>
+                    </CheckRow>
+                  </fieldset>
 
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-blue-900 hover:bg-blue-800"
-                  size="lg"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit Prayer Request'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  <SubmitButton pending={isSubmitting} pendingLabel="Submitting…">
+                    Submit prayer request
+                  </SubmitButton>
+                </form>
+              </FormShell>
+            )}
+          </Reveal>
         </div>
       </section>
 
-      {/* Encouragement Section */}
-      <section className="bg-blue-50 py-12">
-        <div className="mx-auto max-w-3xl px-6 lg:px-8 text-center">
-          <p className="text-lg text-gray-700 mb-4">
-            "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God."
+      <section className="on-light bg-ivory-200 py-20 text-center">
+        <div className="wrap-narrow">
+          <p className="display-sm text-ink-900 sm:text-[1.75rem]">
+            &ldquo;Do not be anxious about anything, but in every situation, by prayer and petition, with
+            thanksgiving, present your requests to God.&rdquo;
           </p>
-          <p className="text-sm text-gray-600">Philippians 4:6</p>
+          <p className="kicker mt-6 text-bronze">Philippians 4:6</p>
         </div>
       </section>
-    </div>
+    </>
   );
 }
